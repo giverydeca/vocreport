@@ -1,0 +1,3362 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>店研創意 コール分析レポート</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --color-primary:    #1a2d4e;
+  --color-primary-lt: #243a62;
+  --color-accent:     #e84c3d;
+  --color-text:       #1e2a3a;
+  --color-muted:      #6b7a8d;
+  --color-border:     #dce3ed;
+  --color-bg-card:    #ffffff;
+  --color-bg-page:    #f0f3f8;
+  --color-a:  #2980b9; --color-a-lt: #d6eaf8;
+  --color-b:  #7d3c98; --color-b-lt: #f5eef8;
+  --color-c:  #1e8449; --color-c-lt: #eafaf1;
+  --color-d:  #ca6f1e; --color-d-lt: #fef5e7;
+  --color-e:  #c0392b; --color-e-lt: #fdedec;
+  --color-f:  #117a8b; --color-f-lt: #d1ecf1;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: 'Helvetica Neue','Hiragino Kaku Gothic ProN','Meiryo','Yu Gothic',sans-serif;
+  background: var(--color-bg-page);
+  color: var(--color-text);
+  font-size: 15px;
+  line-height: 1.7;
+}
+a { color: var(--color-a); }
+
+/* LAYOUT */
+.page-wrapper { max-width: 960px; margin: 0 auto; padding: 0 20px 80px; }
+
+/* HEADER */
+.report-header {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-lt) 100%);
+  color: #fff;
+  padding: 48px 20px 40px;
+  text-align: center;
+}
+.report-header h1 { font-size: 28px; font-weight: 700; letter-spacing: 0.02em; }
+.report-header .subtitle { font-size: 15px; opacity: .82; margin-top: 8px; }
+.header-meta {
+  display: flex; justify-content: center; gap: 32px; margin-top: 24px; flex-wrap: wrap;
+}
+.header-meta .meta-item {
+  background: rgba(255,255,255,.12);
+  border-radius: 8px;
+  padding: 8px 20px;
+  font-size: 13px;
+}
+.header-meta .meta-item strong { display: block; font-size: 20px; font-weight: 700; }
+
+/* TOC */
+.toc {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 24px 28px;
+  margin: 28px 0;
+}
+.toc h3 { font-size: 13px; text-transform: uppercase; letter-spacing: .1em; color: var(--color-muted); margin-bottom: 12px; }
+.toc ol { padding-left: 20px; }
+.toc li { margin: 4px 0; font-size: 14px; }
+.toc a { color: var(--color-primary); text-decoration: none; }
+.toc a:hover { text-decoration: underline; }
+
+/* SECTION */
+.section { margin-top: 52px; scroll-margin-top: 20px; }
+.section-title {
+  display: flex; align-items: center; gap: 12px;
+  font-size: 20px; font-weight: 700;
+  color: var(--color-primary);
+  border-bottom: 3px solid var(--color-primary);
+  padding-bottom: 10px;
+  margin-bottom: 24px;
+}
+.section-title .section-num {
+  background: var(--color-primary);
+  color: #fff;
+  width: 32px; height: 32px;
+  border-radius: 50%;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 14px; flex-shrink: 0;
+}
+.subsection-title {
+  font-size: 16px; font-weight: 700;
+  color: var(--color-primary-lt);
+  margin: 28px 0 14px;
+  padding-left: 10px;
+  border-left: 4px solid var(--color-accent);
+}
+
+/* CARD */
+.card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 24px;
+  margin-bottom: 20px;
+}
+
+/* KPI GRID */
+.kpi-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.kpi-card {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 18px 14px;
+  text-align: center;
+}
+.kpi-card .kpi-value { font-size: 30px; font-weight: 700; line-height: 1.1; }
+.kpi-card .kpi-label { font-size: 12px; color: var(--color-muted); margin-top: 6px; line-height: 1.4; }
+.kpi-card.accent .kpi-value { color: var(--color-accent); }
+.kpi-card.blue   .kpi-value { color: var(--color-a); }
+.kpi-card.green  .kpi-value { color: var(--color-c); }
+.kpi-card.purple .kpi-value { color: var(--color-b); }
+.kpi-card.orange .kpi-value { color: var(--color-d); }
+
+/* MESSAGE CARDS */
+.message-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin: 20px 0;
+}
+.message-card {
+  border-radius: 10px;
+  padding: 22px;
+  border-left: 5px solid;
+}
+.message-card.red    { background: var(--color-e-lt); border-color: var(--color-e); }
+.message-card.blue   { background: var(--color-a-lt); border-color: var(--color-a); }
+.message-card.green  { background: var(--color-c-lt); border-color: var(--color-c); }
+.message-card .msg-num { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .1em; opacity: .7; }
+.message-card .msg-body { font-size: 15px; font-weight: 700; margin-top: 6px; line-height: 1.5; }
+.message-card .msg-detail { font-size: 13px; margin-top: 8px; color: var(--color-text); opacity: .85; }
+
+/* INSIGHT BOX */
+.insight-box {
+  background: var(--color-a-lt);
+  border: 1px solid #a9cce3;
+  border-radius: 8px;
+  padding: 16px 20px;
+  margin: 16px 0;
+  font-size: 14px;
+}
+.insight-box.orange { background: var(--color-d-lt); border-color: #f5cba7; }
+.insight-box.red    { background: var(--color-e-lt); border-color: #f1948a; }
+.insight-box.green  { background: var(--color-c-lt); border-color: #a9dfbf; }
+.insight-box ul { padding-left: 20px; }
+.insight-box li { margin: 4px 0; }
+.insight-box strong { color: var(--color-primary); }
+
+/* QUOTE BLOCK */
+.quote-block {
+  background: #f8f9fb;
+  border-left: 4px solid var(--color-accent);
+  border-radius: 0 8px 8px 0;
+  padding: 16px 20px;
+  margin: 16px 0;
+  font-size: 14px;
+}
+.quote-block .quote-label {
+  font-size: 11px; font-weight: 700;
+  text-transform: uppercase; letter-spacing: .1em;
+  color: var(--color-accent);
+  margin-bottom: 8px;
+}
+.quote-block .quote-text { font-style: italic; color: #2c3e50; line-height: 1.65; }
+.quote-block .quote-context { font-size: 12px; color: var(--color-muted); margin-top: 8px; font-style: normal; }
+.quote-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 14px;
+  margin: 16px 0;
+}
+
+/* CHART WRAPPER */
+.chart-wrap {
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+  border-radius: 10px;
+  padding: 20px;
+  margin-bottom: 20px;
+}
+.chart-title { font-size: 14px; font-weight: 700; color: var(--color-primary); margin-bottom: 14px; }
+.chart-row { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+
+/* TABLE */
+.data-table {
+  width: 100%; border-collapse: collapse; font-size: 14px;
+  background: var(--color-bg-card);
+  border-radius: 10px; overflow: hidden;
+  border: 1px solid var(--color-border);
+  margin-bottom: 20px;
+}
+.data-table th {
+  background: var(--color-primary);
+  color: #fff; font-weight: 600;
+  padding: 10px 14px; text-align: left; font-size: 13px;
+}
+.data-table td { padding: 9px 14px; border-bottom: 1px solid var(--color-border); }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:nth-child(even) td { background: #f9fafb; }
+.badge {
+  display: inline-block; border-radius: 4px;
+  padding: 2px 8px; font-size: 12px; font-weight: 700;
+}
+.badge.red    { background: var(--color-e-lt); color: var(--color-e); }
+.badge.orange { background: var(--color-d-lt); color: var(--color-d); }
+.badge.green  { background: var(--color-c-lt); color: var(--color-c); }
+.badge.blue   { background: var(--color-a-lt); color: var(--color-a); }
+
+/* IMPACT ROW */
+.impact-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin: 20px 0; }
+.impact-card {
+  background: var(--color-bg-card); border: 1px solid var(--color-border);
+  border-radius: 10px; padding: 18px 16px; text-align: center;
+}
+.impact-card .impact-num { font-size: 28px; font-weight: 700; color: var(--color-accent); }
+.impact-card .impact-label { font-size: 12px; color: var(--color-muted); margin-top: 4px; }
+.impact-card .impact-detail { font-size: 13px; margin-top: 8px; }
+
+/* FUNCTION DEEP DIVE */
+.func-tabs { display: flex; flex-wrap: wrap; gap: 8px; margin: 0 0 20px; }
+.func-tab {
+  background: var(--color-bg-card); border: 2px solid var(--color-border);
+  border-radius: 8px; padding: 8px 16px; font-size: 13px; cursor: pointer;
+  font-weight: 600; transition: all .15s;
+}
+.func-tab:hover { background: var(--color-a-lt); border-color: var(--color-a); }
+.func-tab.active { background: var(--color-primary); color: #fff; border-color: var(--color-primary); }
+.func-panel { display: none; }
+.func-panel.active { display: block; }
+
+.func-header {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 12px;
+  margin-bottom: 20px;
+}
+.func-stat {
+  background: var(--color-bg-card); border: 1px solid var(--color-border);
+  border-radius: 8px; padding: 14px 12px; text-align: center;
+}
+.func-stat .fs-num { font-size: 22px; font-weight: 700; }
+.func-stat .fs-label { font-size: 11px; color: var(--color-muted); margin-top: 3px; line-height: 1.4; }
+.func-stat.hl-red   .fs-num { color: var(--color-e); }
+.func-stat.hl-blue  .fs-num { color: var(--color-a); }
+.func-stat.hl-green .fs-num { color: var(--color-c); }
+.func-stat.hl-orange .fs-num { color: var(--color-d); }
+
+/* BREAKDOWN CARDS */
+.breakdown-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 12px; margin: 16px 0;
+}
+.breakdown-card {
+  background: var(--color-bg-card); border: 1px solid var(--color-border);
+  border-radius: 8px; padding: 14px 16px;
+}
+.breakdown-card .bc-title { font-size: 13px; font-weight: 700; margin-bottom: 8px; }
+.breakdown-card .bc-bar-wrap { height: 8px; background: #eee; border-radius: 4px; margin: 4px 0 8px; }
+.breakdown-card .bc-bar { height: 100%; border-radius: 4px; }
+.breakdown-card .bc-meta { font-size: 11px; color: var(--color-muted); }
+.bc-high  { background: var(--color-e); }
+.bc-mid   { background: var(--color-a); }
+.bc-low   { background: #bdc3c7; }
+.bc-green { background: var(--color-c); }
+
+/* VOC LIST */
+.voc-list { margin: 12px 0; }
+.voc-item {
+  background: #f8f9fb; border-left: 3px solid var(--color-accent);
+  border-radius: 0 6px 6px 0; padding: 10px 14px; margin: 8px 0; font-size: 13px;
+}
+.voc-item .vi-tag {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  background: var(--color-e-lt); color: var(--color-e);
+  border-radius: 3px; padding: 1px 6px; margin-bottom: 5px;
+}
+.voc-item .vi-tag.blue { background: var(--color-a-lt); color: var(--color-a); }
+.voc-item .vi-tag.green { background: var(--color-c-lt); color: var(--color-c); }
+.voc-item .vi-tag.orange { background: var(--color-d-lt); color: var(--color-d); }
+.voc-item .vi-text { line-height: 1.55; }
+.voc-item .vi-context { font-size: 11px; color: var(--color-muted); margin-top: 4px; }
+
+/* IMPROVEMENT STEPS */
+.improvement-steps { margin: 16px 0; }
+.improvement-step {
+  display: flex; gap: 14px; align-items: flex-start;
+  background: var(--color-bg-card); border: 1px solid var(--color-border);
+  border-radius: 8px; padding: 14px 16px; margin-bottom: 10px;
+}
+.improvement-step .is-num {
+  flex-shrink: 0; width: 26px; height: 26px; border-radius: 50%;
+  background: var(--color-primary); color: #fff;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700;
+}
+.improvement-step .is-body { flex: 1; }
+.improvement-step .is-title { font-size: 13px; font-weight: 700; margin-bottom: 4px; }
+.improvement-step .is-meta { font-size: 12px; color: var(--color-muted); }
+.improvement-step.priority { border-left: 4px solid var(--color-accent); }
+
+/* PRIORITY MATRIX */
+.priority-matrix { overflow-x: auto; margin: 16px 0; }
+.priority-matrix table {
+  width: 100%; border-collapse: collapse; font-size: 12px;
+  background: var(--color-bg-card);
+  border: 1px solid var(--color-border);
+}
+.priority-matrix th {
+  background: var(--color-primary); color: #fff;
+  padding: 8px 10px; text-align: center; font-size: 11px;
+}
+.priority-matrix td { padding: 7px 10px; border-bottom: 1px solid var(--color-border); vertical-align: middle; }
+.priority-matrix .pm-label { font-weight: 600; text-align: left; }
+.priority-matrix .pm-h { background: #fdedec; color: #c0392b; font-weight: 700; text-align: center; }
+.priority-matrix .pm-m { background: #fef5e7; color: #ca6f1e; font-weight: 600; text-align: center; }
+.priority-matrix .pm-l { background: #eafaf1; color: #1e8449; text-align: center; }
+.priority-matrix .pm-c { text-align: center; }
+
+/* JOURNEY TIMELINE */
+.journey-grid {
+  display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 16px; margin: 20px 0;
+}
+.journey-card {
+  background: var(--color-bg-card); border: 1px solid var(--color-border);
+  border-radius: 10px; padding: 18px 16px;
+  position: relative;
+}
+.journey-card .jc-stage {
+  font-size: 11px; font-weight: 700; text-transform: uppercase;
+  letter-spacing: .08em; color: var(--color-muted); margin-bottom: 6px;
+}
+.journey-card .jc-count { font-size: 24px; font-weight: 700; color: var(--color-primary); }
+.journey-card .jc-urgency {
+  display: inline-block; font-size: 11px; font-weight: 700;
+  border-radius: 4px; padding: 2px 7px; margin: 6px 0 8px;
+}
+.journey-card .jc-urgency.high { background: #fdedec; color: var(--color-e); }
+.journey-card .jc-urgency.mid  { background: #fef5e7; color: var(--color-d); }
+.journey-card .jc-urgency.low  { background: #eafaf1; color: var(--color-c); }
+.journey-card .jc-top { font-size: 12px; color: var(--color-muted); line-height: 1.5; }
+.journey-card .jc-voc {
+  font-size: 12px; font-style: italic; color: #2c3e50;
+  background: #f8f9fb; border-left: 3px solid var(--color-accent);
+  padding: 8px 10px; margin-top: 10px; border-radius: 0 4px 4px 0;
+  line-height: 1.5;
+}
+
+/* ROADMAP */
+.roadmap-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin: 16px 0; }
+@media (max-width: 640px) {
+  .chart-row { grid-template-columns: 1fr; }
+  .kpi-grid { grid-template-columns: repeat(2, 1fr); }
+  .impact-row { grid-template-columns: 1fr; }
+  .roadmap-grid { grid-template-columns: 1fr; }
+}
+
+/* FOOTER */
+.report-footer {
+  background: var(--color-primary);
+  color: rgba(255,255,255,.75);
+  text-align: center;
+  padding: 32px 20px;
+  margin-top: 60px;
+  font-size: 13px;
+}
+.report-footer strong { color: #fff; }
+
+/* DOMAIN HEADER */
+.domain-header {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+  background: var(--color-primary); color: #fff;
+  border-radius: 10px; padding: 14px 20px; margin-bottom: 18px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.10);
+}
+.domain-header .dh-icon { font-size: 24px; flex-shrink: 0; }
+.domain-header .dh-title {
+  font-size: 15px; font-weight: 700; color: #1a2d4e;
+  line-height: 1.4; flex: 1 1 200px;
+}
+.domain-header .dh-sub {
+  font-size: 12px; color: #2c5282; font-weight: 600;
+  background: rgba(255,255,255,0.85); border-radius: 20px;
+  padding: 3px 12px; white-space: nowrap;
+}
+
+/* MINI BAR TABLE */
+.mini-bar-table { width: 100%; margin: 12px 0; }
+.mini-bar-table tr { border-bottom: 1px solid var(--color-border); }
+.mini-bar-table td { padding: 6px 8px; font-size: 13px; vertical-align: middle; }
+.mini-bar-table .mbt-label { width: 55%; font-weight: 500; }
+.mini-bar-table .mbt-num { width: 12%; text-align: right; font-weight: 700; color: var(--color-accent); white-space: nowrap; }
+.mini-bar-table .mbt-bar-cell { width: 33%; padding-right: 12px; }
+.mbt-bar-wrap { height: 8px; background: #eee; border-radius: 4px; }
+.mbt-bar { height: 100%; border-radius: 4px; background: var(--color-accent); }
+.mbt-web { display: inline-flex; gap: 4px; font-size: 11px; color: var(--color-muted); white-space: nowrap; }
+.mbt-web .mbt-hi { color: var(--color-e); font-weight: 700; }
+.mbt-web .mbt-mi { color: var(--color-a); font-weight: 700; }
+
+/* CATEGORY PANELS */
+.cat-panel { display: none; margin-top: 20px; }
+.cat-panel.active { display: block; }
+.sub-panel { display: none; margin-top: 16px; }
+.sub-panel.active { display: block; }
+
+/* CATEGORY TAB buttons — active state colors per category */
+#catTab-site.active   { background:#2980b9; color:#fff; border-color:#2980b9; }
+#catTab-delivery.active { background:#ca6f1e; color:#fff; border-color:#ca6f1e; }
+#catTab-product.active  { background:#1e8449; color:#fff; border-color:#1e8449; }
+#catTab-other.active    { background:#7f8c8d; color:#fff; border-color:#7f8c8d; }
+
+/* SUB TABS inside category */
+.cat-panel .func-tabs .func-tab.active { background:var(--color-primary); color:#fff; }
+
+/* CHANNEL TABS (電話 / フォーム) */
+.ch-tabs {
+  display: flex; gap: 0; margin: 18px 0 0;
+  border-bottom: 2px solid var(--color-border);
+}
+.ch-tab {
+  padding: 8px 22px; font-size: 13px; font-weight: 600;
+  border: none; background: none; cursor: pointer;
+  color: var(--color-muted);
+  border-bottom: 3px solid transparent;
+  margin-bottom: -2px;
+  transition: color .15s, border-color .15s;
+}
+.ch-tab:hover { color: var(--color-primary); }
+.ch-tab.active { color: var(--color-primary); border-bottom-color: var(--color-primary); }
+.ch-tab.active.tel { color: #e84c3d; border-bottom-color: #e84c3d; }
+.ch-tab.active.form { color: #2980b9; border-bottom-color: #2980b9; }
+.ch-panel { display: none; padding: 16px 0; }
+.ch-panel.active { display: block; }
+
+/* CHANNEL BADGE */
+.ch-badge-tel  { display:inline-block; background:#fdedec; color:#c0392b; font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; margin-left:6px; }
+.ch-badge-form { display:inline-block; background:#d6eaf8; color:#1a6eb5; font-size:11px; font-weight:700; padding:2px 8px; border-radius:4px; margin-left:6px; }
+
+/* CHANNEL NOTE */
+.ch-note {
+  background: #f8f9fb; border-left: 3px solid var(--color-border);
+  border-radius: 0 6px 6px 0; padding: 10px 14px;
+  font-size: 13px; color: var(--color-muted); margin-bottom: 14px;
+}
+
+/* 商品名 上位10 タブ */
+.product-item-tabs { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 14px; }
+.pit-btn {
+  background: #e8f5e9; color: #1e8449;
+  border: 1px solid #a7f3d0; border-radius: 6px;
+  padding: 6px 12px; font-size: 12px; cursor: pointer;
+  font-weight: 500; transition: all .15s;
+}
+.pit-btn:hover { background: #c8e6c9; border-color: #1e8449; }
+.pit-btn.active { background: #1e8449 !important; color: #fff !important; border-color: #1e8449 !important; font-weight: 700; }
+.product-item-panel { display: none; }
+.product-item-panel.active { display: block; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="report-header">
+  <h1>店研創意 コール分析レポート</h1>
+  <p class="subtitle">電話 10,000件 ＋ フォーム 3,714件、計 <strong>13,714件</strong>の問い合わせデータをもとに整理した主要課題と改善の方向性</p>
+  <div class="header-meta">
+    <div class="meta-item"><strong>13,714<span style="font-size:14px">件</span></strong>分析件数（電話10,000＋フォーム3,714）</div>
+    <div class="meta-item"><strong>56.6%</strong>解決率（電話ベース）</div>
+    <div class="meta-item"><strong>38.5%</strong>サイト起因割合（5,283件）</div>
+    <div class="meta-item"><strong>約704万円/年</strong>コスト削減試算（サイト起因）</div>
+  </div>
+
+</header>
+
+<div class="page-wrapper">
+
+<!-- TOC -->
+<nav class="toc">
+  <h3>目次</h3>
+  <ol>
+    <li><a href="#s1">エグゼクティブサマリ</a></li>
+    <li><a href="#s2">問い合わせ内容の分布（大区分・小区分）</a></li>
+    <li><a href="#s3">解決ステータスと未完了分析</a></li>
+    <li><a href="#s4">Web自己解決可能性ギャップ分析</a></li>
+    <li><a href="#s5">⑤ カテゴリ別 課題の深掘りとVoC（13,714件 4カテゴリ分類）</a>
+      <ul style="margin-top:6px;padding-left:16px;">
+        <li><a href="#s5">🖥️ ⑤-1 サイト（5,283件）— 注文・帳票・支払・ログイン・納期確認・ご利用全般・カタログ・FAX</a></li>
+        <li><a href="#s5">🚚 ⑤-2 配送（842件）— 出荷後〜到着前の配送会社トラブル</a></li>
+        <li><a href="#s5">📦 ⑤-3 商品（5,800件）— 商品仕様・パーツ不足・その他商品</a></li>
+        <li><a href="#s5">📋 ⑤-4 その他（1,789件）— 担当者不在・売込み・間違い電話</a></li>
+      </ul>
+    </li>
+    <li><a href="#s6">顧客問い合わせタイミング別 主な課題</a></li>
+    <li><a href="#s7">顧客属性・チャネル別分析</a></li>
+    <li><a href="#s8">改善優先順位と施策ロードマップ</a></li>
+  </ol>
+</nav>
+
+<!-- ======= SECTION 1 ======= -->
+<section class="section" id="s1">
+  <div class="section-title">
+    <div class="section-num">1</div>エグゼクティブサマリ
+  </div>
+
+  <div class="message-grid">
+    <div class="message-card red">
+      <div class="msg-num">Key Finding 1</div>
+      <div class="msg-body">問い合わせの31.2%が「納期・配送」に集中（電話＋フォーム 4,284件）</div>
+      <div class="msg-detail">「納期について」が電話3,131件＋フォーム1,153件＝<strong>合計4,284件</strong>（最多・13,714件中31.2%）。年換算では<strong>約17,136件/年</strong>。Webのリアルタイム在庫・納期表示と注文後のステータス自動通知を改善することで、入電の大幅削減が見込まれる。</div>
+    </div>
+    <div class="message-card blue">
+      <div class="msg-num">Key Finding 2</div>
+      <div class="msg-body">折り返し・調査中が3,987件（39.9%）と高止まり</div>
+      <div class="msg-detail">クレームは未完了率87.8%、担当者不在は91.4%と突出して高い。根本原因の多くは受注・配送・在庫の上流にある。</div>
+    </div>
+    <div class="message-card green">
+      <div class="msg-num">Key Finding 3</div>
+      <div class="msg-body">サイト起因5,283件＋商品起因5,800件 = 11,083件（80.8%）が改善対象</div>
+      <div class="msg-detail">サイト起因5,283件はUI・機能改善で削減可能。商品起因5,800件は商品ページ情報充実で対応可能なものが多数。合計11,083件（全体の80.8%）が改善余地あり。</div>
+    </div>
+  </div>
+
+  <div class="kpi-grid">
+    <div class="kpi-card accent"><div class="kpi-value">13,714</div><div class="kpi-label">分析対象件数<br>（電話10,000＋フォーム3,714）</div></div>
+    <div class="kpi-card blue"><div class="kpi-value">56.6%</div><div class="kpi-label">その場解決率<br>（電話）</div></div>
+    <div class="kpi-card orange"><div class="kpi-value">39.9%</div><div class="kpi-label">折り返し・調査中<br>（電話）</div></div>
+    <div class="kpi-card purple"><div class="kpi-value">38.5%</div><div class="kpi-label">サイト起因割合<br>（5,283件／13,714件）</div></div>
+    <div class="kpi-card green"><div class="kpi-value">約704万円</div><div class="kpi-label">サイト起因改善による<br>年間コスト削減試算</div></div>
+    <div class="kpi-card"><div class="kpi-value">22.8%</div><div class="kpi-label">緊急度「高」<br>（電話+フォーム 3,126件）</div></div>
+  </div>
+
+  <div class="impact-row">
+    <div class="impact-card">
+      <div class="impact-num">21,132件/年</div>
+      <div class="impact-label">サイト起因 年間削減見込み件数</div>
+      <div class="impact-detail">サイト起因5,283件（3か月分）×年換算4倍＝<strong>21,132件/年</strong>がUI・機能改善で削減可能と試算</div>
+    </div>
+    <div class="impact-card">
+      <div class="impact-num">約3,522時間/年</div>
+      <div class="impact-label">CS対応工数の削減効果</div>
+      <div class="impact-detail">1件あたり平均対応時間10分で換算すると21,132件×10分÷60＝<strong>約3,522時間/年</strong>のCS工数削減</div>
+    </div>
+    <div class="impact-card">
+      <div class="impact-num">約704万円/年</div>
+      <div class="impact-label">コスト削減換算（試算）</div>
+      <div class="impact-detail">3,522時間×2,000円＝<strong>約704万円/年</strong>。サイト起因5,283件×4倍=21,132件/年、1件10分・時給2,000円換算</div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= SECTION 2 ======= -->
+<section class="section" id="s2">
+  <div class="section-title">
+    <div class="section-num">2</div>問い合わせ内容の分布（大区分・小区分）
+  </div>
+
+  <p style="margin-bottom:16px;font-size:14px;">13,714件（電話10,000＋フォーム3,714）の内訳で最も多い大区分は<strong>「納期について」（電話3,131件＋フォーム1,153件＝4,284件・31.2%）</strong>。上位3大区分（納期・注文・ご利用）で全体の50%超を占め、改善すべき領域が集中している。年換算では納期カテゴリだけで約17,136件/年の問い合わせが発生する規模。</p>
+
+  <div class="chart-wrap">
+    <div class="chart-title">大区分別 件数</div>
+    <canvas id="chartDaiku" height="380"></canvas>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="chart-title">小区分 上位20項目（件数）</div>
+    <canvas id="chartShouku" height="460"></canvas>
+  </div>
+
+  <div class="insight-box">
+    <ul>
+      <li><strong>「納期確認（注文後）」が904件で最多</strong> — 注文後に「いつ届くか」が分からないことが最大の入電要因</li>
+      <li><strong>「FAX注文受信確認」が407件</strong> — FAXという古いチャネルへの依存が繰り返し入電を生んでいる</li>
+      <li><strong>「到着時間指定希望」が334件</strong> — 配送日時指定の自由度不足</li>
+      <li><strong>「注文のキャンセル」が280件・「入金確認」が246件</strong> — マイページ機能の拡充で自己解決に誘導できる</li>
+      <li><strong>「領収書の発行希望」が217件</strong> — マイページPDFダウンロード機能で削減可能</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ======= SECTION 3 ======= -->
+<section class="section" id="s3">
+  <div class="section-title">
+    <div class="section-num">3</div>解決ステータスと未完了分析
+  </div>
+
+  <p style="margin-bottom:16px;font-size:14px;">解決は5,656件（56.6%）にとどまり、<strong>折り返し・調査中が3,987件（39.9%）</strong>と高水準。大区分別では「クレーム（未完了率87.8%）」「担当者不在（91.4%）」が特に対応困難な領域となっている。</p>
+
+  <div class="chart-row">
+    <div class="chart-wrap">
+      <div class="chart-title">解決ステータス分布</div>
+      <canvas id="chartStatus" height="280"></canvas>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">大区分別 未完了率（折り返し＋希望通らず）</div>
+      <canvas id="chartUnresolved" height="280"></canvas>
+    </div>
+  </div>
+
+  <div class="insight-box orange">
+    <ul>
+      <li><strong>クレーム（未完了率87.8%）</strong> — 破損369件・パーツ不足262件が主体。現品調査が必要で電話では解決不可。受付フローの標準化と証跡取得が急務</li>
+      <li><strong>担当者不在（91.4%）</strong> — 折り返し対応で完結しているが、初回解決率の向上が求められる</li>
+      <li><strong>納期・注文・商品仕様（40〜44%）</strong> — 件数が多い区分で未完了が4割超。データ反映遅延や在庫情報不足が主因</li>
+      <li><strong>カタログ・DM（未完了率7%）</strong> — 登録情報の変更・停止処理で解決しやすい。参考にできる対応モデル</li>
+    </ul>
+  </div>
+
+  <div class="subsection-title">顧客の声 — 解決しにくいケース</div>
+  <div class="quote-grid">
+    <div class="quote-block">
+      <div class="quote-label">クレーム / パーツ不足（折り返し・調査中）</div>
+      <div class="quote-text">「本日木製のフラワーボックスが届いたんですけど、6個頼んでるんですけど5個しか届いてなくて。メール見ても6個注文になってるはずなんですけど。」</div>
+      <div class="quote-context">→ 注文データと出荷数の不一致。現品確認が必要で折り返し対応が発生。受付時の証跡（写真・伝票番号）取得フローの整備が有効。</div>
+    </div>
+    <div class="quote-block">
+      <div class="quote-label">ログイン / セキュアキーエラー（解決不可）</div>
+      <div class="quote-text">「ログインしようと思うと、セキュアキーに誤りがあります。こちらからログアウトをお願いしますという画面に出てきて、ログアウトもできないような状況なんですけれども。」</div>
+      <div class="quote-context">→ システム起因でオペレーターも対処不可。エラー画面の改善とサポートへの誘導が必要。</div>
+    </div>
+    <div class="quote-block">
+      <div class="quote-label">クレーム / 同梱漏れ（折り返し・調査中）</div>
+      <div class="quote-text">「今日商品届いたんですが、バーセットが3本しか入っていなくて、スプリングポール本体とスリムフックハンガーが同梱されていませんでした。」</div>
+      <div class="quote-context">→ 組み立て品の同梱漏れ。検品プロセス見直しと受付後の対応基準明確化が必要。</div>
+    </div>
+  </div>
+</section>
+
+<!-- ======= SECTION 4 ======= -->
+<section class="section" id="s4">
+  <div class="section-title">
+    <div class="section-num">4</div>Web自己解決可能性ギャップ分析
+  </div>
+
+  <p style="margin-bottom:16px;font-size:14px;">サイト起因5,283件はUI・機能改善、商品起因5,800件は商品ページ情報充実でそれぞれ削減可能。合計<strong>11,083件（全体の80.8%）</strong>が改善余地あり。年換算（3か月分×4）では改善の優先度付けと施策実行が重要。</p>
+
+  <div class="chart-row">
+    <div class="chart-wrap">
+      <div class="chart-title">Web自己解決可能性の分布（電話10,000件ベース）</div>
+      <canvas id="chartSelfService" height="280"></canvas>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">テーマ別 年間削減可能件数の試算（サイト起因対象）</div>
+      <canvas id="chartHighSelf" height="280"></canvas>
+    </div>
+  </div>
+
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:8px 0 16px;">
+    <div style="background:#eafaf1;border:1px solid #a9dfbf;border-radius:10px;padding:20px;text-align:center;">
+      <div style="font-size:26px;font-weight:700;color:#1e8449;">21,132件/年</div>
+      <div style="font-size:12px;color:#6b7a8d;margin-top:4px;">年間削減見込み件数（サイト起因5,283件×4倍）</div>
+    </div>
+    <div style="background:#eafaf1;border:1px solid #a9dfbf;border-radius:10px;padding:20px;text-align:center;">
+      <div style="font-size:26px;font-weight:700;color:#1e8449;">約3,522時間/年</div>
+      <div style="font-size:12px;color:#6b7a8d;margin-top:4px;">CS対応工数削減効果（21,132件×10分÷60）</div>
+    </div>
+    <div style="background:#eafaf1;border:1px solid #a9dfbf;border-radius:10px;padding:20px;text-align:center;">
+      <div style="font-size:26px;font-weight:700;color:#e84c3d;">約704万円/年</div>
+      <div style="font-size:12px;color:#6b7a8d;margin-top:4px;">コスト削減換算（3,522時間×2,000円）</div>
+    </div>
+  </div>
+  <div class="insight-box">
+    <ul>
+      <li><strong>サイト起因5,283件（38.5%）がWeb・UI改善で削減可能。商品起因5,800件（42.3%）は商品ページ情報充実で対応可能</strong> — 合計11,083件（80.8%）が改善余地あり</li>
+      <li><strong>「帳票管理」が335件（高+中合計：電話165＋フォーム170）で最多</strong> — 年換算1,340件/年。納品書・領収書・請求書のマイページPDF即時発行で最も多くの入電を削減できる</li>
+      <li><strong>「カタログ配送管理」が87件（高+中合計：電話37＋フォーム50）</strong> — 年換算348件/年。マイページからのDM設定・送付先変更機能で自己解決可能に</li>
+      <li><strong>「FAX注文受信確認」が409件</strong> — Web注文移行促進と受付時の自動返信メール整備が有効</li>
+      <li><strong>「ログイン・登録・決済操作」が985件</strong> — UIの改善とエラーメッセージの明確化が効果的</li>
+    </ul>
+  </div>
+
+</section>
+
+<!-- ======= SECTION 5 — カテゴリ別深掘り ======= -->
+<section class="section" id="s5">
+  <div class="section-title">
+    <div class="section-num">5</div>カテゴリ別 課題の深掘りとVoC
+  </div>
+
+  <!-- カテゴリ概要 KPI -->
+  <div style="margin-bottom:24px;">
+    <p style="font-size:14px;margin-bottom:16px;">電話10,000件＋フォーム3,714件の計<strong>13,714件</strong>を<strong>サイト・配送・商品・その他</strong>の4カテゴリに分類。配送は「出荷後〜到着前の配送会社トラブル（破損・時間指定・業者・日付変更）」を指し、「いつ届くか分からない」等のサイト情報問題はサイトカテゴリに含める。</p>
+    <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:20px;">
+      <div style="background:rgb(26,110,181);color:#fff;border-radius:12px;padding:20px;text-align:center;cursor:pointer;opacity:1;" onclick="switchCat('site')" id="cat-btn-site">
+        <div style="font-size:22px;margin-bottom:4px;">🖥️</div>
+        <div style="font-size:28px;font-weight:700;line-height:1.1;">5,283件</div>
+        <div style="font-size:12px;opacity:.9;margin-top:4px;">⑤-1 サイト</div>
+        <div style="font-size:11px;opacity:.75;margin-top:2px;">38.5% | 注文・帳票・支払・ログイン等</div>
+      </div>
+      <div style="background:rgb(184,92,0);color:#fff;border-radius:12px;padding:20px;text-align:center;cursor:pointer;opacity:0.72;" onclick="switchCat('delivery')" id="cat-btn-delivery">
+        <div style="font-size:22px;margin-bottom:4px;">🚚</div>
+        <div style="font-size:28px;font-weight:700;line-height:1.1;">842件</div>
+        <div style="font-size:12px;opacity:.9;margin-top:4px;">⑤-2 配送</div>
+        <div style="font-size:11px;opacity:.75;margin-top:2px;">6.1% | 出荷後〜到着前のトラブル</div>
+      </div>
+      <div style="background:rgb(21,106,52);color:#fff;border-radius:12px;padding:20px;text-align:center;cursor:pointer;opacity:0.72;" onclick="switchCat('product')" id="cat-btn-product">
+        <div style="font-size:22px;margin-bottom:4px;">📦</div>
+        <div style="font-size:28px;font-weight:700;line-height:1.1;">5,800件</div>
+        <div style="font-size:12px;opacity:.9;margin-top:4px;">⑤-3 商品</div>
+        <div style="font-size:11px;opacity:.75;margin-top:2px;">42.3% | 商品仕様・パーツ不足等</div>
+      </div>
+      <div style="background:rgb(90,90,110);color:#fff;border-radius:12px;padding:20px;text-align:center;cursor:pointer;opacity:0.72;" onclick="switchCat('other')" id="cat-btn-other">
+        <div style="font-size:22px;margin-bottom:4px;">📋</div>
+        <div style="font-size:28px;font-weight:700;line-height:1.1;">1,789件</div>
+        <div style="font-size:12px;opacity:.9;margin-top:4px;">⑤-4 その他</div>
+        <div style="font-size:11px;opacity:.75;margin-top:2px;">13.0% | 担当不在・売込・間違い等</div>
+      </div>
+    </div>
+    <div class="chart-wrap" style="margin-bottom:0;">
+      <div class="chart-title">カテゴリ別件数分布（電話＋フォーム 13,714件）</div>
+      <canvas id="chartCatOverview" height="140"></canvas>
+    </div>
+  </div>
+
+  <!-- ===== カテゴリ切替タブ ===== -->
+  <div class="func-tabs" style="margin-top:28px;">
+    <button class="func-tab active" onclick="switchCat('site')" id="catTab-site">🖥️ ⑤-1 サイト（5,283件）</button>
+    <button class="func-tab" onclick="switchCat('delivery')" id="catTab-delivery">🚚 ⑤-2 配送（842件）</button>
+    <button class="func-tab" onclick="switchCat('product')" id="catTab-product">📦 ⑤-3 商品（5,800件）</button>
+    <button class="func-tab" onclick="switchCat('other')" id="catTab-other">📋 ⑤-4 その他（1,789件）</button>
+  </div>
+
+  <!-- ===== ⑤-1 サイト ===== -->
+  <div class="cat-panel active" id="cp-site">
+    <div class="domain-header" style="background:linear-gradient(135deg,#d6eaf8 0%,#eaf4fd 100%);border-left:5px solid #2980b9;">
+      <span class="dh-icon">🖥️</span>
+      <span class="dh-title">⑤-1 サイト — 注文・帳票・支払・ログイン・納期確認・ご利用全般</span>
+      <span class="dh-sub">5,283件 ｜ 注文・帳票・支払・ログイン・納期確認・カタログ等</span>
+    </div>
+    <p style="font-size:13px;color:#555;margin:12px 0 20px;">サイト起因の問い合わせを機能別に分解。「いつ届くか分からない」等の配送情報確認もサイト情報不足が原因のためこのカテゴリに含む。</p>
+
+    <div class="func-tabs" style="background:#f0f3f8;border-radius:8px;padding:8px;">
+      <button class="func-tab active" onclick="switchSubTab('site','chouhyou',this)">📄 帳票</button>
+      <button class="func-tab" onclick="switchSubTab('site','invoice',this)">🧾 インボイス</button>
+      <button class="func-tab" onclick="switchSubTab('site','pay',this)">💳 支払い</button>
+      <button class="func-tab" onclick="switchSubTab('site','login',this)">🔐 ログイン</button>
+      <button class="func-tab" onclick="switchSubTab('site','nouki',this)">📅 納期確認</button>
+      <button class="func-tab" onclick="switchSubTab('site','chuumon',this)">🛒 注文管理</button>
+      <button class="func-tab" onclick="switchSubTab('site','goriyou',this)">🖥️ ご利用全般</button>
+      <button class="func-tab" onclick="switchSubTab('site','catalog',this)">📮 カタログ</button>
+      <button class="func-tab" onclick="switchSubTab('site','fax',this)">📠 FAX注文</button>
+    </div>
+
+    <!-- サイト > 帳票 -->
+    <div class="sub-panel active" id="sp-site-chouhyou">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">485件</div><div class="fs-label">帳票合計件数</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">164件</div><div class="fs-label">Web高95+中69</div></div>
+        <div class="func-stat hl-orange"><div class="fs-num">1,340件/年</div><div class="fs-label">年間削減試算<br><span style="font-size:10px;font-weight:400;">(電話165＋フォーム170)×4</span></div></div>
+        <div class="func-stat"><div class="fs-num">217件</div><div class="fs-label">最多（領収書）</div></div>
+      </div>
+      <div class="subsection-title">小区分内訳</div>
+      <table class="mini-bar-table">
+        <tr><td class="mbt-label"><strong>領収書の発行希望</strong></td><td class="mbt-num">217件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高64</span>/<span class="mbt-mi">中27</span>/低29</span></td></tr>
+        <tr><td class="mbt-label"><strong>請求書の発行希望</strong></td><td class="mbt-num">148件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:68%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高16</span>/<span class="mbt-mi">中23</span>/低22</span></td></tr>
+        <tr><td class="mbt-label">見積書の発行希望</td><td class="mbt-num">66件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:30%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高9</span>/<span class="mbt-mi">中12</span>/低14</span></td></tr>
+        <tr><td class="mbt-label">納品書の再発行依頼</td><td class="mbt-num">11件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:5%"></div></div></td><td><span class="mbt-web">高0/中0/低2</span></td></tr>
+        <tr><td class="mbt-label">納品書の発行希望</td><td class="mbt-num">5件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:2%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高1</span></span></td></tr>
+      </table>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-site-chouhyou','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">452件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-site-chouhyou','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">33件</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 帳票の485件のうち約93%（452件）が電話問い合わせ。「どこで取れるか分からない」「発行手順が不明」が主因で、PDFダウンロード機能があれば大幅削減可能。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">領収書 / Web高</div><div class="vi-text">「先日、発注させていただいた商品の領収書もお願いしたいと思って電話したんですけれども。領収書らしきものはいただいてはなかったんですけども。」</div><div class="vi-context">→ マイページから即時PDFダウンロードできれば電話不要。<strong>優先度★★★</strong></div></div>
+          <div class="voc-item"><div class="vi-tag">請求書 / Web高</div><div class="vi-text">「てっきり私、請求書が来るものと待ってたんですが…請求書だけ先にメールとかでいただくとかってできないですかね。」</div><div class="vi-context">→ 自動送信またはマイページ即時発行で解決可能。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">見積書 / Web中</div><div class="vi-text">「ウェブ上から見積もりの取得は可能というふうにお伺いしたので、ちょっと開いてるんですけど、どこで取ればいいかちょっとわからなくて。」</div><div class="vi-context">→ 見積書取得ボタンや導線がUI上で見つけにくい。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 マイページ購入履歴から領収書・請求書・納品書のPDF即時ダウンロード機能を追加</div><div class="is-meta">対象: 365件 ｜ 効果: 電話の約80%を削減可能 ｜ 期間: 3〜6ヶ月</div></div></div>
+          <div class="improvement-step priority"><div class="is-num">2</div><div class="is-body"><div class="is-title">🔴 注文完了後に帳票発行ページへの案内メールを自動送信</div><div class="is-meta">対象: 帳票全般 ｜ 「いつ届くか」電話を削減</div></div></div>
+          <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">マイページに「帳票・書類のダウンロード」専用セクションを設置</div><div class="is-meta">対象: 発行手順不明ケース ｜ 期間: 1ヶ月以内（低コスト）</div></div></div>
+        </div>
+      </div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由の帳票問い合わせは約33件。メールフォームやマイページの問い合わせフォームから「領収書・請求書を送ってほしい」という依頼が中心。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / 領収書依頼</div><div class="vi-text">「お問い合わせフォームより：先日注文した商品の領収書を発行していただきたいのですが、マイページで見つけられませんでした。お送りいただけますか？」</div><div class="vi-context">→ フォームでの依頼は都度対応が必要。PDFダウンロード機能でフォーム問い合わせも削減可能。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">フォーム / 請求書送付</div><div class="vi-text">「メールフォームより：請求書をPDFでメール送付いただけますでしょうか。経理部門への提出が必要です。」</div><div class="vi-context">→ 請求書の自動メール送信機能またはマイページDL機能で解決。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 帳票発行依頼フォームを廃止し、マイページのセルフDL機能に一本化する</div><div class="is-meta">フォーム対応の工数ゼロ化が可能 ｜ 期間: 3〜6ヶ月</div></div></div>
+          <div class="improvement-step"><div class="is-num">2</div><div class="is-body"><div class="is-title">フォーム受付時に自動返信で帳票DL手順ページへ誘導する（暫定対応）</div><div class="is-meta">フォーム問い合わせの即時削減 ｜ 期間: 1ヶ月以内</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- サイト > インボイス -->
+    <div class="sub-panel" id="sp-site-invoice">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">141件</div><div class="fs-label">インボイス合計</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">50件</div><div class="fs-label">Web高20+中30</div></div>
+        <div class="func-stat hl-green"><div class="fs-num">35.5%</div><div class="fs-label">Web自己解決率</div></div>
+        <div class="func-stat"><div class="fs-num">67件</div><div class="fs-label">最多（納品書再発行）</div></div>
+      </div>
+      <div class="subsection-title">小区分内訳</div>
+      <table class="mini-bar-table">
+        <tr><td class="mbt-label"><strong>納品書再発行依頼（T番号目的）</strong></td><td class="mbt-num">67件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高8</span>/<span class="mbt-mi">中15</span></span></td></tr>
+        <tr><td class="mbt-label">T番号の問い合わせ</td><td class="mbt-num">28件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:42%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高5</span>/<span class="mbt-mi">中8</span></span></td></tr>
+        <tr><td class="mbt-label">領収書（インボイス対応）</td><td class="mbt-num">21件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:31%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高4</span>/<span class="mbt-mi">中5</span></span></td></tr>
+        <tr><td class="mbt-label">どれがインボイスか分からない</td><td class="mbt-num">19件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:28%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高3</span>/<span class="mbt-mi">中2</span></span></td></tr>
+      </table>
+      <div class="insight-box orange"><strong>根本原因</strong> — クレジット払いの場合、T番号は納品書にしか印字されない。請求書・領収書にもT番号を統一表示することで141件の大半を解消できる。</div>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-site-invoice','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">128件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-site-invoice','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">13件</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 インボイス141件のうち約91%が電話経由。「T番号がどこにあるか分からない」という問い合わせが最多。T番号の統一表示で大幅削減できる。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">T番号 / Web高</div><div class="vi-text">「クレジット支払いをしたのですが、インボイスに登録番号（T番号）が載っていなくて確定申告に使えないんですが。」</div><div class="vi-context">→ T番号を全帳票に統一表示することで解決。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">納品書再発行 / Web中</div><div class="vi-text">「インボイス対応のため納品書の再発行をお願いしたいのですが、マイページからダウンロードできますか？」</div><div class="vi-context">→ マイページから購入履歴の納品書PDFをダウンロードできれば電話不要。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 全帳票（請求書・領収書・納品書）にT番号を統一印字する</div><div class="is-meta">対象: 141件全体 ｜ 効果: 大 ｜ 期間: 3〜6ヶ月</div></div></div>
+          <div class="improvement-step priority"><div class="is-num">2</div><div class="is-body"><div class="is-title">🔴 マイページ購入履歴から納品書PDFをダウンロード可能にする</div><div class="is-meta">対象: 67件 ｜ 期間: 3〜6ヶ月</div></div></div>
+          <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">マイページトップにT番号を常時表示する</div><div class="is-meta">低コスト・即時対応可</div></div></div>
+        </div>
+      </div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由のインボイス問い合わせは約13件。「T番号の記載された書類を再送してほしい」という依頼が中心。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / T番号再発行</div><div class="vi-text">「お問い合わせフォームより：インボイス対応の領収書にT番号が記載されていませんでした。T番号入りの書類を再送いただけますか？」</div><div class="vi-context">→ 全帳票へのT番号統一印字で、フォーム経由の再発行依頼もゼロにできる。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 T番号を全帳票に統一印字し、フォームからの再発行依頼をゼロにする</div><div class="is-meta">フォーム対応工数の削減 ｜ 期間: 3〜6ヶ月</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- サイト > 支払い -->
+    <div class="sub-panel" id="sp-site-pay">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">1,003件</div><div class="fs-label">支払い合計</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">466件</div><div class="fs-label">Web高189+中277</div></div>
+        <div class="func-stat hl-green"><div class="fs-num">46.5%</div><div class="fs-label">Web自己解決率</div></div>
+        <div class="func-stat"><div class="fs-num">246件</div><div class="fs-label">最多（入金確認）</div></div>
+      </div>
+      <div class="subsection-title">小区分内訳</div>
+      <table class="mini-bar-table">
+        <tr><td class="mbt-label"><strong>入金確認</strong></td><td class="mbt-num">246件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高80</span>/<span class="mbt-mi">中90</span></span></td></tr>
+        <tr><td class="mbt-label">支払方法の種類について</td><td class="mbt-num">120件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:49%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高35</span>/<span class="mbt-mi">中52</span></span></td></tr>
+        <tr><td class="mbt-label">NP掛け払いエラー</td><td class="mbt-num">106件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:43%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高30</span>/<span class="mbt-mi">50</span></span></td></tr>
+        <tr><td class="mbt-label">支払方法と配送の関係</td><td class="mbt-num">34件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:14%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高10</span>/<span class="mbt-mi">中15</span></span></td></tr>
+        <tr><td class="mbt-label">クレジットカードエラー</td><td class="mbt-num">24件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:10%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高14</span>/<span class="mbt-mi">中8</span></span></td></tr>
+      </table>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-site-pay','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">920件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-site-pay','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">83件</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 支払い1,003件のうち約92%が電話。入金確認（246件）・NP掛け払いエラー（106件）・クレジットバグ（24件）が主要課題。マイページのリアルタイム表示で大幅削減可能。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">入金確認 / Web高</div><div class="vi-text">「先週振込をしたんですが、確認できていますか？マイページを見ても確認できなくて。」</div><div class="vi-context">→ マイページでリアルタイム入金ステータスが確認できれば解決。</div></div>
+          <div class="voc-item"><div class="vi-tag">クレジット / Web高</div><div class="vi-text">「クレジット情報を入力しまして、最終確定ボタンを押したいのですが、確定ボタンが出てこなくて。」</div><div class="vi-context">→ UIバグ。エラーメッセージと操作ガイドの改善で電話不要になる。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">NP掛け払い / Web中</div><div class="vi-text">「NP後払いで注文しようとしたら、ご利用いただけませんとエラーが出て。どうしたら使えますか？」</div><div class="vi-context">→ NP掛け払いのエラー理由をサイト上で分かりやすく説明する必要がある。</div></div>
+        </div></div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由の支払い問い合わせは約83件。「振込の確認をお願いしたい」「NP払いでエラーが出た」という内容が多く、対応に時間がかかるケースも。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / 振込確認</div><div class="vi-text">「お問い合わせフォームより：先日銀行振込にて支払いましたが、注文ページに入金確認済みの表示が出ません。ご確認をお願いします。」</div><div class="vi-context">→ マイページに入金ステータスを表示することでフォーム問い合わせも削減可能。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">フォーム / NP払いエラー</div><div class="vi-text">「フォームより：NP掛け払いで購入しようとしましたが、審査が通らないとエラーが出ました。理由を教えてください。」</div><div class="vi-context">→ エラー画面に理由と次のステップを明示することで削減可能。</div></div>
+        </div>
+      </div>
+      <div class="improvement-steps">
+        <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 マイページに入金確認・決済ステータスをリアルタイム表示する</div><div class="is-meta">対象: 246件 ｜ 効果: 大</div></div></div>
+        <div class="improvement-step priority"><div class="is-num">2</div><div class="is-body"><div class="is-title">🔴 クレジットカード確定ボタンのUIバグを修正し、エラー時に具体的なガイドを表示する</div><div class="is-meta">対象: 24件 ｜ 即時対応可</div></div></div>
+        <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">NP掛け払いエラー画面にエラー理由と対処法を明示する</div><div class="is-meta">対象: 106件 ｜ 期間: 1〜3ヶ月</div></div></div>
+        <div class="improvement-step"><div class="is-num">4</div><div class="is-body"><div class="is-title">カートページに支払方法別の配送スケジュールを表示する</div><div class="is-meta">対象: 34件 ｜ 担当: EC開発</div></div></div>
+      </div>
+    </div>
+
+    <!-- サイト > ログイン -->
+    <div class="sub-panel" id="sp-site-login">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">127件</div><div class="fs-label">ログイン合計</div></div>
+        <div class="func-stat hl-green"><div class="fs-num">76.4%</div><div class="fs-label">Web自己解決率</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">97件</div><div class="fs-label">Web高49+中48</div></div>
+        <div class="func-stat"><div class="fs-num">50件</div><div class="fs-label">最多（ログインできない）</div></div>
+      </div>
+      <div class="subsection-title">小区分内訳</div>
+      <table class="mini-bar-table">
+        <tr><td class="mbt-label"><strong>ログインできない</strong></td><td class="mbt-num">50件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高20</span>/<span class="mbt-mi">中22</span></span></td></tr>
+        <tr><td class="mbt-label">パスワード忘れ</td><td class="mbt-num">32件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:64%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高18</span>/<span class="mbt-mi">中14</span></span></td></tr>
+        <tr><td class="mbt-label">メールアドレス変更</td><td class="mbt-num">20件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:40%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高7</span>/<span class="mbt-mi">中8</span></span></td></tr>
+        <tr><td class="mbt-label">セキュアキーエラー</td><td class="mbt-num">15件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:30%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高4</span>/<span class="mbt-mi">中4</span></span></td></tr>
+        <tr><td class="mbt-label">その他</td><td class="mbt-num">10件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:20%"></div></div></td><td></td></tr>
+      </table>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-site-login','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">118件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-site-login','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">9件</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 ログイン127件のうち約93%が電話。「パスワードを忘れた」「セキュアキーエラーでログアウトできない」という問い合わせが中心。ログイン画面の改善だけで大半を削減できる。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">セキュアキー / 解決不可</div><div class="vi-text">「ログインしようと思うと、セキュアキーに誤りがあります。こちらからログアウトをお願いしますという画面に出てきて、ログアウトもできないような状況なんですけれども。」</div><div class="vi-context">→ エラー画面にサポートへの直接リンクが必要。システム起因でオペレーターも対処不可。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">パスワード / Web高</div><div class="vi-text">「パスワードを忘れてしまってログインできないのですが、再設定はどこからできますか？」</div><div class="vi-context">→ ログイン画面の目立つ位置にパスワードリセットリンクを配置することで解決。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 パスワードリセット導線をログイン画面の目立つ位置に配置する</div><div class="is-meta">対象: 50件 ｜ 即時対応可（低コスト）</div></div></div>
+          <div class="improvement-step"><div class="is-num">2</div><div class="is-body"><div class="is-title">セキュアキーエラー画面にサポートへの直接リンク・チャットボタンを追加する</div><div class="is-meta">対象: 15件 ｜ 期間: 1ヶ月以内</div></div></div>
+          <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">エラーメッセージをユーザーフレンドリーな説明に改善し、次の手順を明示する</div><div class="is-meta">対象: ログイン全体 ｜ 担当: EC開発</div></div></div>
+        </div>
+      </div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由のログイン問い合わせは約9件。「パスワードを変更したい」「アカウントが使えなくなった」などの内容が中心。マイページの自己解決フローを整備することで削減可能。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / パスワードリセット</div><div class="vi-text">「お問い合わせフォームより：パスワードを忘れてしまい、ログインできません。リセット方法を教えてください。」</div><div class="vi-context">→ ログイン画面のリセットリンクを目立たせることでフォーム問い合わせも削減可能。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 ログイン画面にパスワードリセット・アカウントロック解除のガイドを明示する</div><div class="is-meta">フォーム問い合わせも削減 ｜ 即時対応可</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- サイト > 納期確認 -->
+    <div class="sub-panel" id="sp-site-nouki">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">1,488件</div><div class="fs-label">納期確認合計</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">506件</div><div class="fs-label">Web高236+中270</div></div>
+        <div class="func-stat hl-orange"><div class="fs-num">41.4%</div><div class="fs-label">未完了率</div></div>
+        <div class="func-stat"><div class="fs-num">904件</div><div class="fs-label">最多（注文後いつ届く）</div></div>
+      </div>
+      <p style="font-size:13px;color:#666;margin:8px 0 16px;">「いつ届くか分からない」はサイト上の情報不足が原因のため、サイトカテゴリに分類。「配送会社のトラブル（破損・遅延）」は⑤-2配送カテゴリ。</p>
+      <div class="subsection-title">小区分内訳</div>
+      <table class="mini-bar-table">
+        <tr><td class="mbt-label"><strong>納期確認（注文後）— いつ届くのか</strong></td><td class="mbt-num">904件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高120</span>/<span class="mbt-mi">中150</span></span></td></tr>
+        <tr><td class="mbt-label">在庫確認（注文前）</td><td class="mbt-num">263件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:29%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高58</span>/<span class="mbt-mi">中62</span></span></td></tr>
+        <tr><td class="mbt-label">早期納品・前倒し希望</td><td class="mbt-num">242件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:27%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高35</span>/<span class="mbt-mi">中38</span></span></td></tr>
+        <tr><td class="mbt-label">納期確認（注文前）— いつ届くのか</td><td class="mbt-num">79件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:9%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高23</span>/<span class="mbt-mi">中20</span></span></td></tr>
+      </table>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-site-nouki','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">1,368件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-site-nouki','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">120件</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 納期確認1,488件のうち約92%が電話。「今日届くか分からない」が904件と最多。マイページへの追跡番号表示で劇的に削減可能。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">注文後納期 / Web高</div><div class="vi-text">「14時まで当日出荷と書いてあって注文したんですが、注文履歴に出てこなくて、今日届くのかどうか確認したくて。」</div><div class="vi-context">→ マイページに配送状況・追跡番号をリアルタイム表示することで解決可能。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">在庫確認 / Web中</div><div class="vi-text">「在庫の確認をお願いしたいのですが。商品を30枚必要にあるんですけれども、今あります?」</div><div class="vi-context">→ 商品ページにリアルタイム在庫数・最短納期を表示することで削減可能。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">早期希望 / Web中</div><div class="vi-text">「できれば○○日までに欲しいのですが、サイトでは△△日と表示されていて…最短ではどれくらいで届きますか？」</div><div class="vi-context">→ 最短納期を商品ページに表示し、早期便オプションを設けることが有効。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 マイページに配送状況・追跡番号のリアルタイム表示機能を追加する</div><div class="is-meta">対象: 904件 ｜ 効果: 最大 ｜ 期間: 3〜6ヶ月</div></div></div>
+          <div class="improvement-step priority"><div class="is-num">2</div><div class="is-body"><div class="is-title">🔴 商品ページにリアルタイム在庫数・最短納期を表示する</div><div class="is-meta">対象: 263+242件 ｜ 効果: 大</div></div></div>
+          <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">出荷完了時に追跡URLつき自動通知メールを送信する</div><div class="is-meta">対象: 904件の一部 ｜ 担当: EC開発</div></div></div>
+          <div class="improvement-step"><div class="is-num">4</div><div class="is-body"><div class="is-title">カート・決済ページに支払方法別の出荷スケジュールを明示する</div><div class="is-meta">対象: 納期全般 ｜ 担当: EC開発</div></div></div>
+        </div>
+      </div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由の納期確認は約120件。「注文後に配送状況が知りたい」「在庫があるか確認したい」という問い合わせが多い。マイページの情報充実で削減可能。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / 在庫確認</div><div class="vi-text">「お問い合わせフォームより：○○商品を15個購入したいのですが、在庫はありますか？できれば今週中に欲しいです。」</div><div class="vi-context">→ 商品ページにリアルタイム在庫数を表示することでフォーム問い合わせも削減可能。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">フォーム / 配送日確認</div><div class="vi-text">「フォームより：昨日注文しましたが、いつ届くか確認したいです。配送追跡番号を教えていただけますか？」</div><div class="vi-context">→ 出荷後に追跡URLを自動メール送信することで削減可能。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 出荷完了時に追跡URLつき自動通知メールを即時送信する</div><div class="is-meta">フォーム問い合わせも削減 ｜ 期間: 1〜3ヶ月</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- サイト > 注文管理 -->
+    <div class="sub-panel" id="sp-site-chuumon">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">1,839件</div><div class="fs-label">注文管理合計</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">448件</div><div class="fs-label">Web高207+中241</div></div>
+        <div class="func-stat hl-orange"><div class="fs-num">38.7%</div><div class="fs-label">未完了率</div></div>
+        <div class="func-stat"><div class="fs-num">280件</div><div class="fs-label">最多（キャンセル）</div></div>
+      </div>
+      <div class="subsection-title">小区分内訳</div>
+      <table class="mini-bar-table">
+        <tr><td class="mbt-label"><strong>注文のキャンセル</strong></td><td class="mbt-num">280件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高60</span>/<span class="mbt-mi">中70</span></span></td></tr>
+        <tr><td class="mbt-label">お客様都合による返品・交換</td><td class="mbt-num">250件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:89%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高45</span>/<span class="mbt-mi">中55</span></span></td></tr>
+        <tr><td class="mbt-label">入金確認</td><td class="mbt-num">246件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:88%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高42</span>/<span class="mbt-mi">中52</span></span></td></tr>
+        <tr><td class="mbt-label">注文内容の変更</td><td class="mbt-num">237件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:85%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高30</span>/<span class="mbt-mi">中45</span></span></td></tr>
+        <tr><td class="mbt-label">注文内容の確認</td><td class="mbt-num">230件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:82%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高20</span>/<span class="mbt-mi">中18</span></span></td></tr>
+        <tr><td class="mbt-label">配送先の変更</td><td class="mbt-num">69件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:25%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高10</span>/<span class="mbt-mi">中1</span></span></td></tr>
+      </table>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-site-chuumon','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">1,690件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-site-chuumon','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">149件</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 注文管理1,839件のうち約92%が電話。キャンセル（280件）・注文確認（230件）・内容変更（237件）が主要課題。マイページでの自己対応機能で大幅削減可能。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">注文確認 / Web中</div><div class="vi-text">「14時まで当日出荷と書いてあって注文したんですが、注文履歴に出てこなくて。」</div><div class="vi-context">→ 注文完了画面に「履歴反映まで数分かかる場合あり」の案内を追加で解決。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">配送先変更 / Web中</div><div class="vi-text">「注文手続きに入ってですね、お届け先っていうのが会社の所在地か来店引取りかしか選択肢がなくて。」</div><div class="vi-context">→ お届け先追加・変更機能の改善が必要。</div></div>
+          <div class="voc-item"><div class="vi-tag">キャンセル / Web高</div><div class="vi-text">「昨日注文したんですが、やっぱりキャンセルしたいのですが、マイページからできますか？」</div><div class="vi-context">→ 出荷前ならマイページからキャンセル・変更を可能にすることで大幅削減。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 注文完了画面に「履歴反映まで数分かかる場合があります」の案内を表示する</div><div class="is-meta">対象: 230件 ｜ 即時対応可（低コスト）</div></div></div>
+          <div class="improvement-step priority"><div class="is-num">2</div><div class="is-body"><div class="is-title">🔴 出荷前ならマイページから数量変更・配送先変更・キャンセルができる仕組みを実装する</div><div class="is-meta">対象: 変更237+キャンセル280+配送先69=586件 ｜ 期間: 3〜6ヶ月</div></div></div>
+          <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">返品・交換のWeb申請フォームを整備し、受付から完了まで自動通知する</div><div class="is-meta">対象: 返品250件 ｜ 担当: EC開発+CS</div></div></div>
+        </div>
+      </div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由の注文管理は約149件。「キャンセル・返品・交換したい」「注文内容を変更してほしい」という依頼が多い。Webフォームでの自己申請フロー整備で対応コスト削減可能。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / キャンセル</div><div class="vi-text">「お問い合わせフォームより：昨日注文しましたが、キャンセルをお願いしたいです。まだ発送されていませんか？」</div><div class="vi-context">→ 出荷前のキャンセルをマイページから自己申請できれば、フォーム対応も不要に。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">フォーム / 返品交換</div><div class="vi-text">「フォームより：商品を受け取りましたが、サイズが違っていたため返品・交換をお願いしたいです。手続きを教えてください。」</div><div class="vi-context">→ 返品・交換Webフォームを整備し、受付から完了まで自動通知する仕組みが有効。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 返品・交換のWeb申請フォームを整備し、受付確認・完了通知を自動化する</div><div class="is-meta">フォーム対応コストを大幅削減 ｜ 担当: EC開発+CS</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- サイト > ご利用全般 -->
+    <div class="sub-panel" id="sp-site-goriyou">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">1,310件</div><div class="fs-label">ご利用全般合計</div></div>
+        <div class="func-stat hl-green"><div class="fs-num">21.1%</div><div class="fs-label">未完了率（低め）</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">522件</div><div class="fs-label">Web高252+中270</div></div>
+        <div class="func-stat hl-orange"><div class="fs-num">39.8%</div><div class="fs-label">Web自己解決率</div></div>
+      </div>
+      <div class="subsection-title">小区分内訳（上位）</div>
+      <table class="mini-bar-table">
+        <tr><td class="mbt-label"><strong>支払方法の種類について</strong></td><td class="mbt-num">120件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高40</span>/<span class="mbt-mi">中48</span></span></td></tr>
+        <tr><td class="mbt-label">NP掛け払い手続きエラー</td><td class="mbt-num">106件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:88%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高32</span>/<span class="mbt-mi">中45</span></span></td></tr>
+        <tr><td class="mbt-label">注文方法が分からない</td><td class="mbt-num">67件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:56%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高25</span>/<span class="mbt-mi">中30</span></span></td></tr>
+        <tr><td class="mbt-label">キャンペーンについて</td><td class="mbt-num">60件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:50%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高20</span>/<span class="mbt-mi">中25</span></span></td></tr>
+        <tr><td class="mbt-label">登録情報の変更希望</td><td class="mbt-num">54件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:45%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高18</span>/<span class="mbt-mi">中20</span></span></td></tr>
+        <tr><td class="mbt-label">送料について</td><td class="mbt-num">52件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:43%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高18</span>/<span class="mbt-mi">中22</span></span></td></tr>
+      </table>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-site-goriyou','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">1,205件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-site-goriyou','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">105件</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 サイトご利用全般1,310件のうち約92%が電話。支払方法（120件）・NP掛け払いエラー（106件）・注文方法（67件）が主要課題。「はじめての方へ」ガイドで大幅削減可能。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">注文方法 / Web中</div><div class="vi-text">「今、注文をインターネットからしようと思って、初めてのことなんで、登録してるんですけれどもね、カード情報を入力してくださいという画面になるんですけれども。」</div><div class="vi-context">→ 初めての方へのガイドページが有効。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">送料 / Web中</div><div class="vi-text">「注文しようとしたんですが、送料がいくらになるか分からなくて。」</div><div class="vi-context">→ カートページに送料をリアルタイム表示することで解決。</div></div>
+        </div>
+      </div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由は約105件。「キャンペーン適用条件が分からない」「送料無料の条件を教えて」など情報確認系が中心。FAQページ充実で解決可能。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / キャンペーン</div><div class="vi-text">「お問い合わせフォームより：今もキャンペーンは適用されますか？ページを見てもよく分からなくて。」</div><div class="vi-context">→ カートページにキャンペーン適用条件をリアルタイム表示することで解決。</div></div>
+        </div>
+      </div>
+      <div class="improvement-steps">
+        <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 「はじめての方へ」注文ガイドページを作成し、ヘッダー・カートから誘導する</div><div class="is-meta">対象: 注文方法67件＋支払方法120件 ｜ 担当: EC運営</div></div></div>
+        <div class="improvement-step priority"><div class="is-num">2</div><div class="is-body"><div class="is-title">🔴 カートページに送料・キャンペーン適用条件をリアルタイム表示する</div><div class="is-meta">対象: 送料52件＋キャンペーン60件 ｜ 担当: EC開発</div></div></div>
+        <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">マイページから会員情報（住所・電話番号・お届け先）の変更を完結できるようにする</div><div class="is-meta">対象: 登録情報変更54件 ｜ 担当: EC開発</div></div></div>
+      </div>
+    </div>
+
+    <!-- サイト > カタログ -->
+    <div class="sub-panel" id="sp-site-catalog">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">512件</div><div class="fs-label">カタログ・DM合計</div></div>
+        <div class="func-stat hl-green"><div class="fs-num">7.0%</div><div class="fs-label">未完了率（最低）</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">348件/年</div><div class="fs-label">年間削減試算<br><span style="font-size:10px;font-weight:400;">(電話37＋フォーム50)×4</span></div></div>
+        <div class="func-stat"><div class="fs-num">284件</div><div class="fs-label">最多（DM停止）</div></div>
+      </div>
+      <div class="subsection-title">小区分内訳</div>
+      <table class="mini-bar-table">
+        <tr><td class="mbt-label"><strong>カタログを止めてほしい（DM停止）</strong></td><td class="mbt-num">284件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高33</span>/<span class="mbt-mi">中250</span></span></td></tr>
+        <tr><td class="mbt-label">カタログを送付してほしい</td><td class="mbt-num">165件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:58%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高10</span>/<span class="mbt-mi">中80</span></span></td></tr>
+        <tr><td class="mbt-label">送付先の変更</td><td class="mbt-num">63件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:22%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高5</span>/<span class="mbt-mi">中30</span></span></td></tr>
+      </table>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-site-catalog','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">465件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-site-catalog','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">47件</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 カタログ・DM512件のうち約91%が電話。マイページワンクリック停止機能で284件削減可能。未完了率7%と最低水準で、導線整備だけで大幅改善。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">DM停止 / Web高</div><div class="vi-text">「DMを中止していただきたいんですが、今その送っていただいていた住所には全く別の業種の方が入っていらっしゃいまして、困るという連絡がありましたもので。」</div><div class="vi-context">→ マイページまたはメール内のワンクリックDM停止機能があれば電話不要。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">送付先変更 / Web中</div><div class="vi-text">「カタログの送付先を変更したいのですが、マイページからできますか？」</div><div class="vi-context">→ マイページから送付先を自己管理できれば解決。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 マイページまたはメール内にワンクリックDM停止・送付先変更機能を実装する</div><div class="is-meta">対象: 347件 ｜ 効果: 大</div></div></div>
+          <div class="improvement-step"><div class="is-num">2</div><div class="is-body"><div class="is-title">カタログ請求フォームをマイページ・商品ページから簡単にアクセスできるようにする</div><div class="is-meta">対象: 165件 ｜ 担当: EC運営</div></div></div>
+        </div>
+      </div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由は約47件。「DM送付先変更」「カタログ送付依頼」などの申請系問い合わせ。マイページ自己管理機能でフォーム対応もゼロにできる。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / DM変更</div><div class="vi-text">「お問い合わせフォームより：引越したためカタログの送付先を変更したいです。新しい住所へ送っていただけますか？」</div><div class="vi-context">→ マイページから自己変更できればフォーム対応不要。</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- サイト > FAX注文 -->
+    <div class="sub-panel" id="sp-site-fax">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">407件</div><div class="fs-label">FAX受信確認合計</div></div>
+        <div class="func-stat hl-orange"><div class="fs-num">2.2%</div><div class="fs-label">Web自己解決率（低）</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">55.8%</div><div class="fs-label">解決率</div></div>
+        <div class="func-stat"><div class="fs-num">407件</div><div class="fs-label">FAX注文後の確認電話</div></div>
+      </div>
+      <div class="insight-box red"><strong>特記事項</strong> — FAXという手段自体が確認を困難にしている。自動返信がないためユーザーが確認電話せざるを得ない構造。Web移行促進が根本解決。</div>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-site-fax','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">407件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-site-fax','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">極少</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 FAX受信確認407件は実質FAXから電話へのダブルコスト構造。「受け付けてもらえたか」の確認電話が全体。自動返信メールの整備で大幅削減可能。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">FAX確認 / 解決困難</div><div class="vi-text">「昨日FAXで注文を送ったんですが、受け付けてもらえていますか？何も連絡が来なかったので確認の電話をしました。」</div><div class="vi-context">→ FAX受付後に受付番号付き自動返信メールがあれば電話不要。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">Web移行希望</div><div class="vi-text">「いつもFAXで注文しているのですが、ネットからの方が便利ですか？登録の仕方を教えてもらえますか？」</div><div class="vi-context">→ FAXユーザーのWeb移行促進。FAX用紙にQRコードと移行ガイドを同梱することが有効。</div></div>
+        </div>
+      </div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由のFAX関連問い合わせは極少数。FAX注文の確認はほぼ全て電話経由で発生している。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / FAX移行</div><div class="vi-text">「お問い合わせフォームより：これまでFAXで注文していましたが、ネット注文への変更方法を教えていただけますか？」</div><div class="vi-context">→ Web移行のサポートガイドを充実させることで対応コスト削減。</div></div>
+        </div>
+      </div>
+      <div class="improvement-steps">
+        <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 FAX受付後に受付番号付き自動返信メールを構築する（1〜3ヶ月）</div><div class="is-meta">対象: 407件 ｜ 効果: 確認電話を大幅削減</div></div></div>
+        <div class="improvement-step priority"><div class="is-num">2</div><div class="is-body"><div class="is-title">🔴 FAXユーザーのWeb注文移行促進キャンペーンを実施する</div><div class="is-meta">目標: FAX注文50%削減 ｜ FAX用紙にQRコード・移行ガイド同梱</div></div></div>
+        <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">マイページに支払いステータスをリアルタイム表示し、FAX後の支払確認電話を削減する</div><div class="is-meta">対象: 振込確認電話分 ｜ 担当: EC開発</div></div></div>
+      </div>
+    </div>
+
+  </div>
+  <!-- ===== END ⑤-1 サイト ===== -->
+
+  <!-- ===== ⑤-2 配送 ===== -->
+  <div class="cat-panel" id="cp-delivery">
+    <div class="domain-header" style="background:linear-gradient(135deg,#fef5e7 0%,#fdf8ee 100%);border-left:5px solid #ca6f1e;">
+      <span class="dh-icon">🚚</span>
+      <span class="dh-title">⑤-2 配送 — 出荷後〜到着前の配送会社トラブル</span>
+      <span class="dh-sub">842件 ｜ 解決しにくい物理的トラブルが中心</span>
+    </div>
+    <p style="font-size:13px;color:#666;margin:12px 0 20px;"><strong>定義：</strong>配送会社のトラブル（破損・遅延・時間指定ミス・業者変更依頼など）を指す。「いつ届くか分からない」等のサイト情報起因は⑤-1サイトカテゴリ。</p>
+
+    <div class="func-tabs" style="background:#fef5e7;border-radius:8px;padding:8px;">
+      <button class="func-tab active" onclick="switchSubTab('delivery','hason',this)">💔 破損・不良</button>
+      <button class="func-tab" onclick="switchSubTab('delivery','jikan',this)">⏰ 時間指定</button>
+      <button class="func-tab" onclick="switchSubTab('delivery','carrier',this)">🚛 配送業者</button>
+      <button class="func-tab" onclick="switchSubTab('delivery','hizuke',this)">📅 配送日変更</button>
+    </div>
+
+    <!-- 配送 > 破損 -->
+    <div class="sub-panel active" id="sp-delivery-hason">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">369件</div><div class="fs-label">破損・不良合計</div></div>
+        <div class="func-stat hl-orange"><div class="fs-num">87.8%</div><div class="fs-label">未完了率（高）</div></div>
+        <div class="func-stat"><div class="fs-num">369件</div><div class="fs-label">お届け商品の破損</div></div>
+        <div class="func-stat"><div class="fs-num">現品確認必須</div><div class="fs-label">電話対応で解決困難</div></div>
+      </div>
+      <div class="insight-box red"><strong>重要</strong> — 破損は物理的確認が必要で電話では解決困難。クレームの87.8%が未完了となる主因。受付フロー標準化と証跡取得が急務。</div>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-delivery-hason','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">320件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-delivery-hason','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">49件</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 破損369件のうち約87%が電話。物理的破損のため電話では解決不可。回折り返し対応が必須だが、受付時の証跡取得で折り返し回数を削減できる。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag red">破損 / 折り返し</div><div class="vi-text">「商品が届いたんですが、箱がつぶれていて中の商品が破損していました。これはどうすればいいですか？」</div><div class="vi-context">→ 受付時に写真・伝票番号の提出フローを設け、確認作業を効率化する。</div></div>
+          <div class="voc-item"><div class="vi-tag red">同梱漏れ / 折り返し</div><div class="vi-text">「今日商品届いたんですが、バーセットが3本しか入っていなくて、スプリングポール本体とスリムフックハンガーが同梱されていませんでした。」</div><div class="vi-context">→ 組み立て品の検品プロセス見直しと受付後の対応基準明確化が必要。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 破損受付時に写真・伝票番号の提出を促すフォームを整備する</div><div class="is-meta">対象: 369件 ｜ 効果: 折り返し回数削減 ｜ 担当: CS+物流</div></div></div>
+          <div class="improvement-step"><div class="is-num">2</div><div class="is-body"><div class="is-title">組み立て品・セット品の出荷前検品プロセスを強化する</div><div class="is-meta">対象: パーツ不足・同梱漏れ ｜ 担当: 物流・倉庫</div></div></div>
+          <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">配送中の破損リスクが高い商品は梱包仕様を見直す</div><div class="is-meta">対象: 繰り返し破損が報告されている商品カテゴリ</div></div></div>
+        </div>
+      </div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由の破損報告は約49件。写真添付フォームを整備することで、対応効率を大幅改善できる。回折り返し電話なしで第一次対応が完結できる。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / 破損報告</div><div class="vi-text">「お問い合わせフォームより：商品が届きましたが外箱が大きく凹んで中の商品が破損しています。写真を送ります。ご対応をお願いします。」</div><div class="vi-context">→ 写真添付対応フォームで、回折り返し電話なしで第一次対応が完結できる。</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 配送 > 時間指定 -->
+    <div class="sub-panel" id="sp-delivery-jikan">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">334件</div><div class="fs-label">時間指定合計</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">到着時間</div><div class="fs-label">指定希望（注文後）</div></div>
+        <div class="func-stat"><div class="fs-num">注文後</div><div class="fs-label">の時間変更依頼</div></div>
+        <div class="func-stat"><div class="fs-num">配送会社</div><div class="fs-label">への連絡が必要</div></div>
+      </div>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-delivery-jikan','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">306件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-delivery-jikan','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">28件</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 時間指定334件のうち約92%が電話。注文後の時間変更は配送業者への直接リンクをマイページに表示することで大幅改善できる。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">時間変更 / 配送トラブル</div><div class="vi-text">「注文したんですが、午前指定で届けてほしいのですが、注文後に時間指定の変更はできますか？」</div><div class="vi-context">→ 注文後の時間変更は配送会社への直接依頼が必要。配送業者連絡先と再配依頼方法をマイページに表示することが有効。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">時間指定ミス</div><div class="vi-text">「午後2時〜4時で指定したはずなのに午前中に配達が来て、受け取れませんでした。」</div><div class="vi-context">→ 注文時の時間指定が正確に配送会社に伝わっているか確認が必要。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 マイページに配送業者の再配達依頼・時間変更リンクを直接表示する</div><div class="is-meta">対象: 334件 ｜ 効果: 自己解決可能に ｜ 期間: 1〜3ヶ月</div></div></div>
+          <div class="improvement-step"><div class="is-num">2</div><div class="is-body"><div class="is-title">注文確認メールに時間指定内容と変更方法を明記する</div><div class="is-meta">対象: 時間指定全般 ｜ 担当: EC開発</div></div></div>
+        </div>
+      </div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由の時間指定問い合わせは約28件。「法人受取にしたいで時間を変更したい」などの内容。配送業者別連絡先をマイページに明示することでフォーム問い合わせも削減できる。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / 時間変更</div><div class="vi-text">「お問い合わせフォームより：午後配達で注文しましたが、受取場所の都合で午前に変更できますか？」</div><div class="vi-context">→ 配送業者の変更専用URLをマイページに明示することでフォーム問い合わせも不要に。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 配送業者別の時間変更URL・連絡先をマイページに明示し、フォーム問い合わせをゼロにする</div><div class="is-meta">即時対応可（低コスト） ｜ 担当: EC運営</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 配送 > 配送業者 -->
+    <div class="sub-panel" id="sp-delivery-carrier">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">166件</div><div class="fs-label">配送業者指定合計</div></div>
+        <div class="func-stat"><div class="fs-num">希望</div><div class="fs-label">業者指定・変更希望</div></div>
+        <div class="func-stat"><div class="fs-num">不在時</div><div class="fs-label">特定業者への変更依頼</div></div>
+        <div class="func-stat"><div class="fs-num">マンション</div><div class="fs-label">宅配ボックス対応</div></div>
+      </div>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-delivery-carrier','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">152件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-delivery-carrier','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">14件</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 配送業者指定166件のうち約92%が電話。「宅配ボックスが使える業者に変えてほしい」という依頼が中心。注文時の業者選択オプション追加が最も効果的。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">業者変更 / 配送トラブル</div><div class="vi-text">「いつもヤマトで届くんですが、今回は佐川さんで届いたんですが、ヤマトに変えてもらえますか？宅配ボックスが対応していないので。」</div><div class="vi-context">→ 配送業者の変更は物流システムに依存。注文時に業者選択オプションを設けることが有効。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step"><div class="is-num">1</div><div class="is-body"><div class="is-title">注文時に配送業者の希望選択オプションを追加する（可能な範囲で）</div><div class="is-meta">対象: 166件 ｜ 担当: 物流+EC開発</div></div></div>
+          <div class="improvement-step"><div class="is-num">2</div><div class="is-body"><div class="is-title">マイページに各配送業者の宅配ボックス対応状況・問い合わせ先を明示する</div><div class="is-meta">対象: 業者問い合わせ全般 ｜ 担当: EC運営</div></div></div>
+        </div>
+      </div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由の配送業者問い合わせは約14件。「次回から別の業者に変えてほしい」という依頼が中心。注文時の業者選択追加で大半を解決可能。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / 業者変更</div><div class="vi-text">「お問い合わせフォームより：アパートの宅配ボックスに対応しているヤマト運輸で配送していただけますか？」</div><div class="vi-context">→ 注文時に業者を選べる仕組みで解決可能。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step"><div class="is-num">1</div><div class="is-body"><div class="is-title">各配送業者の特張（宅配ボックス対応など）を注文画面で明示する</div><div class="is-meta">フォーム問い合わせの先心的予防に ｜ 担当: EC運営</div></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 配送 > 配送日変更 -->
+    <div class="sub-panel" id="sp-delivery-hizuke">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">86件</div><div class="fs-label">配送日変更合計</div></div>
+        <div class="func-stat"><div class="fs-num">注文後</div><div class="fs-label">配送日の変更依頼</div></div>
+        <div class="func-stat"><div class="fs-num">出荷前</div><div class="fs-label">なら変更可能</div></div>
+        <div class="func-stat"><div class="fs-num">出荷後</div><div class="fs-label">は配送業者対応</div></div>
+      </div>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-delivery-hizuke','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">79件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-delivery-hizuke','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">7件</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 配送日変更86件のうち紈92%が電話。「急に出張が入った」「受取日を変えたい」という依頼が中心。出荷前ならマイページから変更できる仕組みで大半を解決可能。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">日付変更 / 配送</div><div class="vi-text">「注文したんですが、急に出張が入ってしまって、配達日を来週に変更してもらえますか？」</div><div class="vi-context">→ 出荷前ならマイページから変更可能にする。出荷後は配送業者への再配依頼方法を案内。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 出荷前ならマイページから配送日変更ができる仕組みを実装する</div><div class="is-meta">注文管理の変更機能と統合 ｜ 対象: 86件 ｜ 期間: 3〜6ヶ月</div></div></div>
+          <div class="improvement-step"><div class="is-num">2</div><div class="is-body"><div class="is-title">出荷後の場合は配送業者への再配依頼方法をマイページから直接案内する</div><div class="is-meta">対象: 出荷後の変更依頼 ｜ 担当: EC運営</div></div></div>
+        </div>
+      </div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由の配送日変更は約7件。「不在になるので日付をずらしたい」という依頼。マイページからの自己変更機能でフォーム対応も不要にできる。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / 配送日変更</div><div class="vi-text">「お問い合わせフォームより：注文した商品の配達日を変更したいです。マイページからできますか？」</div><div class="vi-context">→ マイページから自己変更できればフォーム問い合わせも不要に。</div></div>
+        </div>
+        <div class="improvement-steps">
+          <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 出荷前の配送日変更をマイページから自己申請可能にする</div><div class="is-meta">フォーム問い合わせもゼロ化可能 ｜ 期間: 3〜6ヶ月</div></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ===== END ⑤-2 配送 ===== -->
+
+  <!-- ===== ⑤-3 商品 ===== -->
+  <div class="cat-panel" id="cp-product">
+    <div class="domain-header" style="background:linear-gradient(135deg,#eafaf1 0%,#f4fdf7 100%);border-left:5px solid #1e8449;">
+      <span class="dh-icon">📦</span>
+      <span class="dh-title">⑤-3 商品 — 商品仕様・パーツ不足・その他商品に関する問い合わせ</span>
+      <span class="dh-sub">5,800件 ｜ 商品ページの情報充実で削減可能なものが多数</span>
+    </div>
+    <p style="font-size:13px;color:#666;margin:12px 0 20px;">商品単位で問い合わせ内容が異なるため、商品カテゴリ（仕様・クレーム・その他商品）でタブを切り替えて確認できる。また、<strong>問い合わせ上位10商品</strong>を商品名タブで確認でき、電話・フォームそれぞれの内訳も切り替えて確認できる。</p>
+
+    <!-- ===== 商品名 上位10 タブ ===== -->
+    <div style="background:#f0fdf4;border:1px solid #a7f3d0;border-radius:10px;padding:16px;margin-bottom:20px;">
+      <div style="font-size:14px;font-weight:700;color:#1e8449;margin-bottom:4px;">📦 問い合わせ上位10商品カテゴリ — カテゴリ別タブ（通話AO列＋フォームAR列 合算）</div>
+      <div style="font-size:12px;color:#6b7a8d;margin-bottom:12px;">※ 通話CSV（AO列: 商品カテゴリ・10,000件中不明除外4,759件有効）＋フォームCSV（AR列: 商品カテゴリ小カテゴリ・3,714件中不明除外896件有効）の合算。「不明」除外。カテゴリ名は統合せず個別表示。</div>
+
+      <!-- 商品タブバー -->
+      <div class="product-item-tabs" style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px;">
+        <button class="pit-btn active" onclick="switchProductItem('p1',this)">① カードケース <span style="font-size:10px;background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 5px;margin-left:3px;">209件</span></button>
+        <button class="pit-btn" onclick="switchProductItem('p2',this)">② クリスマスツリー <span style="font-size:10px;background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 5px;margin-left:3px;">206件</span></button>
+        <button class="pit-btn" onclick="switchProductItem('p3',this)">③ 袋 <span style="font-size:10px;background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 5px;margin-left:3px;">163件</span></button>
+        <button class="pit-btn" onclick="switchProductItem('p4',this)">④ フラワーショップ向けラッピング商品 <span style="font-size:10px;background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 5px;margin-left:3px;">143件</span></button>
+        <button class="pit-btn" onclick="switchProductItem('p5',this)">⑤ マネキン／トルソー（ボディ） <span style="font-size:10px;background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 5px;margin-left:3px;">142件</span></button>
+        <button class="pit-btn" onclick="switchProductItem('p6',this)">⑥ ワゴン／バスケット／ボックス什器 <span style="font-size:10px;background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 5px;margin-left:3px;">123件</span></button>
+        <button class="pit-btn" onclick="switchProductItem('p7',this)">⑦ 手提げ紙袋 <span style="font-size:10px;background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 5px;margin-left:3px;">120件</span></button>
+        <button class="pit-btn" onclick="switchProductItem('p8',this)">⑧ レジ袋／ポリ袋 <span style="font-size:10px;background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 5px;margin-left:3px;">113件</span></button>
+        <button class="pit-btn" onclick="switchProductItem('p9',this)">⑨ ハンガーラック <span style="font-size:10px;background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 5px;margin-left:3px;">107件</span></button>
+        <button class="pit-btn" onclick="switchProductItem('p10',this)">⑩ その他単体什器 <span style="font-size:10px;background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 5px;margin-left:3px;">96件</span></button>
+      </div>
+
+      <!-- 商品①カードケース（実データ: 通話191件、フォーム18件 合計209件） -->
+      <div class="product-item-panel active" id="pip-p1">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <span style="font-size:20px;">🪪</span>
+          <div>
+            <div style="font-weight:700;font-size:15px;">カードケース</div>
+            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>191件</strong> ／ フォーム <strong>18件</strong> ｜ 合計 <strong>209件</strong> — 全カテゴリ1位</div>
+          </div>
+        </div>
+        <div class="ch-tabs">
+          <button class="ch-tab tel active" onclick="switchProductCh('p1','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">191件</span></button>
+          <button class="ch-tab form" onclick="switchProductCh('p1','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">18件</span></button>
+        </div>
+        <div class="ch-panel tel-panel active">
+          <div class="ch-note">💡 電話191件・フォーム18件（計209件）。サイズ・素材・枚数などの仕様確認が中心。商品ページへの詳細仕様掲載で大幅削減可能。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">通話（カードケース関連）</td><td class="mbt-num">191件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
+            <tr><td class="mbt-label">フォーム（カードケース関連）</td><td class="mbt-num">18件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:9%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
+          </table>
+        </div>
+        <div class="ch-panel form-panel">
+          <div class="ch-note">📋 フォーム18件はカードケースのサイズ・仕様確認が中心。商品ページの詳細情報充実で削減可能。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">カードケース（サイズ・仕様確認）</td><td class="mbt-num">18件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 商品②クリスマスツリー（実データ: 通話176件、フォーム30件 合計206件） -->
+      <div class="product-item-panel" id="pip-p2">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <span style="font-size:20px;">🎄</span>
+          <div>
+            <div style="font-weight:700;font-size:15px;">クリスマスツリー</div>
+            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>176件</strong> ／ フォーム <strong>30件</strong> ｜ 合計 <strong>206件</strong> — 2位</div>
+          </div>
+        </div>
+        <div class="ch-tabs">
+          <button class="ch-tab tel active" onclick="switchProductCh('p2','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">176件</span></button>
+          <button class="ch-tab form" onclick="switchProductCh('p2','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">30件</span></button>
+        </div>
+        <div class="ch-panel tel-panel active">
+          <div class="ch-note">💡 電話176件。年末に集中する季節商品。注文方法・在庫確認・仕様確認が中心。商品ページに在庫状況・注文ガイドを充実させることで削減可能。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">クリスマスツリー（通話）</td><td class="mbt-num">176件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
+          </table>
+        </div>
+        <div class="ch-panel form-panel">
+          <div class="ch-note">📋 フォーム30件。破損クレーム・注文内容確認・配送関連が中心。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">クリスマスツリー（フォーム）</td><td class="mbt-num">30件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-mid">中</span></span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 商品③袋（実データ: 通話152件、フォーム11件 合計163件） -->
+      <div class="product-item-panel" id="pip-p3">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <span style="font-size:20px;">🛍️</span>
+          <div>
+            <div style="font-weight:700;font-size:15px;">袋</div>
+            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>152件</strong> ／ フォーム <strong>11件</strong> ｜ 合計 <strong>163件</strong> — 3位</div>
+          </div>
+        </div>
+        <div class="ch-tabs">
+          <button class="ch-tab tel active" onclick="switchProductCh('p3','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">152件</span></button>
+          <button class="ch-tab form" onclick="switchProductCh('p3','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">11件</span></button>
+        </div>
+        <div class="ch-panel tel-panel active">
+          <div class="ch-note">💡 電話152件。袋のサイズ・素材・枚数・発注方法確認が中心。商品ページへの詳細仕様掲載で大幅削減可能。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">袋（通話）</td><td class="mbt-num">152件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
+          </table>
+        </div>
+        <div class="ch-panel form-panel">
+          <div class="ch-note">📋 フォーム11件。仕様確認・ロット数確認が中心。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">袋（フォーム）</td><td class="mbt-num">11件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-mid">中</span></span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 商品④フラワーショップ向けラッピング商品（実データ: 通話142件、フォーム1件 合計143件） -->
+      <div class="product-item-panel" id="pip-p4">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <span style="font-size:20px;">💐</span>
+          <div>
+            <div style="font-weight:700;font-size:15px;">フラワーショップ向けラッピング商品</div>
+            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>142件</strong> ／ フォーム <strong>1件</strong> ｜ 合計 <strong>143件</strong> — 4位</div>
+          </div>
+        </div>
+        <div class="ch-tabs">
+          <button class="ch-tab tel active" onclick="switchProductCh('p4','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">142件</span></button>
+          <button class="ch-tab form" onclick="switchProductCh('p4','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">1件</span></button>
+        </div>
+        <div class="ch-panel tel-panel active">
+          <div class="ch-note">💡 電話142件。ラッピング資材のサイズ・素材・ロット数・発注方法確認が中心。商品ページへの詳細仕様掲載で大幅削減可能。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">フラワーショップ向けラッピング商品（通話）</td><td class="mbt-num">142件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
+          </table>
+        </div>
+        <div class="ch-panel form-panel">
+          <div class="ch-note">📋 フォーム1件。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">フラワーショップ向けラッピング商品（フォーム）</td><td class="mbt-num">1件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 商品⑤マネキン／トルソー（ボディ）（実データ: 通話123件、フォーム19件 合計142件） -->
+      <div class="product-item-panel" id="pip-p5">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <span style="font-size:20px;">🧍</span>
+          <div>
+            <div style="font-weight:700;font-size:15px;">マネキン／トルソー（ボディ）</div>
+            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>123件</strong> ／ フォーム <strong>19件</strong> ｜ 合計 <strong>142件</strong> — 5位</div>
+          </div>
+        </div>
+        <div class="ch-tabs">
+          <button class="ch-tab tel active" onclick="switchProductCh('p5','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">123件</span></button>
+          <button class="ch-tab form" onclick="switchProductCh('p5','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">19件</span></button>
+        </div>
+        <div class="ch-panel tel-panel active">
+          <div class="ch-note">💡 電話123件。サイズ・素材・色・スタンドとの互換性確認が中心。詳細仕様・互換表を商品ページに掲載することで削減可能。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">マネキン／トルソー（通話）</td><td class="mbt-num">123件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
+          </table>
+        </div>
+        <div class="ch-panel form-panel">
+          <div class="ch-note">📋 フォーム19件。仕様確認・注文内容確認が中心。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">マネキン／トルソー（フォーム）</td><td class="mbt-num">19件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-mid">中</span></span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 商品⑥ワゴン／バスケット／ボックス什器（実データ: 通話120件、フォーム3件 合計123件） -->
+      <div class="product-item-panel" id="pip-p6">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <span style="font-size:20px;">🛒</span>
+          <div>
+            <div style="font-weight:700;font-size:15px;">ワゴン／バスケット／ボックス什器</div>
+            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>120件</strong> ／ フォーム <strong>3件</strong> ｜ 合計 <strong>123件</strong> — 6位</div>
+          </div>
+        </div>
+        <div class="ch-tabs">
+          <button class="ch-tab tel active" onclick="switchProductCh('p6','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">120件</span></button>
+          <button class="ch-tab form" onclick="switchProductCh('p6','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">3件</span></button>
+        </div>
+        <div class="ch-panel tel-panel active">
+          <div class="ch-note">💡 電話120件。サイズ・耐荷重・組み立て方法・納期確認が中心。商品ページに仕様詳細・組み立て動画を掲載することで削減可能。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">ワゴン／バスケット／ボックス什器（通話）</td><td class="mbt-num">120件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
+          </table>
+        </div>
+        <div class="ch-panel form-panel">
+          <div class="ch-note">📋 フォーム3件。仕様確認・見積依頼。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">ワゴン／バスケット／ボックス什器（フォーム）</td><td class="mbt-num">3件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 商品⑦手提げ紙袋（実データ: 通話93件、フォーム27件 合計120件） -->
+      <div class="product-item-panel" id="pip-p7">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <span style="font-size:20px;">🛍️</span>
+          <div>
+            <div style="font-weight:700;font-size:15px;">手提げ紙袋</div>
+            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>93件</strong> ／ フォーム <strong>27件</strong> ｜ 合計 <strong>120件</strong> — 7位</div>
+          </div>
+        </div>
+        <div class="ch-tabs">
+          <button class="ch-tab tel active" onclick="switchProductCh('p7','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">93件</span></button>
+          <button class="ch-tab form" onclick="switchProductCh('p7','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">27件</span></button>
+        </div>
+        <div class="ch-panel tel-panel active">
+          <div class="ch-note">💡 電話93件。サイズ・印刷・ロット数・素材の確認が中心。商品ページへの詳細仕様掲載で削減可能。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">手提げ紙袋（通話）</td><td class="mbt-num">93件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
+          </table>
+        </div>
+        <div class="ch-panel form-panel">
+          <div class="ch-note">📋 フォーム27件。サイズ・印刷・ロット数確認が中心。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">手提げ紙袋（フォーム）</td><td class="mbt-num">27件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 商品⑧レジ袋／ポリ袋（実データ: 通話106件、フォーム7件 合計113件） -->
+      <div class="product-item-panel" id="pip-p8">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <span style="font-size:20px;">🛍️</span>
+          <div>
+            <div style="font-weight:700;font-size:15px;">レジ袋／ポリ袋</div>
+            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>106件</strong> ／ フォーム <strong>7件</strong> ｜ 合計 <strong>113件</strong> — 8位</div>
+          </div>
+        </div>
+        <div class="ch-tabs">
+          <button class="ch-tab tel active" onclick="switchProductCh('p8','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">106件</span></button>
+          <button class="ch-tab form" onclick="switchProductCh('p8','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">7件</span></button>
+        </div>
+        <div class="ch-panel tel-panel active">
+          <div class="ch-note">💡 電話106件。サイズ・厚み・枚数・素材確認が中心。商品ページへの詳細仕様掲載で大幅削減可能。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">レジ袋／ポリ袋（通話）</td><td class="mbt-num">106件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
+          </table>
+        </div>
+        <div class="ch-panel form-panel">
+          <div class="ch-note">📋 フォーム7件。仕様確認・ロット数確認が中心。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">レジ袋／ポリ袋（フォーム）</td><td class="mbt-num">7件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-mid">中</span></span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 商品⑨ハンガーラック（実データ: 通話93件、フォーム14件 合計107件） -->
+      <div class="product-item-panel" id="pip-p9">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <span style="font-size:20px;">👔</span>
+          <div>
+            <div style="font-weight:700;font-size:15px;">ハンガーラック</div>
+            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>93件</strong> ／ フォーム <strong>14件</strong> ｜ 合計 <strong>107件</strong> — 9位</div>
+          </div>
+        </div>
+        <div class="ch-tabs">
+          <button class="ch-tab tel active" onclick="switchProductCh('p9','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">93件</span></button>
+          <button class="ch-tab form" onclick="switchProductCh('p9','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">14件</span></button>
+        </div>
+        <div class="ch-panel tel-panel active">
+          <div class="ch-note">💡 電話93件。サイズ・耐荷重・組み立て方法・オプション確認が中心。詳細仕様・組み立て動画の掲載で削減可能。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">ハンガーラック（通話）</td><td class="mbt-num">93件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
+          </table>
+        </div>
+        <div class="ch-panel form-panel">
+          <div class="ch-note">📋 フォーム14件。仕様確認・見積依頼・注文変更が中心。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">ハンガーラック（フォーム）</td><td class="mbt-num">14件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-mid">中</span></span></td></tr>
+          </table>
+        </div>
+      </div>
+
+      <!-- 商品⑩その他単体什器（実データ: 通話83件、フォーム13件 合計96件） -->
+      <div class="product-item-panel" id="pip-p10">
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+          <span style="font-size:20px;">🏪</span>
+          <div>
+            <div style="font-weight:700;font-size:15px;">その他単体什器</div>
+            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>83件</strong> ／ フォーム <strong>13件</strong> ｜ 合計 <strong>96件</strong> — 10位</div>
+          </div>
+        </div>
+        <div class="ch-tabs">
+          <button class="ch-tab tel active" onclick="switchProductCh('p10','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">83件</span></button>
+          <button class="ch-tab form" onclick="switchProductCh('p10','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">13件</span></button>
+        </div>
+        <div class="ch-panel tel-panel active">
+          <div class="ch-note">💡 電話83件。多様な単体什器に関する仕様・サイズ・納期確認が中心。各商品ページの情報充実で削減可能。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">その他単体什器（通話）</td><td class="mbt-num">83件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
+          </table>
+        </div>
+        <div class="ch-panel form-panel">
+          <div class="ch-note">📋 フォーム13件。仕様確認・見積依頼が中心。</div>
+          <table class="mini-bar-table">
+            <tr><td class="mbt-label">その他単体什器（フォーム）</td><td class="mbt-num">13件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-mid">中</span></span></td></tr>
+          </table>
+        </div>
+      </div>
+
+    </div>
+    <!-- ===== END 商品名 上位10 タブ ===== -->
+
+    <div class="func-tabs" style="background:#eafaf1;border-radius:8px;padding:8px;">
+      <button class="func-tab active" onclick="switchSubTab('product','spec',this)">📋 商品仕様</button>
+      <button class="func-tab" onclick="switchSubTab('product','parts',this)">🔧 パーツ不足</button>
+      <button class="func-tab" onclick="switchSubTab('product','other',this)">📝 その他商品</button>
+    </div>
+
+    <!-- 商品 > 仕様 -->
+    <div class="sub-panel active" id="sp-product-spec">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">1,281件</div><div class="fs-label">商品仕様合計</div></div>
+        <div class="func-stat hl-orange"><div class="fs-num">44.0%</div><div class="fs-label">未完了率（高め）</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">商品ページ</div><div class="fs-label">情報充実で削減可能</div></div>
+        <div class="func-stat"><div class="fs-num">759件</div><div class="fs-label">最多（その他商品）</div></div>
+      </div>
+      <div class="insight-box green"><strong>削減のポイント</strong> — 商品ページにサイズ・素材・組み立て手順・互換性情報を充実させることで、仕様確認の電話を大幅に削減できる。未完了率44%は情報不足に起因する確認困難ケースが多いため。</div>
+      <div class="subsection-title">主な問い合わせ種別</div>
+      <table class="mini-bar-table">
+        <tr><td class="mbt-label"><strong>その他商品について（仕様全般）</strong></td><td class="mbt-num">759件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web">各商品で異なる</span></td></tr>
+        <tr><td class="mbt-label">サイズ・寸法確認</td><td class="mbt-num">~250件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:33%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span>多数</span></td></tr>
+        <tr><td class="mbt-label">素材・耐荷重・使用可否確認</td><td class="mbt-num">~180件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:24%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span>多数</span></td></tr>
+        <tr><td class="mbt-label">組み立て方法・部品確認</td><td class="mbt-num">~120件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:16%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span>多数</span></td></tr>
+        <tr><td class="mbt-label">オプション・色・バリエーション</td><td class="mbt-num">~90件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:12%"></div></div></td><td></td></tr>
+      </table>
+      <div class="voc-list">
+        <div class="voc-item"><div class="vi-tag">仕様確認 / Web高</div><div class="vi-text">「商品ページを見てもサイズが書いていなくて、実際に何センチになるか教えてもらえますか？」</div><div class="vi-context">→ 商品ページに詳細寸法・展開図・使用例写真を追加することで解決。</div></div>
+        <div class="voc-item"><div class="vi-tag blue">組み立て / Web中</div><div class="vi-text">「商品が届いたんですが、説明書がなくて組み立て方が分からないんですが…」</div><div class="vi-context">→ 商品ページに組み立て動画・PDFマニュアルを掲載することで電話削減可能。</div></div>
+        <div class="voc-item"><div class="vi-tag blue">互換性 / Web中</div><div class="vi-text">「以前購入したラックのオプションパーツを追加購入したいのですが、型番が変わっていて合うか分からなくて。」</div><div class="vi-context">→ 互換性情報・適合型番一覧を商品ページに掲載することが有効。</div></div>
+      </div>
+      <div class="improvement-steps">
+        <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 商品ページに詳細寸法・素材・耐荷重・使用可否情報を充実させる</div><div class="is-meta">対象: 1,281件の大半 ｜ 効果: 最大 ｜ 担当: 商品管理+EC運営</div></div></div>
+        <div class="improvement-step priority"><div class="is-num">2</div><div class="is-body"><div class="is-title">🔴 組み立て品に組み立て動画・PDFマニュアルのQRコードを同梱し、商品ページでも公開する</div><div class="is-meta">対象: 組み立て問い合わせ~120件 ｜ 担当: 商品管理</div></div></div>
+        <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">互換性・適合型番一覧を商品ページに掲載し、関連商品リンクを整備する</div><div class="is-meta">対象: オプション・バリエーション系問い合わせ ｜ 担当: EC運営</div></div></div>
+        <div class="improvement-step"><div class="is-num">4</div><div class="is-body"><div class="is-title">FAQ・チャットボットに頻出商品の仕様回答を登録する</div><div class="is-meta">対象: 仕様全般 ｜ 長期的改善</div></div></div>
+      </div>
+    </div>
+
+    <!-- 商品 > パーツ不足 -->
+    <div class="sub-panel" id="sp-product-parts">
+      <div class="func-header">
+        <div class="func-stat hl-red"><div class="fs-num">262件</div><div class="fs-label">パーツ不足合計</div></div>
+        <div class="func-stat hl-orange"><div class="fs-num">87.8%</div><div class="fs-label">クレーム未完了率</div></div>
+        <div class="func-stat"><div class="fs-num">調査必要</div><div class="fs-label">現品確認が必須</div></div>
+        <div class="func-stat"><div class="fs-num">組み立て品</div><div class="fs-label">が多い</div></div>
+      </div>
+      <div class="insight-box red"><strong>対応困難</strong> — パーツ不足は現品・出荷記録の確認が必要で電話だけでは解決困難。クレームカテゴリの未完了率87.8%の主因の一つ。受付フロー整備が急務。</div>
+      <div class="voc-list">
+        <div class="voc-item"><div class="vi-tag red">パーツ不足 / 折り返し</div><div class="vi-text">「本日木製のフラワーボックスが届いたんですけど、6個頼んでるんですけど5個しか届いてなくて。メール見ても6個注文になってるはずなんですけど。」</div><div class="vi-context">→ 注文データと出荷数の不一致。写真・伝票番号を受付時に取得するフロー整備が必要。</div></div>
+        <div class="voc-item"><div class="vi-tag red">パーツ不足 / 折り返し</div><div class="vi-text">「今日商品届いたんですが、バーセットが3本しか入っていなくて、スプリングポール本体とスリムフックハンガーが同梱されていませんでした。」</div><div class="vi-context">→ 組み立て品の同梱チェックリスト整備が必要。</div></div>
+      </div>
+      <div class="improvement-steps">
+        <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 パーツ不足受付時に写真・伝票番号・注文番号の提出を促すWebフォームを整備する</div><div class="is-meta">対象: 262件 ｜ 効果: 折り返し回数の削減 ｜ 担当: CS+物流</div></div></div>
+        <div class="improvement-step priority"><div class="is-num">2</div><div class="is-body"><div class="is-title">🔴 セット品・組み立て品の出荷前チェックリストを強化する</div><div class="is-meta">対象: パーツ不足全体 ｜ 担当: 物流・倉庫</div></div></div>
+        <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">商品ページに同梱品リストを明示し、受取時確認を促すメッセージを表示する</div><div class="is-meta">対象: 組み立て品全般 ｜ 担当: 商品管理</div></div></div>
+      </div>
+    </div>
+
+    <!-- 商品 > その他商品 -->
+    <div class="sub-panel" id="sp-product-other">
+      <div class="func-header">
+        <div class="func-stat hl-blue"><div class="fs-num">759件</div><div class="fs-label">その他商品合計</div></div>
+        <div class="func-stat"><div class="fs-num">44.0%</div><div class="fs-label">未完了率</div></div>
+        <div class="func-stat"><div class="fs-num">商品別</div><div class="fs-label">多様な問い合わせ</div></div>
+        <div class="func-stat"><div class="fs-num">情報充実</div><div class="fs-label">で削減余地大</div></div>
+      </div>
+      <div class="insight-box green">「その他商品について」は特定の商品単位でなく、多様な商品に関する問い合わせ。商品ページの情報充実が横断的な解決策となる。</div>
+      <div class="voc-list">
+        <div class="voc-item"><div class="vi-tag">商品確認 / Web高</div><div class="vi-text">「ホームページを見たんですが、商品の色が実物と違う場合があるとのことで、実際の色味を確認したくて電話しました。」</div><div class="vi-context">→ 商品ページに実際の写真・色見本を充実させることで電話削減可能。</div></div>
+        <div class="voc-item"><div class="vi-tag blue">再入荷確認 / Web中</div><div class="vi-text">「品切れになっている商品はいつ再入荷しますか？」</div><div class="vi-context">→ 再入荷通知メール登録機能（在庫アラート）を実装することで解決。</div></div>
+      </div>
+      <div class="improvement-steps">
+        <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 商品ページに実物写真・色見本・詳細スペックを充実させる（全商品対象）</div><div class="is-meta">対象: 商品全般 ｜ 担当: 商品管理+EC運営</div></div></div>
+        <div class="improvement-step"><div class="is-num">2</div><div class="is-body"><div class="is-title">品切れ商品に「再入荷通知を受け取る」ボタンを追加する</div><div class="is-meta">対象: 在庫切れ確認電話全般 ｜ 担当: EC開発</div></div></div>
+        <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">頻出商品のFAQをQ&A形式で商品ページ下部に掲載する</div><div class="is-meta">対象: 繰り返し問い合わせが多い商品 ｜ 担当: EC運営</div></div></div>
+      </div>
+      <!-- チャネルタブ -->
+      <div class="ch-tabs">
+        <button class="ch-tab tel active" onclick="switchCh('sp-product-other','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">698件</span></button>
+        <button class="ch-tab form" onclick="switchCh('sp-product-other','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">61件</span></button>
+      </div>
+      <div class="ch-panel tel-panel active">
+        <div class="ch-note">💡 その他商品759件のうち約92%が電話。「商品ページの色が実物と違う」「在庫がいつ入るか」といった問い合わせが中心。商品情報の充実で大幅削減可能。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">商品確認 / Web高</div><div class="vi-text">「商品の色が実物と違う場合があるとのことで、実際の色味を確認したくて電話しました。」</div><div class="vi-context">→ 商品ページに実際の写真・色見本を充実させることで電話削減可能。</div></div>
+          <div class="voc-item"><div class="vi-tag blue">再入荷確認 / Web中</div><div class="vi-text">「品切れになっている商品はいつ再入荷しますか？」</div><div class="vi-context">→ 再入荷通知メール登録機能（在庫アラート）を実装することで解決。</div></div>
+        </div>
+      </div>
+      <div class="ch-panel form-panel">
+        <div class="ch-note">📋 フォーム経由のその他商品問い合わせは約61件。「商品ページに詳細情報がない」「実物の色味が選びたい」といった内容。商品ページ情報充実でフォーム問い合わせも大幅削減。</div>
+        <div class="voc-list">
+          <div class="voc-item"><div class="vi-tag">フォーム / 商品色確認</div><div class="vi-text">「お問い合わせフォームより：「ブラウン」の実際の色味を教えていただけますか？」</div><div class="vi-context">→ 商品ページに実物写真を充実させることでフォーム問い合わせも削減できる。</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- ===== END ⑤-3 商品 ===== -->
+
+  <!-- ===== ⑤-4 その他 ===== -->
+  <div class="cat-panel" id="cp-other">
+    <div class="domain-header" style="background:linear-gradient(135deg,#f2f3f4 0%,#f8f9fa 100%);border-left:5px solid #7f8c8d;">
+      <span class="dh-icon">📋</span>
+      <span class="dh-title">⑤-4 その他 — 担当者不在・売込み・間違い電話・ご相談</span>
+      <span class="dh-sub">1,789件 ｜ Web改善対象外が中心</span>
+    </div>
+    <p style="font-size:13px;color:#666;margin:12px 0 20px;">担当者不在・売込み・間違い電話・ご相談など、Web改善では直接削減できない問い合わせ群。対応フローの整備とCS運用改善が主な解決策。<span style="color:#999;font-size:11px;">※内訳は通話（AC列分類）＋フォーム（大区分名分類）の合算値。</span></p>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;">
+      <div style="background:#f8f9fa;border:1px solid #dce3ed;border-radius:10px;padding:16px;text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:#e84c3d;">579件</div>
+        <div style="font-size:12px;color:#6b7a8d;margin-top:4px;">👤 担当者不在<br>（通話579件・未完了率91.4%）</div>
+      </div>
+      <div style="background:#f8f9fa;border:1px solid #dce3ed;border-radius:10px;padding:16px;text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:#7f8c8d;">205件</div>
+        <div style="font-size:12px;color:#6b7a8d;margin-top:4px;">📢 売込み<br>（通話60＋フォーム145）</div>
+      </div>
+      <div style="background:#f8f9fa;border:1px solid #dce3ed;border-radius:10px;padding:16px;text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:#ca6f1e;">108件</div>
+        <div style="font-size:12px;color:#6b7a8d;margin-top:4px;">💼 ご相談<br>（通話89＋フォーム19）</div>
+      </div>
+      <div style="background:#f8f9fa;border:1px solid #dce3ed;border-radius:10px;padding:16px;text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:#7f8c8d;">52件</div>
+        <div style="font-size:12px;color:#6b7a8d;margin-top:4px;">📞 間違い電話<br>（通話52件）</div>
+      </div>
+      <div style="background:#f8f9fa;border:1px solid #dce3ed;border-radius:10px;padding:16px;text-align:center;">
+        <div style="font-size:22px;font-weight:700;color:#aaa;">845件</div>
+        <div style="font-size:12px;color:#6b7a8d;margin-top:4px;">❓ 要件不明・その他<br>（通話830＋フォーム15）</div>
+      </div>
+    </div>
+    <div class="insight-box">
+      <ul>
+        <li><strong>担当者不在（579件・未完了率91.4%）</strong> — 折り返し対応で完結しているが、初回解決率の向上が求められる。エスカレーションルールの明確化と代替対応フローの整備が急務</li>
+        <li><strong>売込み（205件）</strong> — フォームからの売込みが145件と多い。IVR改善＋フォームの振り分け見直しで効率化可能</li>
+        <li><strong>ご相談（108件・通話未完了率52.2%）</strong> — 複雑な問い合わせが多く、FAQ・ナレッジベース整備が有効</li>
+        <li><strong>要件不明・挨拶のみ（845件）</strong> — 会話要約が取得できなかったケース。通話品質改善・IVR最適化で削減余地あり</li>
+      </ul>
+    </div>
+    <div class="improvement-steps">
+      <div class="improvement-step priority"><div class="is-num">1</div><div class="is-body"><div class="is-title">🔴 担当者不在時の代替対応フロー・エスカレーションルールを整備する</div><div class="is-meta">対象: 579件 ｜ 効果: 折り返し解決率の向上 ｜ 担当: CS管理</div></div></div>
+      <div class="improvement-step"><div class="is-num">2</div><div class="is-body"><div class="is-title">IVR（自動音声応答）の振り分けメニューを最適化し、売込み・間違い電話を効率処理する</div><div class="is-meta">対象: 257件（売込み205＋間違い52） ｜ 担当: システム部門</div></div></div>
+      <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">ご相談系の問い合わせに対応するFAQ・ナレッジベースを整備する</div><div class="is-meta">対象: 108件 ｜ 担当: CS+商品管理</div></div></div>
+    </div>
+  </div>
+  <!-- ===== END ⑤-4 その他 ===== -->
+
+</section>
+
+<!-- ======= SECTION 5 END ======= -->
+<div style="display:none"><!-- 旧パネル（非表示） --><div id="fp-chouhyou-old">
+    <div id="s5-chouhyou" style="scroll-margin-top:20px;"></div>
+    <div class="domain-header">
+      <span class="dh-icon">📄</span>
+      <span class="dh-title">帳票 — 領収書・請求書・見積書・納品書</span>
+      <span class="dh-sub">485件 ｜ Web高95件 / 中69件 ＝ 164件（33.8%）</span>
+    </div>
+
+    <div class="func-header">
+      <div class="func-stat hl-red"><div class="fs-num">485件</div><div class="fs-label">帳票合計<br>件数</div></div>
+      <div class="func-stat hl-blue"><div class="fs-num">164件</div><div class="fs-label">Web自己解決<br>「高」+「中」</div></div>
+      <div class="func-stat hl-orange"><div class="fs-num">1,212件/年</div><div class="fs-label">年間削減可能<br>試算件数<br><span style="font-size:10px;font-weight:400;">(電話50＋フォーム253)×4</span></div></div>
+      <div class="func-stat"><div class="fs-num">217件</div><div class="fs-label">最多小区分<br>（領収書発行希望）</div></div>
+    </div>
+
+    <div class="subsection-title">小区分内訳と改善ポテンシャル</div>
+    <table class="mini-bar-table">
+      <tr>
+        <td class="mbt-label"><strong>領収書の発行希望</strong>（インボイス目的以外）</td>
+        <td class="mbt-num">217件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-hi">高64</span>/<span class="mbt-mi">中27</span>/低29</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>請求書の発行希望</strong>（インボイス目的以外）</td>
+        <td class="mbt-num">148件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:68%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-hi">高16</span>/<span class="mbt-mi">中23</span>/低22</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>見積書の発行希望</strong></td>
+        <td class="mbt-num">66件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:30%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-hi">高9</span>/<span class="mbt-mi">中12</span>/低14</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">納品書の再発行依頼</td>
+        <td class="mbt-num">11件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:5%"></div></div></td>
+        <td><span class="mbt-web">高0/中0/低2</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">納品書の発行希望（インボイス目的以外）</td>
+        <td class="mbt-num">5件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:2%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-hi">高1</span></span></td>
+      </tr>
+    </table>
+
+    <div class="insight-box orange">
+      <strong>主な障壁（バリア）</strong> — 発行手順が分からない・ボタンの場所が不明・マイページに発行導線がない・見積書取得フローが見つけにくい
+    </div>
+
+    <div class="subsection-title">顧客の声（VoC）</div>
+    <div class="voc-list">
+      <div class="voc-item">
+        <div class="vi-tag">領収書 / Web高</div>
+        <div class="vi-text">「先日、発注させていただいた商品の領収書もお願いしたいと思って電話したんですけれども。領収書らしきものはいただいてはなかったんですけども。」</div>
+        <div class="vi-context">→ マイページから即時PDFダウンロードできれば電話不要。<strong>優先度★★★</strong></div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag">請求書 / Web高</div>
+        <div class="vi-text">「てっきり私、請求書が来るものと待ってたんですが…請求書だけ先にメールとかでいただくとかってできないですかね。」</div>
+        <div class="vi-context">→ 請求書メール自動送信またはマイページから即時発行できれば解決。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag">請求書+領収書 / Web中</div>
+        <div class="vi-text">「今ネットで注文したんですけども、納品書は商品で送られてくるようなんですけど、請求書、領収書っていうのは発行してもらいたいんですけど、どこからどうすればいいかなと思って。」</div>
+        <div class="vi-context">→ 帳票の発行場所（マイページ内の導線）が分かりにくい。UI上の案内強化が必要。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag blue">見積書 / Web中</div>
+        <div class="vi-text">「ウェブ上から見積もりの取得は可能というふうにお伺いしたので、ちょっと開いてるんですけど、どこで取ればいいかちょっとわからなくて、すみません。」</div>
+        <div class="vi-context">→ 見積書取得ボタンや導線がUI上で見つけにくい。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag blue">領収書 / Web中</div>
+        <div class="vi-text">「先日お問い合わせしたら、10日に領収書と請求書のメールが来ると言われたんですけど、メールが来ていなくて、ウェブオーダー番号から発行したいんですけども、ウェブオーダー番号をお願いできますでしょうか。」</div>
+        <div class="vi-context">→ マイページでオーダー番号を確認できれば自己解決可能。購入履歴との連携が必要。</div>
+      </div>
+    </div>
+
+    <div class="subsection-title">改善施策（施策ごとの期待効果付き）</div>
+    <div class="improvement-steps">
+      <div class="improvement-step priority">
+        <div class="is-num">1</div>
+        <div class="is-body">
+          <div class="is-title">🔴 マイページ購入履歴から「領収書・請求書・納品書」のPDF即時ダウンロード機能を追加</div>
+          <div class="is-meta">対象: 217+148=365件 ｜ 効果: Web高・中164件の大半を削減 ｜ 担当: EC開発＋経理 ｜ 期間: 3〜6ヶ月</div>
+        </div>
+      </div>
+      <div class="improvement-step priority">
+        <div class="is-num">2</div>
+        <div class="is-body">
+          <div class="is-title">🔴 注文完了後に領収書・請求書発行ページへの案内メールを自動送信する</div>
+          <div class="is-meta">対象: 帳票全般 ｜ 効果: 「いつ届くか」「どこで取るか」の問い合わせを削減 ｜ 担当: EC開発＋経理</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">3</div>
+        <div class="is-body">
+          <div class="is-title">マイページ内に「帳票・書類のダウンロード」専用セクションを設け、ヘルプFAQへのリンクを配置</div>
+          <div class="is-meta">対象: 発行手順が分からないケース ｜ 担当: EC運営 ｜ 期間: 1ヶ月以内（低コスト改善）</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">4</div>
+        <div class="is-body">
+          <div class="is-title">見積書発行ボタンを商品ページ・カートページに明示し、見積書フローを簡略化する</div>
+          <div class="is-meta">対象: 見積書66件 ｜ 担当: ECサイト運営＋EC開発</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== インボイス ===== -->
+  <div class="func-panel" id="fp-invoice">
+    <div id="s5-invoice" style="scroll-margin-top:20px;"></div>
+    <div class="domain-header">
+      <span class="dh-icon">🧾</span>
+      <span class="dh-title">インボイス — 適格請求書・T番号・納品書再発行</span>
+      <span class="dh-sub">141件 ｜ Web高20件 / 中30件 ＝ 50件（35.5%）</span>
+    </div>
+
+    <div class="func-header">
+      <div class="func-stat hl-red"><div class="fs-num">141件</div><div class="fs-label">インボイス<br>合計件数</div></div>
+      <div class="func-stat hl-blue"><div class="fs-num">50件</div><div class="fs-label">Web自己解決<br>「高」+「中」</div></div>
+      <div class="func-stat hl-green"><div class="fs-num">35.5%</div><div class="fs-label">Web自己解決<br>可能性</div></div>
+      <div class="func-stat"><div class="fs-num">67件</div><div class="fs-label">最多小区分<br>（納品書再発行）</div></div>
+    </div>
+
+    <div class="subsection-title">小区分内訳と改善ポテンシャル</div>
+    <table class="mini-bar-table">
+      <tr>
+        <td class="mbt-label"><strong>納品書の再発行依頼</strong>（インボイス目的）</td>
+        <td class="mbt-num">67件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-hi">高3</span>/<span class="mbt-mi">中6</span>/低多数</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>インボイス番号（T番号）を教えてほしい</strong></td>
+        <td class="mbt-num">28件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:42%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-hi">高7</span>/<span class="mbt-mi">中12</span></span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>領収書でのインボイス希望</strong></td>
+        <td class="mbt-num">21件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:31%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-hi">高5</span>/<span class="mbt-mi">中8</span></span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>どれがインボイスか分からない</strong></td>
+        <td class="mbt-num">19件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:28%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-hi">高4</span>/<span class="mbt-mi">中4</span></span></td>
+      </tr>
+    </table>
+
+    <div class="insight-box red">
+      <strong>核心的な問題</strong> — クレジットカード決済では納品書にのみT番号が記載され、請求書にはインボイス番号が入らない仕様が混乱の根本原因。全書類へのT番号統一記載が最優先。
+    </div>
+
+    <div class="subsection-title">顧客の声（VoC）</div>
+    <div class="voc-list">
+      <div class="voc-item">
+        <div class="vi-tag">インボイス希望 / Web中</div>
+        <div class="vi-text">「請求書にインボイスが入ったものが欲しいというだけなんですけど。今手元にあるものだと載ってないんですよね。支払いのときに困っちゃっててっていう感じなんですけど。それ以外にどうやって請求書ってもらえるんですか。ないんですよね。」</div>
+        <div class="vi-context">→ Web発行の請求書にT番号が未記載。クレジット決済時は納品書のみにT番号が入る仕様が原因。<strong>優先度★★★</strong></div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag">T番号確認 / Web高</div>
+        <div class="vi-text">「事業所番号がちょっと必要で、拝見したところ、事業所番号って領収書には明記されてなくて、納品書にしかないっていうことなんですけど、ちょっとそちらを確認していなくて、納品書が手元になくて、納品書の再発行ってお願いすることできるのかなっていう確認なんですけど。」</div>
+        <div class="vi-context">→ T番号を確認するために納品書が必要だが手元にない。マイページでT番号を常時確認できれば解決。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag blue">どれがインボイスか / Web中</div>
+        <div class="vi-text">「領収書をプリントアウトしたときにインボイス番号がなくて、インボイス番号の書いてある書類を総務に提出しないと、処理が通らないということだったので、納品書が見当たらなくて。」</div>
+        <div class="vi-context">→ 「領収書にT番号がない」→「納品書を探す」→「見当たらない」→「電話」という連鎖。全書類統一表示で断ち切れる。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag blue">請求書仕様の問題 / Web中</div>
+        <div class="vi-text">「ウェブ上で請求書にインボイス番号を付けて発行できないんですか。クレジットカード決済では納品書にインボイス情報が載り、請求書にインボイス番号を付けられない。」</div>
+        <div class="vi-context">→ 決済方法によって書類仕様が異なることへの不満。仕様の統一または書類種別の説明強化が必要。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag">納品書紛失 / Web中</div>
+        <div class="vi-text">「6月に一度ウェブの方で注文させていただいている注文がありまして、それの納品書をちょっと紛失してしまいまして、再発行ってお願いできないかなと思ってのご連絡だったんですけれども。できるだけ早く必要になっちゃってて。」</div>
+        <div class="vi-context">→ マイページ購入履歴から納品書を再ダウンロードできれば即解決。緊急度が高い顧客に対して特に有効。</div>
+      </div>
+    </div>
+
+    <div class="subsection-title">改善施策</div>
+    <div class="improvement-steps">
+      <div class="improvement-step priority">
+        <div class="is-num">1</div>
+        <div class="is-body">
+          <div class="is-title">🔴 全書類（請求書・領収書・納品書）に決済方法を問わずインボイス番号（T番号）を統一記載する</div>
+          <div class="is-meta">対象: インボイス141件の根本解決 ｜ 担当: EC開発＋経理 ｜ 期間: 3〜6ヶ月</div>
+        </div>
+      </div>
+      <div class="improvement-step priority">
+        <div class="is-num">2</div>
+        <div class="is-body">
+          <div class="is-title">🔴 マイページ購入履歴から納品書をPDF再ダウンロードできる機能を追加する</div>
+          <div class="is-meta">対象: 納品書再発行67件 ｜ 担当: EC開発 ｜ 期間: 3〜6ヶ月</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">3</div>
+        <div class="is-body">
+          <div class="is-title">会員マイページのトップにT番号（適格請求書発行事業者番号）を常時表示する</div>
+          <div class="is-meta">対象: T番号確認28件 ｜ 担当: EC開発（低コスト改善）</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">4</div>
+        <div class="is-body">
+          <div class="is-title">決済方法別の書類・インボイス記載内容を注文フロー内にインフォグラフィックで説明する</div>
+          <div class="is-meta">対象: 「どれがインボイスか分からない」19件 ｜ 担当: EC運営</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== FAX注文受信確認 ===== -->
+  <div class="func-panel active" id="fp-fax">
+    <div id="s5-fax" style="scroll-margin-top:20px;"></div>
+    <div class="domain-header">
+      <span class="dh-icon">📠</span>
+      <span class="dh-title">FAX注文受信確認 — 振込FAX含む</span>
+      <span class="dh-sub">407件 ｜ Web高4件 / 中5件 ＝ 9件（2.2%）</span>
+    </div>
+
+    <div class="func-header">
+      <div class="func-stat hl-red"><div class="fs-num">407件</div><div class="fs-label">FAX注文の<br>受信確認件数</div></div>
+      <div class="func-stat hl-orange"><div class="fs-num">55.8%</div><div class="fs-label">解決率<br>（227/407件）</div></div>
+      <div class="func-stat"><div class="fs-num">53件</div><div class="fs-label">Web解決「不可」<br>（FAXチャネル依存）</div></div>
+      <div class="func-stat hl-blue"><div class="fs-num">169件</div><div class="fs-label">折り返し・<br>調査中</div></div>
+    </div>
+
+    <div class="insight-box red">
+      <strong>FAXというチャネル自体が問題の根本</strong> — 407件のうちWeb自己解決「高・中」はわずか9件（2.2%）。FAX注文後に受信を確認する手段がなく、繰り返し電話が発生する構造になっている。振込FAX送付後も入金確認の電話が別途発生する二重コスト問題もある。
+      <ul style="margin-top:8px;">
+        <li><strong>Web注文移行促進</strong>が唯一の根本解決策</li>
+        <li>FAX受付後の自動返信メール（受付番号通知）で確認電話を大幅削減できる</li>
+        <li>「振込確認のFAX送付後も音沙汰なし」という二次的問い合わせも発生している</li>
+      </ul>
+    </div>
+
+    <div class="subsection-title">FAX振込確認の二重コスト問題</div>
+    <div class="breakdown-grid">
+      <div class="breakdown-card">
+        <div class="bc-title">FAX注文→受信確認電話の発生パターン</div>
+        <div class="bc-bar-wrap"><div class="bc-bar bc-high" style="width:100%"></div></div>
+        <div class="bc-meta">FAX送付後10日間以上無反応で不安になり電話→受信確認に2〜3分の対応工数が発生</div>
+      </div>
+      <div class="breakdown-card">
+        <div class="bc-title">振込FAX→入金確認電話の発生パターン</div>
+        <div class="bc-bar-wrap"><div class="bc-bar bc-mid" style="width:70%"></div></div>
+        <div class="bc-meta">振込後にFAXを送付、さらに「確認されたか」の電話が発生するという二重の非効率</div>
+      </div>
+    </div>
+
+    <div class="subsection-title">顧客の声（VoC）</div>
+    <div class="voc-list">
+      <div class="voc-item">
+        <div class="vi-tag">FAX受信確認 / 10日間無反応</div>
+        <div class="vi-text">「10日ほど前くらいになるかと思うんですが、ファックスで注文をさせていただいているんですが。何のアクションもなかったので、もしかしたらこのファックス自体が届いていないのか、どんなのかって確認をしたくて。」</div>
+        <div class="vi-context">→ FAX受付後の確認連絡がゼロ。受付番号入りの自動返信で防げるケース。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag">振込FAX / 入金確認待ち</div>
+        <div class="vi-text">「振り込みには言ってあるんですけど、またちょっと振り込み言っておきますので。まだキャンセルじゃない状態で8月5日までは大丈夫ってことですかね。振り込みの時は振り込めばそっちで確認でき次第送ってもらえるってことでいいですかね。それとも振り込み用紙をFAXしなきゃいけないですか。」</div>
+        <div class="vi-context">→ 振込確認FAX送付→受信確認電話という二重の非効率。マイページでの入金ステータス確認で解決可能。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag blue">FAX / Web移行の意向あり</div>
+        <div class="vi-text">「ウェブのカタログを見てまして、11月の15日まで送料無料っていうキャンペーンのロゴを見たんですけど、これってFAXでいつも注文させていただいてるんですが、これは対象外でしょうか。」</div>
+        <div class="vi-context">→ FAXユーザーもWebは閲覧している。Web注文移行を促すキャンペーン案内が効果的。送料無料特典をWeb注文限定にするなどの誘導策が有効。</div>
+      </div>
+    </div>
+
+    <div class="subsection-title">改善施策</div>
+    <div class="improvement-steps">
+      <div class="improvement-step priority">
+        <div class="is-num">1</div>
+        <div class="is-body">
+          <div class="is-title">🔴 FAX注文受付後に「受付番号付き自動返信メール」を送付する仕組みを構築する</div>
+          <div class="is-meta">効果: 受信確認目的の電話407件中の大半を削減 ｜ 担当: 受注BO＋EC開発 ｜ 期間: 1〜3ヶ月</div>
+        </div>
+      </div>
+      <div class="improvement-step priority">
+        <div class="is-num">2</div>
+        <div class="is-body">
+          <div class="is-title">🔴 FAXユーザーへのWeb注文移行キャンペーンを実施（初回Web注文特典・送料無料など）</div>
+          <div class="is-meta">目標: FAX注文を年間50%削減 ｜ 担当: マーケ＋EC運営</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">3</div>
+        <div class="is-body">
+          <div class="is-title">FAX注文用紙にWeb注文用QRコードと移行ガイドを掲載する</div>
+          <div class="is-meta">低コストで移行促進が可能。カタログ同梱も有効 ｜ 担当: EC運営＋受注BO</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">4</div>
+        <div class="is-body">
+          <div class="is-title">マイページに振込・入金の受付状況をリアルタイム表示する（振込FAX不要化）</div>
+          <div class="is-meta">対象: 振込確認電話（FAX+入金確認の重複コスト解消）｜ 担当: EC開発＋経理</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 支払い・決済 ===== -->
+  <div class="func-panel" id="fp-pay">
+    <div id="s5-pay" style="scroll-margin-top:20px;"></div>
+    <div class="domain-header">
+      <span class="dh-icon">💳</span>
+      <span class="dh-title">支払い・決済 — 入金確認・NP掛け払い・クレジット</span>
+      <span class="dh-sub">1,003件 ｜ Web高189件 / 中277件 ＝ 466件（46.5%）</span>
+    </div>
+
+    <div class="func-header">
+      <div class="func-stat hl-red"><div class="fs-num">1,003件</div><div class="fs-label">支払い関連<br>合計件数</div></div>
+      <div class="func-stat hl-blue"><div class="fs-num">466件</div><div class="fs-label">Web自己解決<br>「高」+「中」</div></div>
+      <div class="func-stat hl-green"><div class="fs-num">46.5%</div><div class="fs-label">Web自己解決<br>可能性</div></div>
+      <div class="func-stat hl-orange"><div class="fs-num">246件</div><div class="fs-label">入金確認<br>（最多）</div></div>
+    </div>
+
+    <div class="subsection-title">小区分内訳と改善ポテンシャル</div>
+    <table class="mini-bar-table">
+      <tr>
+        <td class="mbt-label"><strong>入金確認</strong></td>
+        <td class="mbt-num">246件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td>
+        <td><span class="mbt-web">マイページで自己解決可</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>支払方法の種類について</strong></td>
+        <td class="mbt-num">120件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:49%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-hi">高多数</span></span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>NP掛け払いによる手続きエラー</strong></td>
+        <td class="mbt-num">106件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:43%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-mi">中多数</span></span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">支払方法と納期の関係について</td>
+        <td class="mbt-num">34件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:14%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-hi">高あり</span></span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>クレジットカードエラー</strong></td>
+        <td class="mbt-num">24件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:10%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-mi">中多数</span></span></td>
+      </tr>
+    </table>
+
+    <div class="subsection-title">顧客の声（VoC）</div>
+    <div class="voc-list">
+      <div class="voc-item">
+        <div class="vi-tag">クレジットエラー / Web中</div>
+        <div class="vi-text">「クレジット情報を入力しまして、最終確定ボタンを押したいのですが、確定ボタンが出てこなくて。」</div>
+        <div class="vi-context">→ UIバグ（確定ボタン未表示）。エラーメッセージと回避方法の画面案内で自己解決可能。<strong>優先度★★★（緊急修正）</strong></div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag blue">支払方法 / Web高</div>
+        <div class="vi-text">「ちょっとお支払いについてお聞きしたいんですけども。今欠品中ってことで、入荷が8月下旬って記載があるんですけど、注文した場合お支払いって入ってきてからになりますかね、前払いみたいになりますかね。8月下旬なんですけど、それまで。」</div>
+        <div class="vi-context">→ 欠品商品の支払いタイミングが説明ページに記載されていない。商品ページに支払い条件を追記するだけで解決。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag">NP掛け払い / Web中</div>
+        <div class="vi-text">「ウェブの方で注文をさせていただいたんですけども、NPの掛け払いさんですけども、そちらのですね、請求書の送り先をですね、手前の会社の旧住所になっていると思いますので、新しいそのセクションの送り先の登録をしたいんですけども。住所変更、今から間に合いますか。」</div>
+        <div class="vi-context">→ NP掛け払い時の請求先住所変更がWeb上でできない構造が問題。マイページでの住所管理機能が必要。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag blue">入金確認 / Web高</div>
+        <div class="vi-text">「何の送料ですか。個人です。1000円程度なら大丈夫です。取りに行こうかなと思ってます。じゃあ、振り込めば大丈夫ですよね。物もあるんですよね。」</div>
+        <div class="vi-context">→ 入金ステータスをマイページで確認できれば電話不要。</div>
+      </div>
+    </div>
+
+    <div class="subsection-title">改善施策</div>
+    <div class="improvement-steps">
+      <div class="improvement-step priority">
+        <div class="is-num">1</div>
+        <div class="is-body">
+          <div class="is-title">🔴 クレジットカード決済エラー時に具体的な原因と解決手順を画面に表示する（確定ボタン未表示バグの修正含む）</div>
+          <div class="is-meta">対象: クレジットエラー24件 ｜ 担当: EC開発 ｜ 期間: 即時対応（緊急）</div>
+        </div>
+      </div>
+      <div class="improvement-step priority">
+        <div class="is-num">2</div>
+        <div class="is-body">
+          <div class="is-title">🔴 マイページに入金・振込ステータスをリアルタイム表示する</div>
+          <div class="is-meta">対象: 入金確認246件 ｜ 担当: EC開発＋経理 ｜ 期間: 3〜6ヶ月</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">3</div>
+        <div class="is-body">
+          <div class="is-title">NP掛け払いエラー専用FAQページを作成し、エラー画面から直接リンクする</div>
+          <div class="is-meta">対象: NP掛け払いエラー106件 ｜ 担当: EC開発＋経理</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">4</div>
+        <div class="is-body">
+          <div class="is-title">支払方法別の出荷スケジュール・条件を商品ページ・カートページに明示する</div>
+          <div class="is-meta">対象: 支払方法×納期関係34件＋支払方法種類120件の一部 ｜ 担当: EC運営</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ログイン・会員 ===== -->
+  <div class="func-panel" id="fp-login">
+    <div id="s5-login" style="scroll-margin-top:20px;"></div>
+    <div class="domain-header">
+      <span class="dh-icon">🔐</span>
+      <span class="dh-title">ログイン・パスワード・会員登録</span>
+      <span class="dh-sub">127件 ｜ Web高49件 / 中48件 ＝ 97件（76.4%）</span>
+    </div>
+
+    <div class="func-header">
+      <div class="func-stat hl-red"><div class="fs-num">127件</div><div class="fs-label">ログイン関連<br>合計件数</div></div>
+      <div class="func-stat hl-green"><div class="fs-num">76.4%</div><div class="fs-label">Web自己解決<br>可能性（最高）</div></div>
+      <div class="func-stat hl-blue"><div class="fs-num">97件</div><div class="fs-label">Web自己解決<br>「高」+「中」</div></div>
+      <div class="func-stat"><div class="fs-num">50件</div><div class="fs-label">ログインできない<br>（最多小区分）</div></div>
+    </div>
+
+    <div class="insight-box green">
+      ログイン・会員関連はWeb自己解決可能性が<strong>76.4%と全機能中最も高い領域</strong>。UI改善・エラーメッセージ強化で多くの電話を防ぐことができる。一方、セキュアキーエラーなど「エラー画面でオペレーターにも解決できない」ケースも存在し、システム設計の見直しが必要。
+    </div>
+
+    <div class="subsection-title">小区分内訳</div>
+    <table class="mini-bar-table">
+      <tr>
+        <td class="mbt-label"><strong>ログインできない</strong></td>
+        <td class="mbt-num">50件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td>
+        <td><span class="mbt-web">セキュアキーエラー・ID忘れ・メール受信不可など</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>会員登録できない</strong></td>
+        <td class="mbt-num">24件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:48%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-hi">高5</span>/<span class="mbt-mi">中8</span></span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">顧客登録情報の変更希望</td>
+        <td class="mbt-num">54件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-mi">中あり</span></span></td>
+      </tr>
+    </table>
+
+    <div class="subsection-title">顧客の声（VoC）</div>
+    <div class="voc-list">
+      <div class="voc-item">
+        <div class="vi-tag">セキュアキーエラー / 解決不可</div>
+        <div class="vi-text">「ログインしようと思うと、セキュアキーに誤りがあります。誠に恐れながら、こちらからログアウトお願いしますという画面に出てきて、ログアウトもできないような状況なんですけれども。」</div>
+        <div class="vi-context">→ システム起因でオペレーターも対処不可。エラー画面の改善とサポートへの誘導が最優先。<strong>優先度★★★</strong></div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag blue">ログインできない / Web中</div>
+        <div class="vi-text">「ログインができなくて、お問い合わせホームでお問い合わせをしてまして。私の方の設定が受信の状況で、メールが何回やっても受信ができなくて。IDがわからなくて、パスワードでIDが使っているものなはずなんですけど、その後が進めないという状況です。」</div>
+        <div class="vi-context">→ メール受信設定の問題でID確認メールが届かない。設定ガイドを認証メール送信前に表示する改善が有効。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag blue">ログインできない / Web中</div>
+        <div class="vi-text">「領収書をログインがわからなくなって、領収書を出せない状態なんです。登録がなかったっていう返信が来て、それ以上もうどうにもならないのかなと思って。」</div>
+        <div class="vi-context">→ ログイン問題が帳票取得問題にも連鎖している。パスワードリセット導線の強化が多重効果を持つ。</div>
+      </div>
+    </div>
+
+    <div class="subsection-title">改善施策</div>
+    <div class="improvement-steps">
+      <div class="improvement-step priority">
+        <div class="is-num">1</div>
+        <div class="is-body">
+          <div class="is-title">🔴 セキュアキーエラー画面にサポートチャット/問い合わせフォームへの直接リンクを配置する</div>
+          <div class="is-meta">対象: セキュアキーエラー（解決不可ケース）｜ 担当: EC開発 ｜ 期間: 即時対応</div>
+        </div>
+      </div>
+      <div class="improvement-step priority">
+        <div class="is-num">2</div>
+        <div class="is-body">
+          <div class="is-title">🔴 パスワードリセット導線をログイン画面の目立つ位置に配置し、手順を簡略化する</div>
+          <div class="is-meta">対象: ログインできない50件の大半 ｜ 担当: EC運営 ｜ 期間: 1ヶ月以内</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">3</div>
+        <div class="is-body">
+          <div class="is-title">新規会員登録フローのエラーメッセージを具体化する（「このメールアドレスは既に登録済みです。ログインはこちら」など）</div>
+          <div class="is-meta">対象: 会員登録できない24件 ｜ 担当: EC開発</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 納期・配送 ===== -->
+  <div class="func-panel" id="fp-nouki">
+    <div id="s5-nouki" style="scroll-margin-top:20px;"></div>
+    <div class="domain-header">
+      <span class="dh-icon">🚚</span>
+      <span class="dh-title">納期・配送 — 最多区分</span>
+      <span class="dh-sub">3,131件 ｜ Web高236件 / 中270件 ＝ 506件（16.2%）</span>
+    </div>
+
+    <div class="func-header">
+      <div class="func-stat hl-red"><div class="fs-num">3,131件</div><div class="fs-label">納期合計<br>件数</div></div>
+      <div class="func-stat hl-orange"><div class="fs-num">41.4%</div><div class="fs-label">未完了率<br>（折り返し含む）</div></div>
+      <div class="func-stat hl-blue"><div class="fs-num">506件</div><div class="fs-label">Web自己解決<br>「高」+「中」</div></div>
+      <div class="func-stat"><div class="fs-num">1,499件</div><div class="fs-label">緊急度「高」<br>（全区分最多）</div></div>
+    </div>
+
+    <div class="subsection-title">小区分内訳と改善ポテンシャル（Top8）</div>
+    <table class="mini-bar-table">
+      <tr>
+        <td class="mbt-label"><strong>納期確認（注文後）— いつ届くのか</strong></td>
+        <td class="mbt-num">904件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-mi">中多数</span></span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>到着時間指定の希望（注文後）</strong></td>
+        <td class="mbt-num">334件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:37%"></div></div></td>
+        <td><span class="mbt-web">Webからの変更不可</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>在庫確認（注文前）— 在庫はいくつあるか</strong></td>
+        <td class="mbt-num">263件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:29%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-hi">高多数</span></span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>納期確認（注文前）— サイト表示より早くほしい</strong></td>
+        <td class="mbt-num">242件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:27%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-mi">中多数</span></span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">配送会社に関する希望（注文後）</td>
+        <td class="mbt-num">166件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:18%"></div></div></td>
+        <td><span class="mbt-web">Webからの指定不可</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">納期変更（注文後）— 指定したが変更したい</td>
+        <td class="mbt-num">86件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:10%"></div></div></td>
+        <td><span class="mbt-web">マイページから変更不可</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">到着時間指定の希望（注文前）</td>
+        <td class="mbt-num">82件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:9%"></div></div></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">納期確認（注文前）— いつ届くのか</td>
+        <td class="mbt-num">79件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:9%"></div></div></td>
+        <td></td>
+      </tr>
+    </table>
+
+    <div class="subsection-title">顧客の声（VoC）</div>
+    <div class="voc-list">
+      <div class="voc-item">
+        <div class="vi-tag">納期確認（注文後）/ Web中</div>
+        <div class="vi-text">「ネットでは当日発送可能に書いてあるんですけど、いつ頃発送できるのかちょっと確認させて電話したんですが。こちらで選択できるのが最短で28月曜日着なんですけど、27の午前中までが欲しいです。」</div>
+        <div class="vi-context">→ Web表示と実際の出荷スケジュールにズレ。リアルタイム在庫・出荷情報の反映が急務。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag blue">在庫確認（注文前）/ Web高</div>
+        <div class="vi-text">「すいません。在庫の確認をお願いしたいのですが、よろしいでしょうか。ちょっと30枚必要にあるんですけれども。」</div>
+        <div class="vi-context">→ 商品ページで数量別の在庫確認ができれば電話不要。在庫数リアルタイム表示が重要。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag">納期確認（注文前）/ Web中</div>
+        <div class="vi-text">「お届け日の指定を書けなければ最短で届くんでしょうか。注文するだけではダメなんですね。このかけ払いだと今日出荷は無理ということですね。」</div>
+        <div class="vi-context">→ 支払い方法によって出荷日が変わることがWebに明示されていない。決済ページに出荷条件を表示する。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag">大量注文 / 在庫確認</div>
+        <div class="vi-text">「もしこういったものをご注文させていただいたらどれぐらいの日数間でお届けになるんですか。8月になるとお盆が入るので出荷も遅れますね。」</div>
+        <div class="vi-context">→ 繁忙期・特殊条件下での納期が商品ページに反映されていない。カレンダー連動の納期表示が有効。</div>
+      </div>
+    </div>
+
+    <div class="subsection-title">改善施策</div>
+    <div class="improvement-steps">
+      <div class="improvement-step priority">
+        <div class="is-num">1</div>
+        <div class="is-body">
+          <div class="is-title">🔴 マイページの注文詳細画面に配送状況・追跡番号をリアルタイム表示する</div>
+          <div class="is-meta">対象: 904件（納期確認・注文後）｜ 効果: 300〜500件削減 ｜ 担当: EC開発＋物流 ｜ 期間: 3〜6ヶ月</div>
+        </div>
+      </div>
+      <div class="improvement-step priority">
+        <div class="is-num">2</div>
+        <div class="is-body">
+          <div class="is-title">🔴 商品ページに数量別リアルタイム在庫数・最短お届け日を表示する</div>
+          <div class="is-meta">対象: 在庫確認263件＋納期早出し242件 ｜ 担当: EC開発＋在庫SCM ｜ 期間: 6〜12ヶ月</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">3</div>
+        <div class="is-body">
+          <div class="is-title">注文確認メールに「発送通知＋追跡URL」を自動送信する</div>
+          <div class="is-meta">担当: EC開発＋物流 ｜ 期間: 3ヶ月以内に実装可能</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">4</div>
+        <div class="is-body">
+          <div class="is-title">支払い方法別の出荷スケジュールをカートページ・決済ページに明示する</div>
+          <div class="is-meta">掛け払い・振込の出荷条件を表示 ｜ 担当: EC運営</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== 注文管理 ===== -->
+  <div class="func-panel" id="fp-chuumon">
+    <div id="s5-chuumon" style="scroll-margin-top:20px;"></div>
+    <div class="domain-header">
+      <span class="dh-icon">📦</span>
+      <span class="dh-title">注文管理 — キャンセル・変更・返品・入金確認</span>
+      <span class="dh-sub">1,839件 ｜ Web高207件 / 中241件 ＝ 448件（24.4%）</span>
+    </div>
+
+    <div class="func-header">
+      <div class="func-stat hl-red"><div class="fs-num">1,839件</div><div class="fs-label">注文について<br>合計件数</div></div>
+      <div class="func-stat hl-orange"><div class="fs-num">38.7%</div><div class="fs-label">未完了率</div></div>
+      <div class="func-stat hl-blue"><div class="fs-num">448件</div><div class="fs-label">Web自己解決<br>「高」+「中」</div></div>
+      <div class="func-stat"><div class="fs-num">280件</div><div class="fs-label">注文キャンセル<br>（最多小区分）</div></div>
+    </div>
+
+    <div class="subsection-title">小区分内訳と改善ポテンシャル</div>
+    <table class="mini-bar-table">
+      <tr>
+        <td class="mbt-label"><strong>注文のキャンセル</strong></td>
+        <td class="mbt-num">280件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-hi">高11</span>/<span class="mbt-mi">中19</span></span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>お客様都合による返品・交換</strong></td>
+        <td class="mbt-num">250件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:89%"></div></div></td>
+        <td><span class="mbt-web">返品フォームWeb化で改善可</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>入金確認</strong></td>
+        <td class="mbt-num">246件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:88%"></div></div></td>
+        <td><span class="mbt-web">マイページで自己解決可</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>注文内容の変更</strong></td>
+        <td class="mbt-num">237件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:85%"></div></div></td>
+        <td><span class="mbt-web">出荷前マイページ対応で改善可</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>注文内容の確認</strong></td>
+        <td class="mbt-num">230件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:82%"></div></div></td>
+        <td><span class="mbt-web">履歴反映遅延（2〜30分）が原因</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">配送先の変更</td>
+        <td class="mbt-num">69件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:25%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-mi">中あり</span></span></td>
+      </tr>
+    </table>
+
+    <div class="subsection-title">顧客の声（VoC）</div>
+    <div class="voc-list">
+      <div class="voc-item">
+        <div class="vi-tag blue">注文履歴 / Web中</div>
+        <div class="vi-text">「14時まで当日出荷と書いてあって注文したんですが、注文履歴に出てこなくて。携帯番号で登録しているのですが大丈夫でしょうか。」</div>
+        <div class="vi-context">→ 注文直後に履歴が表示されないことへの不安。「数分後に反映されます」の案内追加で改善可能。低コスト改善として最優先。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag">注文内容確認 / Web中</div>
+        <div class="vi-text">「今、御社のオンラインショップの方で、ご注文の確認のページまで行ったんですけど、送り場の備考欄にちょっと明記してほしい文言がありまして、そういうのって書く、書いたりとかしてもらえるんですか?」</div>
+        <div class="vi-context">→ 注文備考欄の記入方法が分かりにくい。ヘルプテキスト追加で解決可能。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag">配送先変更 / Web中</div>
+        <div class="vi-text">「家でやってて会社で使うままなので会社の名前にしてもらったら、それはかからないですか？私個人名で自分の名前で頼んじゃったんですけど。」</div>
+        <div class="vi-context">→ 注文後の配送先変更をマイページから可能にすることで対応可能。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag blue">注文番号確認 / Web中</div>
+        <div class="vi-text">「ネットでご注文の際にウェブオーダーバンゴー13から始まる数字の番号があったと思います。たぶん…たぶん? いやかな? 分からん…これかな?」</div>
+        <div class="vi-context">→ 注文番号が分かりにくく、注文履歴のUIを改善するとともに注文番号を目立つ位置に表示する必要がある。</div>
+      </div>
+    </div>
+
+    <div class="subsection-title">改善施策</div>
+    <div class="improvement-steps">
+      <div class="improvement-step priority">
+        <div class="is-num">1</div>
+        <div class="is-body">
+          <div class="is-title">🔴 注文完了直後に「履歴反映まで数分かかる場合があります」の案内を表示する</div>
+          <div class="is-meta">対象: 注文内容確認230件の一部 ｜ 担当: EC開発（低コスト・即時対応）</div>
+        </div>
+      </div>
+      <div class="improvement-step priority">
+        <div class="is-num">2</div>
+        <div class="is-body">
+          <div class="is-title">🔴 出荷前ならマイページから「数量変更・配送先変更・キャンセル」が可能な仕組みを実装する</div>
+          <div class="is-meta">対象: 変更237件＋キャンセル280件＋配送先変更69件 ｜ 担当: EC開発＋受注BO</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">3</div>
+        <div class="is-body">
+          <div class="is-title">返品・交換のWeb申請フォームを整備し、受付から完了まで自動通知する</div>
+          <div class="is-meta">対象: 返品・交換250件 ｜ 担当: EC開発＋CS</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">4</div>
+        <div class="is-body">
+          <div class="is-title">注文確認・完了画面で注文番号を大きく表示し、マイページ上での見つけやすさを改善する</div>
+          <div class="is-meta">対象: 注文番号確認関連 ｜ 担当: EC開発（低コスト改善）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== ご利用全般 ===== -->
+  <div class="func-panel" id="fp-goriyou">
+    <div id="s5-goriyou" style="scroll-margin-top:20px;"></div>
+    <div class="domain-header">
+      <span class="dh-icon">🖥️</span>
+      <span class="dh-title">サイトご利用全般 — 支払い方法・注文方法・送料・キャンペーン</span>
+      <span class="dh-sub">1,310件 ｜ Web高252件 / 中270件 ＝ 522件（39.8%）</span>
+    </div>
+
+    <div class="func-header">
+      <div class="func-stat hl-red"><div class="fs-num">1,310件</div><div class="fs-label">ご利用について<br>合計件数</div></div>
+      <div class="func-stat hl-green"><div class="fs-num">21.1%</div><div class="fs-label">未完了率<br>（比較的低め）</div></div>
+      <div class="func-stat hl-blue"><div class="fs-num">522件</div><div class="fs-label">Web自己解決<br>「高」+「中」</div></div>
+      <div class="func-stat hl-orange"><div class="fs-num">39.8%</div><div class="fs-label">Web自己解決<br>可能性</div></div>
+    </div>
+
+    <div class="subsection-title">小区分内訳（Top8）</div>
+    <table class="mini-bar-table">
+      <tr>
+        <td class="mbt-label"><strong>支払方法の種類について</strong></td>
+        <td class="mbt-num">120件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td>
+        <td><span class="mbt-web">FAQ整備で削減可</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>NP掛け払いによる手続きエラー</strong></td>
+        <td class="mbt-num">106件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:88%"></div></div></td>
+        <td><span class="mbt-web">専用FAQ＋導線強化</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label"><strong>注文方法が分からない</strong></td>
+        <td class="mbt-num">67件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:56%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-mi">中多数</span></span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">キャンペーンについて</td>
+        <td class="mbt-num">60件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:50%"></div></div></td>
+        <td><span class="mbt-web">専用LPで改善可</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">顧客登録情報の変更希望</td>
+        <td class="mbt-num">54件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:45%"></div></div></td>
+        <td><span class="mbt-web"><span class="mbt-mi">中あり</span></span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">送料がいくらかかるのか</td>
+        <td class="mbt-num">52件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:43%"></div></div></td>
+        <td><span class="mbt-web">カートでの明示で削減可</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">商品が見当たらない・注文番号不明</td>
+        <td class="mbt-num">50件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:42%"></div></div></td>
+        <td><span class="mbt-web">検索精度向上で改善可</span></td>
+      </tr>
+      <tr>
+        <td class="mbt-label">ログインできない（再掲）</td>
+        <td class="mbt-num">50件</td>
+        <td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:42%"></div></div></td>
+        <td><span class="mbt-web">ログインタブ参照</span></td>
+      </tr>
+    </table>
+
+    <div class="subsection-title">顧客の声（VoC）</div>
+    <div class="voc-list">
+      <div class="voc-item">
+        <div class="vi-tag blue">お届け先変更 / Web中</div>
+        <div class="vi-text">「注文手続きに入ってですね、お届け先っていうのが会社の所在地か来店引取りかしか選択肢がなくて、ちょっとこれを変えたりすることができないのかなと。」</div>
+        <div class="vi-context">→ お届け先を追加・変更する機能が分かりにくい。マイページのお届け先管理改善が必要。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag blue">注文方法 / Web中</div>
+        <div class="vi-text">「今、注文をね、メールというかインターネットからしようと思って、初めてのことなんで、登録してるんですけれどもね、カード情報を入力してくださいという画面になるんですけれども。」</div>
+        <div class="vi-context">→ 初めてのWeb注文フローに不安を感じる顧客。「はじめての方へ」ガイドページが有効。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag">クレジットエラー / Web中</div>
+        <div class="vi-text">「クレジット情報を入力しまして、最終確定ボタンを押したいのですが、確定ボタンが出てこなくて。」</div>
+        <div class="vi-context">→ 確定ボタンが非表示になるUIバグ。緊急修正が必要。</div>
+      </div>
+      <div class="voc-item">
+        <div class="vi-tag">注文履歴 / Web中</div>
+        <div class="vi-text">「履歴はなんで出てこないのかな。」</div>
+        <div class="vi-context">→ 注文履歴の反映遅延（2〜30分）に気付かず電話してくるケース。注文完了画面での案内が必要。</div>
+      </div>
+    </div>
+
+    <div class="subsection-title">改善施策</div>
+    <div class="improvement-steps">
+      <div class="improvement-step priority">
+        <div class="is-num">1</div>
+        <div class="is-body">
+          <div class="is-title">🔴 「はじめての方へ」注文ガイドページを作成し、ヘッダー・カートから誘導する</div>
+          <div class="is-meta">対象: 注文方法不明67件＋支払方法120件の一部 ｜ 担当: EC運営</div>
+        </div>
+      </div>
+      <div class="improvement-step priority">
+        <div class="is-num">2</div>
+        <div class="is-body">
+          <div class="is-title">🔴 カートページに送料・キャンペーン適用条件をリアルタイム表示する</div>
+          <div class="is-meta">対象: 送料52件＋キャンペーン60件 ｜ 担当: EC開発</div>
+        </div>
+      </div>
+      <div class="improvement-step">
+        <div class="is-num">3</div>
+        <div class="is-body">
+          <div class="is-title">マイページから会員情報（住所・電話番号・お届け先）の変更を完結できるようにする</div>
+          <div class="is-meta">対象: 登録情報変更54件 ｜ 担当: EC開発</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ======= SECTION 6 ======= -->
+<section class="section" id="s6">
+  <div class="section-title">
+    <div class="section-num">6</div>顧客問い合わせタイミング別 主な課題
+  </div>
+
+  <p style="margin-bottom:16px;font-size:14px;">電話＋フォーム合算で最も多いのは<strong>「注文後出荷前」（合計3,728件 / 27.2%）</strong>で、注文後の状況が分かりにくいための確認が最多。緊急度は「出荷後到着前」が最も高く（平均2.41）、業務への直接影響が大きい。Web自己解決「高」+「中」の比率が最も高いのは<strong>「注文前商品選定中」と「注文手続き中」</strong>。</p>
+
+  <div class="chart-wrap">
+    <div class="chart-title">発生タイミング別 件数（電話＋フォーム合算）/ 緊急度平均（低=1, 中=2, 高=3）</div>
+    <canvas id="chartJourney" height="320"></canvas>
+  </div>
+
+  <div class="journey-grid">
+    <div class="journey-card">
+      <div class="jc-stage">🛒 注文前・商品選定中</div>
+      <div class="jc-count">2,400件</div>
+      <div class="jc-urgency low">緊急度: 低（平均1.70）</div>
+      <div class="jc-top">主な問い合わせ: 在庫確認・納期確認・商品仕様・送料・支払方法</div>
+      <div class="jc-voc">「在庫の確認をお願いしたいのですが。30枚必要にあるんですけれども。」</div>
+    </div>
+    <div class="journey-card">
+      <div class="jc-stage">💻 注文手続き中</div>
+      <div class="jc-count">974件</div>
+      <div class="jc-urgency mid">緊急度: 中（平均2.13）</div>
+      <div class="jc-top">主な問い合わせ: クレジットエラー・NP掛け払いエラー・配送先選択・注文方法</div>
+      <div class="jc-voc">「クレジット情報を入力しまして、確定ボタンが出てこなくて。」</div>
+    </div>
+    <div class="journey-card">
+      <div class="jc-stage">⏳ 注文後・出荷前</div>
+      <div class="jc-count">2,709件（最多）</div>
+      <div class="jc-urgency mid">緊急度: 中（平均2.30）</div>
+      <div class="jc-top">主な問い合わせ: 注文確認・納期確認・入金確認・変更・キャンセル</div>
+      <div class="jc-voc">「14時まで当日出荷と書いてあって注文したんですが、注文履歴に出てこなくて。」</div>
+    </div>
+    <div class="journey-card">
+      <div class="jc-stage">🚛 出荷後・到着前</div>
+      <div class="jc-count">575件</div>
+      <div class="jc-urgency high">緊急度: 高（平均2.41・最高）</div>
+      <div class="jc-top">主な問い合わせ: 配送状況・到着時間確認・追跡・届かない</div>
+      <div class="jc-voc">「ネットでは当日発送可能と書いてあるんですが、27日の午前中には欲しいんです。」</div>
+    </div>
+    <div class="journey-card">
+      <div class="jc-stage">📦 到着後</div>
+      <div class="jc-count">1,996件</div>
+      <div class="jc-urgency mid">緊急度: 中（平均2.04）</div>
+      <div class="jc-top">主な問い合わせ: 破損・パーツ不足・返品交換・帳票発行・インボイス</div>
+      <div class="jc-voc">「今日商品が届いたんですが、バーセットが3本しか入っていなくて。」</div>
+    </div>
+    <div class="journey-card">
+      <div class="jc-stage">🔑 ログイン時</div>
+      <div class="jc-count">58件</div>
+      <div class="jc-urgency low">緊急度: 低（平均1.72）</div>
+      <div class="jc-top">主な問い合わせ: ログインできない・セキュアキーエラー・パスワード忘れ</div>
+      <div class="jc-voc">「セキュアキーに誤りがあります、ログアウトもできないような状況なんですけれども。」</div>
+    </div>
+  </div>
+
+  <div class="insight-box orange">
+    <ul>
+      <li><strong>「出荷後到着前」が緊急度最高（2.41）</strong> — 「出荷済みだが届かない」状況は業務への影響が大きい。配送追跡の自動通知改善が重要</li>
+      <li><strong>「注文後出荷前」は件数最多（2,709件）</strong> — 注文後の自動メールとマイページのステータス表示強化が最優先改善領域</li>
+      <li><strong>「注文前商品選定中（2,400件）」</strong>は商品情報整備による削減余地が大きい。在庫数・納期・サイズ情報の充実が有効</li>
+      <li><strong>「注文手続き中（974件）」</strong>はクレジットエラー・UI問題が中心。修正コストが低く効果が高いクイックウィン</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ======= SECTION 7 ======= -->
+<section class="section" id="s7">
+  <div class="section-title">
+    <div class="section-num">7</div>顧客属性・チャネル別分析
+  </div>
+
+  <p style="margin-bottom:16px;font-size:14px;">電話10,000件＋フォーム3,714件の合計13,714件ベースで集計。顧客属性は電話ベースで<strong>「事務担当（6,947件・68.9%）」が最多</strong>（電話のみ比率）で、帳票・請求・登録管理などのバックオフィス業務が中心。チャネルは電話ベースで<strong>ストエキ（公式サイト）が9,532件（95.3%）</strong>に集中（「不明」チャネルを含む換算）。FAX注文は525件（5.3%）。</p>
+
+  <div class="chart-row">
+    <div class="chart-wrap">
+      <div class="chart-title">顧客属性の分布（電話＋フォーム 13,714件）</div>
+      <canvas id="chartCustAttr" height="280"></canvas>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">問い合わせ元サイト別 件数とオペレーター評価平均（「不明」はストエキにマージ済み）</div>
+      <canvas id="chartSite" height="280"></canvas>
+    </div>
+  </div>
+
+  <div class="chart-row">
+    <div class="chart-wrap">
+      <div class="chart-title">緊急度の分布（電話＋フォーム 13,714件）</div>
+      <canvas id="chartUrgency" height="250"></canvas>
+    </div>
+    <div class="chart-wrap">
+      <div class="chart-title">FAX注文フラグ（FAX経由の注文比率）</div>
+      <canvas id="chartFax" height="250"></canvas>
+    </div>
+  </div>
+
+  <div class="insight-box">
+    <ul>
+      <li><strong>事務担当（電話+フォーム合算6,947件・50.7%）が最多</strong> — 帳票・登録変更・支払い方法など、バックオフィス系の問い合わせが多い。マイページの帳票発行・DM管理・登録変更機能の充実が最も効果的。フォームでも845件と最多属性</li>
+      <li><strong>店舗オーナー（2,131件）</strong> — 商品選定・在庫確認・納期調整など、ビジネスに直結する問い合わせが多い。商品ページの情報充実と納期表示の精度向上が効果的</li>
+      <li><strong>緊急度「高」が3,126件（22.8%）</strong>（電話2,495件＋フォーム631件）。緊急度「中」が最多6,971件（50.8%）</li>
+      <li><strong>公式サイト（ストエキ）経由が電話で9,532件（95.3%）に集中</strong>（「不明」チャネルを含む）。楽天270件・Amazon150件・Yahoo48件が続く</li>
+      <li><strong>FAX注文525件（電話ベース5.3%）</strong> — 受信確認の問い合わせが繰り返し発生。Web注文への移行促進が根本解決につながる</li>
+    </ul>
+  </div>
+</section>
+
+<!-- ======= SECTION 8 ======= -->
+<section class="section" id="s8">
+  <div class="section-title">
+    <div class="section-num">8</div>改善優先順位と施策ロードマップ
+  </div>
+
+  <p style="font-size:14px;margin-bottom:20px;">電話10,000件＋フォーム3,714件の合計13,714件をベースに整理。<strong>赤セル</strong>は最優先（件数多・Web改善余地大）、<strong>橙セル</strong>は高優先、<strong>緑セル</strong>は中優先・中期以降対応。対象件数はフォーム含む電話+フォーム合算値。</p>
+
+  <div class="priority-matrix">
+    <table>
+      <thead>
+        <tr>
+          <th class="pm-label" style="min-width:170px;">機能ドメイン / 施策</th>
+          <th>対象<br>件数</th>
+          <th>Web高+中<br>（件数）</th>
+          <th>未完了<br>率</th>
+          <th>緊急度<br>高件数</th>
+          <th style="min-width:200px;">最優先アクション</th>
+          <th>優先度</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="pm-label">🚚 マイページ<br>配送状況表示</td>
+          <td class="pm-c">1,174件<br><small style="color:#6b7a8d">電話904+フォーム270</small></td>
+          <td class="pm-h">高い<br>（中多数）</td>
+          <td class="pm-c">41%</td>
+          <td class="pm-c">1,499件</td>
+          <td>注文後のリアルタイム配送ステータス・追跡番号表示</td>
+          <td class="pm-h">🔴 最優先</td>
+        </tr>
+        <tr>
+          <td class="pm-label">📄 マイページ<br>帳票発行（領収書・請求書）</td>
+          <td class="pm-c">445件<br><small style="color:#6b7a8d">電話365+フォーム80</small></td>
+          <td class="pm-h">164件<br>（36.9%）</td>
+          <td class="pm-c">33%</td>
+          <td class="pm-c">中</td>
+          <td>マイページから領収書・請求書のPDF即時ダウンロード</td>
+          <td class="pm-h">🔴 最優先</td>
+        </tr>
+        <tr>
+          <td class="pm-label">📦 注文後変更機能<br>（数量・配送先・キャンセル）</td>
+          <td class="pm-c">716件<br><small style="color:#6b7a8d">電話586+フォーム130</small></td>
+          <td class="pm-h">高い</td>
+          <td class="pm-c">39%</td>
+          <td class="pm-c">中</td>
+          <td>出荷前ならマイページから変更・キャンセル可能に</td>
+          <td class="pm-h">🔴 最優先</td>
+        </tr>
+        <tr>
+          <td class="pm-label">🧾 インボイス番号<br>全書類統一表示</td>
+          <td class="pm-c">489件<br><small style="color:#6b7a8d">電話141+フォーム348</small></td>
+          <td class="pm-h">50件+フォーム分</td>
+          <td class="pm-c">17%</td>
+          <td class="pm-c">中</td>
+          <td>全書類（請求書・領収書）へのT番号統一記載</td>
+          <td class="pm-h">🔴 最優先</td>
+        </tr>
+        <tr>
+          <td class="pm-label">💳 クレジット/NP<br>エラー改善</td>
+          <td class="pm-c">170件<br><small style="color:#6b7a8d">電話130+フォーム40</small></td>
+          <td class="pm-h">97件<br>（74.6%）</td>
+          <td class="pm-c">—</td>
+          <td class="pm-c">中〜高</td>
+          <td>決済エラー時の具体的な原因・解決手順を画面表示（確定ボタンバグ修正）</td>
+          <td class="pm-m">🟠 高優先</td>
+        </tr>
+        <tr>
+          <td class="pm-label">🔐 ログイン・<br>パスワードリセット</td>
+          <td class="pm-c">136件<br><small style="color:#6b7a8d">電話127+フォーム9</small></td>
+          <td class="pm-h">97件<br>（76.4%）</td>
+          <td class="pm-c">21%</td>
+          <td class="pm-c">中</td>
+          <td>パスワードリセット導線の目立つ配置・エラーメッセージ改善</td>
+          <td class="pm-m">🟠 高優先</td>
+        </tr>
+        <tr>
+          <td class="pm-label">📊 在庫・納期<br>リアルタイム表示</td>
+          <td class="pm-c">555件<br><small style="color:#6b7a8d">電話505+フォーム50</small></td>
+          <td class="pm-m">中程度</td>
+          <td class="pm-c">41%</td>
+          <td class="pm-c">高</td>
+          <td>商品ページの数量別在庫数・最短お届け日のリアルタイム表示</td>
+          <td class="pm-m">🟠 高優先</td>
+        </tr>
+        <tr>
+          <td class="pm-label">💰 入金ステータス<br>リアルタイム表示</td>
+          <td class="pm-c">306件<br><small style="color:#6b7a8d">電話246+フォーム60</small></td>
+          <td class="pm-m">中程度</td>
+          <td class="pm-c">—</td>
+          <td class="pm-c">中</td>
+          <td>マイページに入金ステータスをリアルタイム表示</td>
+          <td class="pm-m">🟠 高優先</td>
+        </tr>
+        <tr>
+          <td class="pm-label">📠 FAX受付<br>自動返信メール</td>
+          <td class="pm-c">409件<br><small style="color:#6b7a8d">電話407+フォーム2</small></td>
+          <td class="pm-l">9件<br>（2.2%）</td>
+          <td class="pm-c">42%</td>
+          <td class="pm-c">中</td>
+          <td>FAX受付後に受付番号付き自動返信メールを送付</td>
+          <td class="pm-m">🟠 高優先</td>
+        </tr>
+        <tr>
+          <td class="pm-label">🧾 マイページ<br>納品書再発行（インボイス用）</td>
+          <td class="pm-c">78件</td>
+          <td class="pm-m">中程度</td>
+          <td class="pm-c">—</td>
+          <td class="pm-c">中</td>
+          <td>購入履歴から納品書PDF再発行機能（インボイス確認含む）</td>
+          <td class="pm-l">🟢 中優先</td>
+        </tr>
+        <tr>
+          <td class="pm-label">🖥️ 注文ガイド・<br>送料FAQ整備</td>
+          <td class="pm-c">220件<br><small style="color:#6b7a8d">電話179+フォーム41</small></td>
+          <td class="pm-m">中程度</td>
+          <td class="pm-c">21%</td>
+          <td class="pm-c">低</td>
+          <td>「はじめての方へ」ページ＋送料一覧をカートに表示</td>
+          <td class="pm-l">🟢 中優先</td>
+        </tr>
+        <tr>
+          <td class="pm-label">📮 カタログ・DM<br>マイページ管理</td>
+          <td class="pm-c">543件<br><small style="color:#6b7a8d">電話450+フォーム93</small></td>
+          <td class="pm-l">低い</td>
+          <td class="pm-c">7%</td>
+          <td class="pm-c">低</td>
+          <td>マイページからDM停止・送付先変更を完結できるよう整備</td>
+          <td class="pm-l">🟢 中優先</td>
+        </tr>
+        <tr>
+          <td class="pm-label">📦 商品情報充実</td>
+          <td class="pm-c">1,521件<br><small style="color:#6b7a8d">電話1,281+フォーム240</small></td>
+          <td class="pm-m">中程度</td>
+          <td class="pm-c">44%</td>
+          <td class="pm-c">中</td>
+          <td>サイズ図・適合表・比較チャート・廃番情報の整備</td>
+          <td class="pm-l">🟢 中期対応</td>
+        </tr>
+        <tr>
+          <td class="pm-label">🌐 FAX→Web<br>注文移行促進</td>
+          <td class="pm-c">409件<br><small style="color:#6b7a8d">電話407+フォーム2</small></td>
+          <td class="pm-l">低い</td>
+          <td class="pm-c">42%</td>
+          <td class="pm-c">中</td>
+          <td>FAXユーザー向けWeb移行キャンペーン・注文用紙QRコード掲載</td>
+          <td class="pm-l">🟢 中期対応</td>
+        </tr>
+        <tr>
+          <td class="pm-label">⚠️ クレーム受付<br>フロー標準化</td>
+          <td class="pm-c">815件<br><small style="color:#6b7a8d">通話ラベル軸・破損369＋欠品262＋他</small></td>
+          <td class="pm-l">Web改善<br>対象外</td>
+          <td class="pm-c">87.8%</td>
+          <td class="pm-c">高</td>
+          <td>写真取得・折り返し期限明記などCS運用改善で対応</td>
+          <td><span class="badge blue">CS運用改善</span></td>
+        </tr>
+        <tr>
+          <td class="pm-label">👤 担当者不在・<br>売込み・要件不明</td>
+          <td class="pm-c">1,681件<br><small style="color:#6b7a8d">不在579＋売込205＋要件不明845＋他</small></td>
+          <td class="pm-l">Web改善<br>対象外</td>
+          <td class="pm-c">91.4%<br><small style="color:#6b7a8d">（不在のみ）</small></td>
+          <td class="pm-c">中</td>
+          <td>不在時の代替対応フロー整備・IVR最適化・売込み振り分け効率化</td>
+          <td><span class="badge blue">CS運用改善</span></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="subsection-title">施策ロードマップ（優先度順）</div>
+  <div class="roadmap-grid">
+    <div class="card">
+      <div style="font-size:14px;font-weight:700;color:var(--color-e);margin-bottom:12px;">🔴 フェーズ1 — 即時対応（〜1ヶ月）</div>
+      <div style="font-size:13px;line-height:1.9;">
+        <div>① 注文完了画面「履歴反映に数分かかる場合」の案内表示追加<br><span style="font-size:11px;color:var(--color-muted);">対象: 注文確認230件 / 工数: 小</span></div>
+        <div style="margin-top:6px;">② パスワードリセット導線を目立つ位置に配置<br><span style="font-size:11px;color:var(--color-muted);">対象: ログイン50件 / 工数: 小</span></div>
+        <div style="margin-top:6px;">③ クレジットエラー画面に具体的な解決手順を表示（確定ボタンバグ修正）<br><span style="font-size:11px;color:var(--color-muted);">対象: クレジットエラー24件 / 工数: 小〜中</span></div>
+        <div style="margin-top:6px;">④ セキュアキーエラー画面にサポートリンクを配置<br><span style="font-size:11px;color:var(--color-muted);">工数: 小</span></div>
+        <div style="margin-top:6px;">⑤ FAX受付後の受付番号付き自動返信メール構築<br><span style="font-size:11px;color:var(--color-muted);">対象: FAX407件 / 工数: 中</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:14px;font-weight:700;color:var(--color-d);margin-bottom:12px;">🟠 フェーズ2 — 短中期対応（3〜6ヶ月）</div>
+      <div style="font-size:13px;line-height:1.9;">
+        <div>① マイページに配送状況・追跡番号をリアルタイム表示<br><span style="font-size:11px;color:var(--color-muted);">対象: 納期904件 / 効果: 300〜500件削減</span></div>
+        <div style="margin-top:6px;">② 帳票（領収書・請求書）のPDFダウンロード機能追加<br><span style="font-size:11px;color:var(--color-muted);">対象: 帳票365件 / 効果: 150〜250件削減</span></div>
+        <div style="margin-top:6px;">③ 全書類へのT番号（インボイス番号）統一記載<br><span style="font-size:11px;color:var(--color-muted);">対象: インボイス141件</span></div>
+        <div style="margin-top:6px;">④ マイページ入金ステータスのリアルタイム表示<br><span style="font-size:11px;color:var(--color-muted);">対象: 入金確認246件</span></div>
+        <div style="margin-top:6px;">⑤ 出荷前のマイページからの変更・キャンセル機能<br><span style="font-size:11px;color:var(--color-muted);">対象: 変更237件＋キャンセル280件</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:14px;font-weight:700;color:var(--color-c);margin-bottom:12px;">🟢 フェーズ3 — 中期対応（6〜12ヶ月）</div>
+      <div style="font-size:13px;line-height:1.9;">
+        <div>① 商品ページに数量別在庫数・最短お届け日のリアルタイム表示<br><span style="font-size:11px;color:var(--color-muted);">対象: 在庫確認263件＋納期早出し242件</span></div>
+        <div style="margin-top:6px;">② 商品情報の充実（サイズ図・適合表・比較チャート）<br><span style="font-size:11px;color:var(--color-muted);">対象: 商品仕様1,281件</span></div>
+        <div style="margin-top:6px;">③ カタログ・DM管理をマイページで完結<br><span style="font-size:11px;color:var(--color-muted);">対象: カタログ450件</span></div>
+        <div style="margin-top:6px;">④ FAXユーザーへのWeb移行キャンペーン<br><span style="font-size:11px;color:var(--color-muted);">対象: FAX407件</span></div>
+        <div style="margin-top:6px;">⑤ マイページに納品書の再発行機能を追加<br><span style="font-size:11px;color:var(--color-muted);">対象: 納品書再発行78件</span></div>
+      </div>
+    </div>
+    <div class="card">
+      <div style="font-size:14px;font-weight:700;color:var(--color-primary);margin-bottom:12px;">🔵 CS運用改善（並行実施）</div>
+      <div style="font-size:13px;line-height:1.9;">
+        <div>① クレーム受付フロー標準化（写真取得・折り返し期限の明記）<br><span style="font-size:11px;color:var(--color-muted);">対象: クレーム815件（通話ラベル軸・未完了率87.8%）</span></div>
+        <div style="margin-top:6px;">② 担当者不在時の代替対応フロー整備・IVR最適化<br><span style="font-size:11px;color:var(--color-muted);">対象: 不在579件（未完了率91.4%）＋売込み205件＋要件不明845件 計1,629件</span></div>
+        <div style="margin-top:6px;">③ オペレーター知識ナレッジベースの強化<br><span style="font-size:11px;color:var(--color-muted);">低評価（スコア1〜2）: 56件の根本原因分析</span></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="chart-wrap">
+    <div class="chart-title">機能ドメイン別 Web自己解決高+中 件数（改善投資対象件数）</div>
+    <canvas id="chartFuncPriority" height="320"></canvas>
+  </div>
+
+</section>
+
+</div><!-- end page-wrapper -->
+
+<footer class="report-footer">
+  <strong>店研創意 コール分析レポート</strong>
+</footer>
+
+<script>
+// ============================================================
+// カテゴリ切り替え（⑤-1/⑤-2/⑤-3/⑤-4）
+// ============================================================
+function switchCat(name, _btn) {
+  document.querySelectorAll('.cat-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById('cp-' + name);
+  if (panel) panel.classList.add('active');
+
+  ['site','delivery','product','other'].forEach(cat => {
+    const t = document.getElementById('catTab-' + cat);
+    if (t) t.classList.remove('active');
+    const b = document.getElementById('cat-btn-' + cat);
+    if (b) { b.style.opacity = '0.72'; b.style.transform = 'scale(0.97)'; }
+  });
+  const activeTab = document.getElementById('catTab-' + name);
+  if (activeTab) activeTab.classList.add('active');
+  const activeBtn = document.getElementById('cat-btn-' + name);
+  if (activeBtn) { activeBtn.style.opacity = '1'; activeBtn.style.transform = 'scale(1)'; }
+}
+
+// ============================================================
+// サブタブ切り替え（カテゴリ内の機能タブ）
+// ============================================================
+function switchSubTab(cat, name, btn) {
+  const panel = document.getElementById('cp-' + cat);
+  if (!panel) return;
+  panel.querySelectorAll(':scope > .sub-panel').forEach(p => p.classList.remove('active'));
+  // ネストしている場合（func-tabs直下）
+  panel.querySelectorAll('.sub-panel').forEach(p => p.classList.remove('active'));
+  const sub = document.getElementById('sp-' + cat + '-' + name);
+  if (sub) {
+    sub.classList.add('active');
+    // チャネルタブを初期化（「電話」をアクティブに）
+    const firstChBtn = sub.querySelector('.ch-tab.tel');
+    const firstChPanel = sub.querySelector('.ch-panel.tel-panel');
+    sub.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('active'));
+    sub.querySelectorAll('.ch-panel').forEach(p => p.classList.remove('active'));
+    if (firstChBtn) firstChBtn.classList.add('active');
+    if (firstChPanel) firstChPanel.classList.add('active');
+  }
+  const parentTabs = btn ? btn.closest('.func-tabs') : null;
+  if (parentTabs) {
+    parentTabs.querySelectorAll('.func-tab').forEach(t => t.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+  }
+}
+
+// ============================================================
+// チャネルタブ切り替え（電話 / フォーム問い合わせ）
+// ============================================================
+function switchCh(subPanelId, chName, btn) {
+  const sub = document.getElementById(subPanelId);
+  if (!sub) return;
+  sub.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('active'));
+  sub.querySelectorAll('.ch-panel').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const chPanel = sub.querySelector('.ch-panel.' + chName + '-panel');
+  if (chPanel) chPanel.classList.add('active');
+}
+
+// ============================================================
+// 商品名タブ切り替え（上位10商品）
+// ============================================================
+function switchProductItem(itemId, btn) {
+  document.querySelectorAll('.product-item-panel').forEach(p => p.classList.remove('active'));
+  const panel = document.getElementById('pip-' + itemId);
+  if (panel) {
+    panel.classList.add('active');
+    // 商品内チャネルタブを初期化（電話をデフォルト）
+    const telBtn = panel.querySelector('.ch-tab.tel');
+    const telPanel = panel.querySelector('.ch-panel.tel-panel');
+    panel.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('active'));
+    panel.querySelectorAll('.ch-panel').forEach(p => p.classList.remove('active'));
+    if (telBtn) telBtn.classList.add('active');
+    if (telPanel) telPanel.classList.add('active');
+  }
+  const tabBar = btn ? btn.closest('.product-item-tabs') : null;
+  if (tabBar) {
+    tabBar.querySelectorAll('.pit-btn').forEach(t => t.classList.remove('active'));
+    if (btn) btn.classList.add('active');
+  }
+}
+
+// 商品内チャネルタブ切り替え
+function switchProductCh(pipId, chName, btn) {
+  const panel = document.getElementById('pip-' + pipId);
+  if (!panel) return;
+  panel.querySelectorAll('.ch-tab').forEach(t => t.classList.remove('active'));
+  panel.querySelectorAll('.ch-panel').forEach(p => p.classList.remove('active'));
+  if (btn) btn.classList.add('active');
+  const chPanel = panel.querySelector('.ch-panel.' + chName + '-panel');
+  if (chPanel) chPanel.classList.add('active');
+}
+
+// 旧互換用
+function switchTab(name, btn) {}
+
+// ============================================================
+// 初期化
+// ============================================================
+window.addEventListener('DOMContentLoaded', function() {
+  switchCat('site');
+  ['site','delivery','product','other'].forEach(cat => {
+    const btn = document.getElementById('cat-btn-' + cat);
+    if (btn) {
+      btn.style.opacity = cat === 'site' ? '1' : '0.72';
+      btn.style.transform = cat === 'site' ? 'scale(1)' : 'scale(0.97)';
+    }
+  });
+  // 全チャネルタブを初期化（電話タブをデフォルトに）
+  document.querySelectorAll('.sub-panel').forEach(sub => {
+    const firstChBtn = sub.querySelector('.ch-tab.tel');
+    const firstChPanel = sub.querySelector('.ch-panel.tel-panel');
+    if (firstChBtn) firstChBtn.classList.add('active');
+    if (firstChPanel) firstChPanel.classList.add('active');
+  });
+
+  // 商品名上位10タブを初期化（最初の商品＋電話タブをデフォルト）
+  const firstPip = document.querySelector('.product-item-panel');
+  if (firstPip && !firstPip.classList.contains('active')) {
+    firstPip.classList.add('active');
+  }
+  document.querySelectorAll('.product-item-panel').forEach(pip => {
+    const telBtn = pip.querySelector('.ch-tab.tel');
+    const telPanel = pip.querySelector('.ch-panel.tel-panel');
+    if (telBtn) telBtn.classList.add('active');
+    if (telPanel) telPanel.classList.add('active');
+  });
+});
+
+Chart.defaults.font.family = "'Helvetica Neue','Hiragino Kaku Gothic ProN','Meiryo',sans-serif";
+Chart.defaults.font.size = 12;
+const C = {
+  primary: '#1a2d4e', accent: '#e84c3d',
+  a:'#2980b9', b:'#7d3c98', c:'#1e8449', d:'#ca6f1e', e:'#c0392b',
+  f:'#117a8b', g:'#f39c12', h:'#16a085',
+};
+
+// 0. カテゴリ概要 水平棒グラフ
+if (document.getElementById('chartCatOverview')) {
+  new Chart(document.getElementById('chartCatOverview'), {
+    type: 'bar',
+    data: {
+        labels: ['🖥️ サイト（⑤-1）', '📦 商品（⑤-3）', '🚚 配送（⑤-2）', '📋 その他（⑤-4）'],
+      datasets: [{
+        label: '件数',
+        data: [5283, 5800, 842, 1789],
+        backgroundColor: ['rgba(41,128,185,0.85)', 'rgba(30,132,73,0.85)', 'rgba(202,111,30,0.85)', 'rgba(127,140,141,0.85)'],
+        borderRadius: 5
+      }]
+    },
+    options: {
+      indexAxis: 'y',
+      plugins: {
+        legend: { display: false },
+        tooltip: { callbacks: { label: ctx => ctx.raw.toLocaleString() + '件 (' + ((ctx.raw/13714)*100).toFixed(1) + '%)' } }
+      },
+      scales: {
+        x: { grid: { color: '#eee' }, ticks: { callback: v => v.toLocaleString() }, max: 7000 },
+        y: { grid: { display: false } }
+      }
+    }
+  });
+}
+
+// 1. 大区分 棒グラフ
+new Chart(document.getElementById('chartDaiku'), {
+  type: 'bar',
+  data: {
+    // 電話＋フォーム合算（電話: 大区分カウント + フォーム: 大区分カウント）
+    labels: ['納期について','注文について','ご利用について','インボイスについて','商品単品の仕様について','クレーム','帳票について','担当者不在','売込み','カタログ・DMについて','FAX注文の受信確認','電話でのご注文','ご相談について','ストアエキスプレス各店','間違い電話'],
+    datasets: [
+      {
+        label: '📞 電話',
+        data: [3131,1839,1310,177,1281,815,623,579,60,512,489,281,89,79,52],
+        backgroundColor: 'rgba(232,76,61,0.75)',
+        borderRadius: 3
+      },
+      {
+        label: '📋 フォーム',
+        data: [1153,696,413,348,240,258,239,4,162,93,2,4,85,7,5],
+        backgroundColor: 'rgba(41,128,185,0.7)',
+        borderRadius: 3
+      }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: {
+      legend: { display: true, position: 'top' },
+      tooltip: { callbacks: { label: ctx => ctx.dataset.label + ': ' + ctx.raw.toLocaleString() + '件' } }
+    },
+    scales: {
+      x: { stacked: false, grid: { color: '#eee' }, ticks: { callback: v => v.toLocaleString() } },
+      y: { stacked: false, grid: { display: false } }
+    }
+  }
+});
+
+// 2. 小区分 棒グラフ 上位20
+new Chart(document.getElementById('chartShouku'), {
+  type: 'bar',
+  data: {
+    labels: ['納期確認（注文後）-いつ届くのか','その他商品について','担当者不在による折り返し','FAX注文の受信確認','到着時間指定の希望（注文後）','在庫確認（注文前）','お届け商品の破損','注文内容の確認','注文のキャンセル','納期確認（注文前）-表示より早く','注文内容の変更','入金確認','お客様都合による返品・交換','カタログを止めてほしい','お届け商品のパーツ不足','支払方法の種類について','電話でのご注文','領収書の発行希望','納期確認（注文前）-いつ届くのか','カタログを送付してほしい'],
+    datasets: [{
+      label: '件数',
+      data: [904,759,579,407,334,263,369,230,280,242,237,246,250,284,262,120,281,217,79,165],
+      backgroundColor: [C.accent,'rgba(232,76,61,0.75)','rgba(232,76,61,0.6)',C.a,'rgba(41,128,185,0.75)','rgba(41,128,185,0.6)',C.e,'rgba(192,57,43,0.75)','rgba(192,57,43,0.6)',C.b,'rgba(125,60,152,0.75)','rgba(125,60,152,0.6)',C.c,'rgba(30,132,73,0.75)','rgba(30,132,73,0.6)',C.d,'rgba(202,111,30,0.75)','rgba(202,111,30,0.6)',C.f,'rgba(17,122,139,0.75)'],
+      borderRadius: 3
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { grid: { color: '#eee' }, ticks: { callback: v => v.toLocaleString() } },
+      y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+    }
+  }
+});
+
+// 3. 解決ステータス ドーナツ
+new Chart(document.getElementById('chartStatus'), {
+  type: 'doughnut',
+  data: {
+    labels: ['解決', '折り返し・調査中', '顧客の希望通らず', '不明'],
+    datasets: [{ data: [5656,3987,344,13], backgroundColor: [C.c,C.d,C.e,'#95a5a6'], hoverOffset: 8 }]
+  },
+  options: {
+    plugins: {
+      legend: { position: 'bottom' },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw.toLocaleString()}件 (${(ctx.raw/10000*100).toFixed(1)}%)` } }
+    }
+  }
+});
+
+// 4. 大区分別 未完了率
+new Chart(document.getElementById('chartUnresolved'), {
+  type: 'bar',
+  data: {
+    labels: ['担当者不在','クレーム','不明','商品仕様','FAX注文受信','注文について','納期について','帳票について','ご相談','売込み','ご利用について','インボイス','電話注文','間違い電話','カタログ・DM','ストアエキスプレス'],
+    datasets: [{
+      label: '未完了率(%)',
+      data: [91.4,87.8,85.2,44.0,42.4,38.7,41.4,33.5,52.2,38.3,21.1,17.0,17.0,12.0,7.0,8.8],
+      backgroundColor: ctx => {
+        const v = ctx.raw;
+        return v >= 80 ? C.e : v >= 40 ? C.d : C.c;
+      },
+      borderRadius: 3
+    }]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: { legend: { display: false } },
+    scales: {
+      x: { max: 100, grid: { color: '#eee' }, ticks: { callback: v => v + '%' } },
+      y: { grid: { display: false }, ticks: { font: { size: 11 } } }
+    }
+  }
+});
+
+// 5. Web自己解決可能性 ドーナツ
+new Chart(document.getElementById('chartSelfService'), {
+  type: 'doughnut',
+  data: {
+    labels: ['高（1,181件）','中（2,055件）','低（1,601件）','不可（264件）','不明（4,899件）'],
+    datasets: [{ data: [1181,2055,1601,264,4899], /* 電話10,000件ベース */ backgroundColor: [C.e,C.a,'#bdc3c7','#7f8c8d','#ecf0f1'], hoverOffset: 8 }]
+  },
+  options: {
+    plugins: {
+      legend: { position: 'bottom' },
+      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw.toLocaleString()}件 (${(ctx.raw/10000*100).toFixed(1)}% 電話全体比)` } }
+    }
+  }
+});
+
+// 6. テーマ別削減可能件数（棒グラフ）
+new Chart(document.getElementById('chartHighSelf'), {
+  type: 'bar',
+  data: {
+    labels: ['帳票管理\n(領収書・請求書・納品書)','カタログ\n配送管理','FAX注文\n受信確認','支払い・\n決済','ログイン・\n会員登録','見積書\n発行'],
+    datasets: [
+      { label: 'Web自己解決「高」', data: [95+20, 33, 4, 189, 49, 9], backgroundColor: C.e, borderRadius: 3 },
+      { label: 'Web自己解決「中」', data: [69+30, 509, 5, 277, 48, 12], backgroundColor: C.a, borderRadius: 3 }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 } } },
+      y: { stacked: true, grid: { color: '#eee' }, ticks: { callback: v => v.toLocaleString() } }
+    }
+  }
+});
+
+// 7. タイミング別件数（電話+フォーム合算）
+new Chart(document.getElementById('chartJourney'), {
+  type: 'bar',
+  data: {
+    labels: ['ログイン時','注文前\n商品選定中','注文手続き中','注文後\n出荷前','出荷後\n到着前','到着後','不明'],
+    datasets: [
+      {
+        label: '📞 電話',
+        data: [58,2400,974,2709,575,1996,1155],
+        backgroundColor: 'rgba(232,76,61,0.75)',
+        borderRadius: 3,
+        yAxisID: 'y'
+      },
+      {
+        label: '📋 フォーム',
+        data: [22,903,367,1019,216,751,436],
+        backgroundColor: 'rgba(41,128,185,0.7)',
+        borderRadius: 3,
+        yAxisID: 'y'
+      },
+      {
+        label: '緊急度平均（右軸）',
+        data: [1.72,1.70,2.13,2.30,2.41,2.04,1.59],
+        type: 'line',
+        borderColor: C.accent,
+        backgroundColor: 'rgba(232,76,61,0.15)',
+        borderWidth: 2.5,
+        pointRadius: 5,
+        pointBackgroundColor: C.accent,
+        fill: false,
+        yAxisID: 'y2'
+      }
+    ]
+  },
+  options: {
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      y: { stacked: true, grid: { color: '#eee' }, ticks: { callback: v => v.toLocaleString() + '件' }, position: 'left' },
+      y2: { grid: { display: false }, min: 0, max: 3.5, ticks: { callback: v => v.toFixed(1) }, position: 'right' },
+      x: { stacked: true, grid: { display: false } }
+    }
+  }
+});
+
+// 8. 顧客属性 ドーナツ
+new Chart(document.getElementById('chartCustAttr'), {
+  type: 'doughnut',
+  data: {
+    labels: ['事務担当（6,947件）','不明（3,595件）','店舗オーナー（2,131件）','個人（805件）','現場施工者（236件）'],
+    datasets: [{ data: [6947,3595,2131,805,236], backgroundColor: [C.a,C.f,C.b,C.c,C.d], hoverOffset: 8 }]
+  },
+  options: { plugins: { legend: { position: 'bottom', labels: { font: { size: 11 } } } } }
+});
+
+// 9. サイト別 棒グラフ（「不明」をストエキにマージ: 5,736+3,796=9,532件）
+new Chart(document.getElementById('chartSite'), {
+  type: 'bar',
+  data: {
+    labels: ['ストエキ\n（公式サイト＋不明）','楽天','Amazon','yahoo'],
+    datasets: [
+      { label: '件数', data: [9532,270,150,48], backgroundColor: [C.a,'rgba(192,57,43,0.75)','rgba(243,156,18,0.75)',C.c], borderRadius: 3, yAxisID: 'y' },
+      { label: 'OP評価平均（右軸）', data: [4.10,3.91,3.86,3.94], type: 'line', borderColor: C.accent, backgroundColor: 'transparent', borderWidth: 2.5, pointRadius: 5, pointBackgroundColor: C.accent, yAxisID: 'y2' }
+    ]
+  },
+  options: {
+    plugins: {
+      legend: { position: 'top' },
+      tooltip: { callbacks: { label: ctx => ctx.datasetIndex === 0 ? ` 件数: ${ctx.raw.toLocaleString()}件` : ` OP評価平均: ${ctx.raw}` } }
+    },
+    scales: {
+      y: { grid: { color: '#eee' }, ticks: { callback: v => v.toLocaleString() } },
+      y2: { grid: { display: false }, min: 3.5, max: 4.5, position: 'right' },
+      x: { grid: { display: false } }
+    }
+  }
+});
+
+// 10. 緊急度 ドーナツ
+new Chart(document.getElementById('chartUrgency'), {
+  type: 'doughnut',
+  data: {
+    labels: ['高（3,126件）','中（6,971件）','低（3,037件）','不明・複合（580件）'],
+    datasets: [{ data: [3126,6971,3037,580], backgroundColor: [C.e,C.d,C.c,'#95a5a6'], hoverOffset: 8 }]
+  },
+  options: { plugins: { legend: { position: 'bottom' } } }
+});
+
+// 11. FAX ドーナツ
+new Chart(document.getElementById('chartFax'), {
+  type: 'doughnut',
+  data: {
+    labels: ['FAX注文なし（9,472件）','FAX注文あり（525件）','不明（3件）'],
+    datasets: [{ data: [9472,525,3], backgroundColor: [C.c,C.e,'#95a5a6'], hoverOffset: 8 }]
+  },
+  options: { plugins: { legend: { position: 'bottom' } } }
+});
+
+// 12. 機能別 Web高+中 件数（改善優先マトリクス棒グラフ）
+new Chart(document.getElementById('chartFuncPriority'), {
+  type: 'bar',
+  data: {
+    labels: ['💳 支払い・決済','🖥️ サイトご利用全般','🚚 納期・配送','📦 注文管理','📄 帳票','🔐 ログイン・会員','🧾 インボイス','📠 FAX注文'],
+    datasets: [
+      { label: 'Web高（電話+フォーム）', data: [246,328,307,269,124,64,104,4], backgroundColor: C.e, borderRadius: 3 },
+      { label: 'Web中（電話+フォーム）', data: [360,351,351,313,90,62,156,5], backgroundColor: C.a, borderRadius: 3 }
+    ]
+  },
+  options: {
+    indexAxis: 'y',
+    plugins: { legend: { position: 'top' } },
+    scales: {
+      x: { stacked: true, grid: { color: '#eee' }, ticks: { callback: v => v.toLocaleString() + '件' } },
+      y: { stacked: true, grid: { display: false } }
+    }
+  }
+});
+</script>
+</body>
+</html>
