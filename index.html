@@ -366,6 +366,9 @@ a { color: var(--color-a); }
   .kpi-grid { grid-template-columns: repeat(2, 1fr); }
   .impact-row { grid-template-columns: 1fr; }
   .roadmap-grid { grid-template-columns: 1fr; }
+  .pip-perspective-grid { grid-template-columns: 1fr; }
+  .pip-action-banner { flex-direction: column; gap: 8px; }
+  .pfs-impact { display: block; margin-left: 0; margin-top: 4px; }
 }
 
 /* FOOTER */
@@ -468,6 +471,136 @@ a { color: var(--color-a); }
 .pit-btn.active { background: #1e8449 !important; color: #fff !important; border-color: #1e8449 !important; font-weight: 700; }
 .product-item-panel { display: none; }
 .product-item-panel.active { display: block; }
+
+/* 商品パネル — 最重要アクションバナー */
+.pip-action-banner {
+  background: linear-gradient(135deg, #fff3cd 0%, #ffe082 100%);
+  border: 2px solid #f59e0b;
+  border-radius: 10px;
+  padding: 14px 18px;
+  margin-bottom: 16px;
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+}
+.pip-action-banner .pab-icon { font-size: 28px; flex-shrink: 0; line-height: 1; }
+.pip-action-banner .pab-body { flex: 1; }
+.pip-action-banner .pab-title {
+  font-size: 13px; font-weight: 800; color: #92400e;
+  letter-spacing: .03em; margin-bottom: 4px;
+}
+.pip-action-banner .pab-action {
+  font-size: 15px; font-weight: 700; color: #1a1a1a; margin-bottom: 4px;
+}
+.pip-action-banner .pab-effect {
+  font-size: 12px; color: #6b3a00; background: rgba(255,255,255,.6);
+  border-radius: 5px; padding: 3px 8px; display: inline-block;
+}
+
+/* 商品パネル — 観点カード */
+.pip-perspective-grid {
+  display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 16px;
+}
+.pip-perspective-card {
+  border-radius: 10px; padding: 14px 12px; position: relative;
+}
+.pip-perspective-card .ppc-label {
+  font-size: 11px; font-weight: 800; letter-spacing: .04em;
+  margin-bottom: 6px; display: flex; align-items: center; gap: 5px;
+}
+.pip-perspective-card .ppc-count {
+  font-size: 22px; font-weight: 900; line-height: 1; margin-bottom: 2px;
+}
+.pip-perspective-card .ppc-count-label {
+  font-size: 10px; color: #666; margin-bottom: 8px;
+}
+.pip-perspective-card .ppc-desc {
+  font-size: 12px; color: #444; line-height: 1.7;
+}
+.ppc-yellow { background:#fef9c3; border:2px solid #fbbf24; }
+.ppc-yellow .ppc-label { color: #92400e; }
+.ppc-yellow .ppc-count { color: #b45309; }
+.ppc-red { background:#fee2e2; border:2px solid #f87171; }
+.ppc-red .ppc-label { color: #991b1b; }
+.ppc-red .ppc-count { color: #b91c1c; }
+.ppc-blue { background:#e0f2fe; border:2px solid #7dd3fc; }
+.ppc-blue .ppc-label { color: #075985; }
+.ppc-blue .ppc-count { color: #0369a1; }
+.ppc-green { background:#d1fae5; border:2px solid #6ee7b7; }
+.ppc-green .ppc-label { color: #065f46; }
+.ppc-green .ppc-count { color: #047857; }
+.ppc-purple { background:#ede9fe; border:2px solid #c4b5fd; }
+.ppc-purple .ppc-label { color: #5b21b6; }
+.ppc-purple .ppc-count { color: #6d28d9; }
+
+/* VoC 吹き出し */
+.voc-bubble-grid {
+  display: grid; grid-template-columns: 1fr; gap: 10px; margin-bottom: 16px;
+}
+.voc-bubble {
+  display: flex; gap: 12px; align-items: flex-start;
+}
+.voc-bubble .vb-icon {
+  width: 36px; height: 36px; border-radius: 50%; background: #6b7a8d;
+  color: #fff; display: flex; align-items: center; justify-content: center;
+  font-size: 18px; flex-shrink: 0; margin-top: 2px;
+}
+.voc-bubble.spec .vb-icon { background: #b45309; }
+.voc-bubble.claim .vb-icon { background: #b91c1c; }
+.voc-bubble.stock .vb-icon { background: #0369a1; }
+.voc-bubble.custom .vb-icon { background: #047857; }
+.voc-bubble .vb-body { flex: 1; }
+.voc-bubble .vb-tag {
+  font-size: 10px; font-weight: 700; letter-spacing: .05em;
+  padding: 2px 7px; border-radius: 3px; margin-bottom: 5px; display: inline-block;
+}
+.voc-bubble.spec .vb-tag { background: #fef3c7; color: #92400e; }
+.voc-bubble.claim .vb-tag { background: #fee2e2; color: #991b1b; }
+.voc-bubble.stock .vb-tag { background: #dbeafe; color: #1e40af; }
+.voc-bubble.custom .vb-tag { background: #d1fae5; color: #065f46; }
+.voc-bubble .vb-speech {
+  background: #f8f9fb; border: 1px solid #e5e7eb; border-radius: 0 10px 10px 10px;
+  padding: 10px 14px; font-size: 13px; color: #1a1a1a;
+  line-height: 1.7; position: relative; font-style: italic;
+  margin-bottom: 5px;
+}
+.voc-bubble.spec .vb-speech { border-left: 3px solid #fbbf24; }
+.voc-bubble.claim .vb-speech { border-left: 3px solid #f87171; }
+.voc-bubble.stock .vb-speech { border-left: 3px solid #60a5fa; }
+.voc-bubble.custom .vb-speech { border-left: 3px solid #34d399; }
+.voc-bubble .vb-fix {
+  font-size: 12px; color: #374151; background: #fff;
+  border: 1px solid #d1d5db; border-radius: 6px;
+  padding: 6px 10px; display: flex; align-items: flex-start; gap: 6px;
+}
+.voc-bubble .vb-fix::before { content: '💡'; flex-shrink: 0; }
+
+/* 商品パネル — 改善ステップ（強調版） */
+.pip-fix-steps { display: flex; flex-direction: column; gap: 8px; }
+.pip-fix-step {
+  display: flex; align-items: flex-start; gap: 10px;
+  background: #f8f9fb; border: 1px solid #e5e7eb;
+  border-radius: 8px; padding: 12px 14px;
+}
+.pip-fix-step.top {
+  background: #fff7ed; border: 2px solid #fb923c;
+}
+.pip-fix-step .pfs-badge {
+  min-width: 28px; height: 28px; border-radius: 50%;
+  background: #e5e7eb; color: #374151;
+  display: flex; align-items: center; justify-content: center;
+  font-size: 12px; font-weight: 700; flex-shrink: 0;
+}
+.pip-fix-step.top .pfs-badge { background: #ea580c; color: #fff; }
+.pip-fix-step .pfs-body { flex: 1; }
+.pip-fix-step .pfs-title { font-size: 13px; font-weight: 700; color: #1a1a1a; margin-bottom: 3px; }
+.pip-fix-step .pfs-meta { font-size: 11px; color: #6b7a8d; }
+.pip-fix-step .pfs-impact {
+  font-size: 11px; font-weight: 700; color: #ea580c;
+  background: #fff7ed; border: 1px solid #fed7aa;
+  border-radius: 4px; padding: 2px 7px; margin-left: 8px;
+  white-space: nowrap;
+}
 </style>
 </head>
 <body>
@@ -1324,274 +1457,849 @@ a { color: var(--color-a); }
         <button class="pit-btn" onclick="switchProductItem('p10',this)">⑩ その他単体什器 <span style="font-size:10px;background:#d1fae5;color:#065f46;border-radius:3px;padding:1px 5px;margin-left:3px;">96件</span></button>
       </div>
 
-      <!-- 商品①カードケース（実データ: 通話191件、フォーム18件 合計209件） -->
+      <!-- ① カードケース -->
       <div class="product-item-panel active" id="pip-p1">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span style="font-size:20px;">🪪</span>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span style="font-size:28px;">🪪</span>
           <div>
-            <div style="font-weight:700;font-size:15px;">カードケース</div>
-            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>191件</strong> ／ フォーム <strong>18件</strong> ｜ 合計 <strong>209件</strong> — 全カテゴリ1位</div>
+            <div style="font-weight:800;font-size:17px;">カードケース</div>
+            <div style="font-size:12px;color:#6b7a8d;">📞 電話 <strong>191件</strong> ／ 📋 フォーム <strong>18件</strong> ｜ 合計 <strong style="color:#1e8449;font-size:14px;">209件</strong> — <span style="background:#fef9c3;border:1px solid #fbbf24;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;color:#92400e;">全カテゴリ1位</span></div>
           </div>
         </div>
-        <div class="ch-tabs">
-          <button class="ch-tab tel active" onclick="switchProductCh('p1','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">191件</span></button>
-          <button class="ch-tab form" onclick="switchProductCh('p1','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">18件</span></button>
+        <!-- 最重要アクションバナー -->
+        <div class="pip-action-banner">
+          <div class="pab-icon">🎯</div>
+          <div class="pab-body">
+            <div class="pab-title">⚡ 最重要改善アクション（電話削減の最大化）</div>
+            <div class="pab-action">商品ページにサイズ・収納枚数・素材を一覧表で掲載する</div>
+            <div class="pab-effect">📉 推定削減: 約120件/年 ｜ 工数: 小〜中 ｜ 担当: 商品管理 ｜ 即時着手可能</div>
+          </div>
         </div>
-        <div class="ch-panel tel-panel active">
-          <div class="ch-note">💡 電話191件・フォーム18件（計209件）。サイズ・素材・枚数などの仕様確認が中心。商品ページへの詳細仕様掲載で大幅削減可能。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">通話（カードケース関連）</td><td class="mbt-num">191件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
-            <tr><td class="mbt-label">フォーム（カードケース関連）</td><td class="mbt-num">18件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:9%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
-          </table>
+        <!-- 3観点カード -->
+        <div class="pip-perspective-grid">
+          <div class="pip-perspective-card ppc-yellow">
+            <div class="ppc-label">📐 仕様・サイズ確認</div>
+            <div class="ppc-count">~120件</div>
+            <div class="ppc-count-label">推定（全体の約57%）</div>
+            <div class="ppc-desc">「名刺は入りますか？」「何枚収納できますか？」「素材は？」など基本仕様の確認が大半。<strong>商品ページに情報があれば全て防げる電話</strong>。</div>
+          </div>
+          <div class="pip-perspective-card ppc-red">
+            <div class="ppc-label">🔧 パーツ・欠品クレーム</div>
+            <div class="ppc-count">~50件</div>
+            <div class="ppc-count-label">推定（折り返し率高）</div>
+            <div class="ppc-desc">「ファスナーが最初から壊れていた」「留め具が動かない」など初期不良。受取直後の連絡が多く折り返し対応が発生しやすい。</div>
+          </div>
+          <div class="pip-perspective-card ppc-blue">
+            <div class="ppc-label">🔄 在庫・納期確認</div>
+            <div class="ppc-count">~40件</div>
+            <div class="ppc-count-label">推定（リアルタイム表示で解決）</div>
+            <div class="ppc-desc">「在庫は何個残っていますか？」「いつ届きますか？」サイトに在庫数・最短納期が表示されていないため電話確認せざるを得ない。</div>
+          </div>
         </div>
-        <div class="ch-panel form-panel">
-          <div class="ch-note">📋 フォーム18件はカードケースのサイズ・仕様確認が中心。商品ページの詳細情報充実で削減可能。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">カードケース（サイズ・仕様確認）</td><td class="mbt-num">18件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
-          </table>
+        <!-- VoC 吹き出し -->
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">💬 実際の顧客の声（代表例）</div>
+        <div class="voc-bubble-grid">
+          <div class="voc-bubble spec">
+            <div class="vb-icon">📐</div>
+            <div class="vb-body">
+              <div class="vb-tag">仕様確認 ／ Web解決度：高</div>
+              <div class="vb-speech">「カードケースのサイズを教えていただきたいんですが、名刺は入りますか？何枚くらい収納できますか？あと素材は何ですか？」</div>
+              <div class="vb-fix">商品ページにサイズ詳細・収納枚数・素材を掲載するだけで電話不要。<strong>最優先対応</strong></div>
+            </div>
+          </div>
+          <div class="voc-bubble claim">
+            <div class="vb-icon">🔧</div>
+            <div class="vb-body">
+              <div class="vb-tag">初期不良クレーム ／ 折り返し発生</div>
+              <div class="vb-speech">「届いたカードケースのファスナーが最初から壊れていて、開閉できない状態です。至急交換していただけますか？」</div>
+              <div class="vb-fix">写真提出フローの整備＋交換基準の明確化。出荷前検品の強化が根本対策。</div>
+            </div>
+          </div>
+          <div class="voc-bubble stock">
+            <div class="vb-icon">📦</div>
+            <div class="vb-body">
+              <div class="vb-tag">在庫・納期確認 ／ Web解決度：中</div>
+              <div class="vb-speech">「在庫が残り少ないと表示されているのですが、実際何個残っていますか？今注文すればいつ届きますか？」</div>
+              <div class="vb-fix">リアルタイム在庫数・最短お届け日を商品ページに表示することで解消できる。</div>
+            </div>
+          </div>
+        </div>
+        <!-- 改善ステップ -->
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">🔧 改善ステップ</div>
+        <div class="pip-fix-steps">
+          <div class="pip-fix-step top">
+            <div class="pfs-badge">1</div>
+            <div class="pfs-body">
+              <div class="pfs-title">🔴 商品ページにサイズ・収納枚数・素材・カラーバリエーションを一覧表で掲載する</div>
+              <div class="pfs-meta">対象: 仕様確認の大半（~120件相当） ｜ 工数: 小〜中 ｜ 担当: 商品管理</div>
+            </div>
+            <div class="pfs-impact">約120件削減見込み</div>
+          </div>
+          <div class="pip-fix-step">
+            <div class="pfs-badge">2</div>
+            <div class="pfs-body">
+              <div class="pfs-title">リアルタイム在庫数・最短お届け日を商品ページに表示する</div>
+              <div class="pfs-meta">対象: 在庫・納期確認（~40件） ｜ 担当: EC開発</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 商品②クリスマスツリー（実データ: 通話176件、フォーム30件 合計206件） -->
+      <!-- ② クリスマスツリー -->
       <div class="product-item-panel" id="pip-p2">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span style="font-size:20px;">🎄</span>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span style="font-size:28px;">🎄</span>
           <div>
-            <div style="font-weight:700;font-size:15px;">クリスマスツリー</div>
-            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>176件</strong> ／ フォーム <strong>30件</strong> ｜ 合計 <strong>206件</strong> — 2位</div>
+            <div style="font-weight:800;font-size:17px;">クリスマスツリー</div>
+            <div style="font-size:12px;color:#6b7a8d;">📞 電話 <strong>176件</strong> ／ 📋 フォーム <strong>30件</strong> ｜ 合計 <strong style="color:#1e8449;font-size:14px;">206件</strong> — <span style="background:#fef9c3;border:1px solid #fbbf24;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;color:#92400e;">2位 ｜ 10〜12月集中型</span></div>
           </div>
         </div>
-        <div class="ch-tabs">
-          <button class="ch-tab tel active" onclick="switchProductCh('p2','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">176件</span></button>
-          <button class="ch-tab form" onclick="switchProductCh('p2','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">30件</span></button>
+        <div class="pip-action-banner">
+          <div class="pab-icon">🎯</div>
+          <div class="pab-body">
+            <div class="pab-title">⚡ 最重要改善アクション（シーズン前必須）</div>
+            <div class="pab-action">商品ページにサイズ・付属品一覧・組み立て動画を掲載する（9月末までに完了）</div>
+            <div class="pab-effect">📉 推定削減: 約100件/年 ｜ 工数: 中 ｜ 担当: 商品管理 ｜ シーズン前に必須</div>
+          </div>
         </div>
-        <div class="ch-panel tel-panel active">
-          <div class="ch-note">💡 電話176件。年末に集中する季節商品。注文方法・在庫確認・仕様確認が中心。商品ページに在庫状況・注文ガイドを充実させることで削減可能。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">クリスマスツリー（通話）</td><td class="mbt-num">176件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
-          </table>
+        <div class="pip-perspective-grid">
+          <div class="pip-perspective-card ppc-yellow">
+            <div class="ppc-label">📐 仕様・サイズ確認</div>
+            <div class="ppc-count">~100件</div>
+            <div class="ppc-count-label">推定（全体の約49%）</div>
+            <div class="ppc-desc">「高さは何cm？」「幅は？」「LEDは付属？」など飾り付け前の基本仕様確認。10〜12月に集中する季節問い合わせ。サイズ展開図一枚で解消できる。</div>
+          </div>
+          <div class="pip-perspective-card ppc-red">
+            <div class="ppc-label">🔧 パーツ欠品クレーム</div>
+            <div class="ppc-count">~60件</div>
+            <div class="ppc-count-label">推定（クリスマス直前に急増）</div>
+            <div class="ppc-desc">「枝が3本足りない」「LEDが点かない」など組み立て品の検品漏れ。<strong>シーズン中なので緊急対応が必要</strong>で対応負荷が高い。</div>
+          </div>
+          <div class="pip-perspective-card ppc-blue">
+            <div class="ppc-label">📅 在庫・締切日確認</div>
+            <div class="ppc-count">~46件</div>
+            <div class="ppc-count-label">推定（シーズン終盤に急増）</div>
+            <div class="ppc-desc">「クリスマスまでに届きますか？」「再入荷はありますか？」注文締め切り日をページに明記することで大幅削減できる。</div>
+          </div>
         </div>
-        <div class="ch-panel form-panel">
-          <div class="ch-note">📋 フォーム30件。破損クレーム・注文内容確認・配送関連が中心。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">クリスマスツリー（フォーム）</td><td class="mbt-num">30件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-mid">中</span></span></td></tr>
-          </table>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">💬 実際の顧客の声（代表例）</div>
+        <div class="voc-bubble-grid">
+          <div class="voc-bubble spec">
+            <div class="vb-icon">📐</div>
+            <div class="vb-body">
+              <div class="vb-tag">仕様確認 ／ Web解決度：高</div>
+              <div class="vb-speech">「クリスマスツリーの高さと幅を教えてください。LEDライトは別売りですか、それとも付属していますか？組み立て方の動画もあれば教えてください。」</div>
+              <div class="vb-fix">サイズ展開図・付属品一覧・組み立て動画を商品ページに掲載するだけで解消。<strong>9月末までに整備必須</strong></div>
+            </div>
+          </div>
+          <div class="voc-bubble claim">
+            <div class="vb-icon">🔧</div>
+            <div class="vb-body">
+              <div class="vb-tag">欠品クレーム ／ 緊急対応必要</div>
+              <div class="vb-speech">「届いたツリーを組み立てようとしたら枝が3本足りませんでした。クリスマスまであと5日しかないんですが、早急に送っていただけますか？」</div>
+              <div class="vb-fix">出荷前検品強化が根本対策。クレーム受付時は緊急配送オプション案内フローを整備。</div>
+            </div>
+          </div>
+          <div class="voc-bubble stock">
+            <div class="vb-icon">📅</div>
+            <div class="vb-body">
+              <div class="vb-tag">納期確認 ／ Web解決度：中</div>
+              <div class="vb-speech">「12月25日までに絶対届きますか？サイトには〇〇日お届けと書いてありますが、本当に間に合うか確認したくて電話しました。」</div>
+              <div class="vb-fix">「〇月〇日までの注文で12/25到着保証」と商品ページに目立つ形で明記することで解消。</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">🔧 改善ステップ</div>
+        <div class="pip-fix-steps">
+          <div class="pip-fix-step top">
+            <div class="pfs-badge">1</div>
+            <div class="pfs-body">
+              <div class="pfs-title">🔴 商品ページにサイズ・付属品一覧・組み立て動画/図解を掲載する（9月末まで必須）</div>
+              <div class="pfs-meta">対象: 仕様・欠品問い合わせの大半 ｜ 工数: 中 ｜ 担当: 商品管理</div>
+            </div>
+            <div class="pfs-impact">約100件削減見込み</div>
+          </div>
+          <div class="pip-fix-step">
+            <div class="pfs-badge">2</div>
+            <div class="pfs-body">
+              <div class="pfs-title">「〇月〇日注文で12/25到着」の締め切り日を商品ページに目立つ形で表示する</div>
+              <div class="pfs-meta">対象: 納期確認問い合わせ（~46件） ｜ 担当: EC運営</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 商品③袋（実データ: 通話152件、フォーム11件 合計163件） -->
+      <!-- ③ 袋 -->
       <div class="product-item-panel" id="pip-p3">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span style="font-size:20px;">🛍️</span>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span style="font-size:28px;">🛍️</span>
           <div>
-            <div style="font-weight:700;font-size:15px;">袋</div>
-            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>152件</strong> ／ フォーム <strong>11件</strong> ｜ 合計 <strong>163件</strong> — 3位</div>
+            <div style="font-weight:800;font-size:17px;">袋（ラッピング・包装用）</div>
+            <div style="font-size:12px;color:#6b7a8d;">📞 電話 <strong>152件</strong> ／ 📋 フォーム <strong>11件</strong> ｜ 合計 <strong style="color:#1e8449;font-size:14px;">163件</strong> — <span style="background:#fef9c3;border:1px solid #fbbf24;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;color:#92400e;">3位</span></div>
           </div>
         </div>
-        <div class="ch-tabs">
-          <button class="ch-tab tel active" onclick="switchProductCh('p3','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">152件</span></button>
-          <button class="ch-tab form" onclick="switchProductCh('p3','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">11件</span></button>
+        <div class="pip-action-banner">
+          <div class="pab-icon">🎯</div>
+          <div class="pab-body">
+            <div class="pab-title">⚡ 最重要改善アクション</div>
+            <div class="pab-action">「用途別サイズ選び方ガイド」と全サイズ一覧表をカテゴリページに掲載する</div>
+            <div class="pab-effect">📉 推定削減: 約80件/年 ｜ 工数: 小 ｜ 担当: EC運営・商品管理 ｜ 即時着手可能</div>
+          </div>
         </div>
-        <div class="ch-panel tel-panel active">
-          <div class="ch-note">💡 電話152件。袋のサイズ・素材・枚数・発注方法確認が中心。商品ページへの詳細仕様掲載で大幅削減可能。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">袋（通話）</td><td class="mbt-num">152件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
-          </table>
+        <div class="pip-perspective-grid">
+          <div class="pip-perspective-card ppc-yellow">
+            <div class="ppc-label">📐 サイズ・素材確認</div>
+            <div class="ppc-count">~80件</div>
+            <div class="ppc-count-label">推定（全体の約49%）</div>
+            <div class="ppc-desc">「何cm×何cm？」「厚みは？」「OPP・クラフト・不織布の違いは？」サイズ展開が多く比較しづらい。<strong>選び方ガイドで全て防げる</strong>。</div>
+          </div>
+          <div class="pip-perspective-card ppc-green">
+            <div class="ppc-label">📦 ロット・発注条件</div>
+            <div class="ppc-count">~50件</div>
+            <div class="ppc-count-label">推定（法人からの大量発注前確認）</div>
+            <div class="ppc-desc">「最小ロットは何枚？」「まとめ買い割引は？」「法人向け大量注文は？」ロット別単価表を商品ページに掲載するだけで解消できる。</div>
+          </div>
+          <div class="pip-perspective-card ppc-blue">
+            <div class="ppc-label">🖨️ 印刷・カスタマイズ</div>
+            <div class="ppc-count">~33件</div>
+            <div class="ppc-count-label">推定（カスタム対応可否の確認）</div>
+            <div class="ppc-desc">「ロゴ印刷できますか？」「オリジナルデザインは？」カスタム対応の可否がサイトから読み取れず、全て確認電話につながっている。</div>
+          </div>
         </div>
-        <div class="ch-panel form-panel">
-          <div class="ch-note">📋 フォーム11件。仕様確認・ロット数確認が中心。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">袋（フォーム）</td><td class="mbt-num">11件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-mid">中</span></span></td></tr>
-          </table>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">💬 実際の顧客の声（代表例）</div>
+        <div class="voc-bubble-grid">
+          <div class="voc-bubble spec">
+            <div class="vb-icon">📐</div>
+            <div class="vb-body">
+              <div class="vb-tag">サイズ確認 ／ Web解決度：高</div>
+              <div class="vb-speech">「OPP袋のサイズ展開を全部教えてもらえますか？A4サイズのパンフレットを入れたいんですが、どれが合いますか？内寸が分からなくて。」</div>
+              <div class="vb-fix">「用途別サイズ早見表」を商品ページに追加するだけで電話不要になる。<strong>最優先</strong></div>
+            </div>
+          </div>
+          <div class="voc-bubble custom">
+            <div class="vb-icon">🖨️</div>
+            <div class="vb-body">
+              <div class="vb-tag">ロット確認 ／ Web解決度：中</div>
+              <div class="vb-speech">「500枚から購入できますか？1,000枚以上発注すると単価が下がるとか、まとめ買い割引みたいなのはありますか？」</div>
+              <div class="vb-fix">ロット別単価表を商品ページに明記することで発注前確認の電話を削減できる。</div>
+            </div>
+          </div>
+          <div class="voc-bubble stock">
+            <div class="vb-icon">🎨</div>
+            <div class="vb-body">
+              <div class="vb-tag">カスタム印刷 ／ Web解決度：中</div>
+              <div class="vb-speech">「この袋にお店のロゴを印刷してもらうことはできますか？最低何枚からで、費用はどのくらいかかりますか？」</div>
+              <div class="vb-fix">カスタム印刷専用ページを作成し、商品ページから導線を設置することで解決。</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">🔧 改善ステップ</div>
+        <div class="pip-fix-steps">
+          <div class="pip-fix-step top">
+            <div class="pfs-badge">1</div>
+            <div class="pfs-body">
+              <div class="pfs-title">🔴 「用途・サイズ選び方ガイド」と全サイズ内寸/外寸一覧表をカテゴリページに掲載する</div>
+              <div class="pfs-meta">対象: サイズ確認の大半（~80件） ｜ 工数: 小 ｜ 担当: EC運営・商品管理</div>
+            </div>
+            <div class="pfs-impact">約80件削減見込み</div>
+          </div>
+          <div class="pip-fix-step">
+            <div class="pfs-badge">2</div>
+            <div class="pfs-body">
+              <div class="pfs-title">ロット別単価表・カスタム印刷案内ページへのリンクを商品ページに設置する</div>
+              <div class="pfs-meta">対象: ロット・カスタム確認（~83件） ｜ 担当: EC運営</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 商品④フラワーショップ向けラッピング商品（実データ: 通話142件、フォーム1件 合計143件） -->
+      <!-- ④ フラワーショップ向けラッピング商品 -->
       <div class="product-item-panel" id="pip-p4">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span style="font-size:20px;">💐</span>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span style="font-size:28px;">💐</span>
           <div>
-            <div style="font-weight:700;font-size:15px;">フラワーショップ向けラッピング商品</div>
-            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>142件</strong> ／ フォーム <strong>1件</strong> ｜ 合計 <strong>143件</strong> — 4位</div>
+            <div style="font-weight:800;font-size:17px;">フラワーショップ向けラッピング商品</div>
+            <div style="font-size:12px;color:#6b7a8d;">📞 電話 <strong>142件</strong> ／ 📋 フォーム <strong>1件</strong> ｜ 合計 <strong style="color:#1e8449;font-size:14px;">143件</strong> — <span style="background:#fee2e2;border:1px solid #f87171;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;color:#991b1b;">4位 ｜ 電話比率99%</span></div>
           </div>
         </div>
-        <div class="ch-tabs">
-          <button class="ch-tab tel active" onclick="switchProductCh('p4','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">142件</span></button>
-          <button class="ch-tab form" onclick="switchProductCh('p4','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">1件</span></button>
+        <div class="pip-action-banner">
+          <div class="pab-icon">🎯</div>
+          <div class="pab-body">
+            <div class="pab-title">⚡ 最重要改善アクション（工数小・効果大）</div>
+            <div class="pab-action">「防水加工の有無」「耐水性の目安」を商品ページに明記する</div>
+            <div class="pab-effect">📉 推定削減: 約70件/年 ｜ 工数: 小（テキスト追記のみ） ｜ 担当: 商品管理</div>
+          </div>
         </div>
-        <div class="ch-panel tel-panel active">
-          <div class="ch-note">💡 電話142件。ラッピング資材のサイズ・素材・ロット数・発注方法確認が中心。商品ページへの詳細仕様掲載で大幅削減可能。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">フラワーショップ向けラッピング商品（通話）</td><td class="mbt-num">142件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
-          </table>
+        <div class="pip-perspective-grid">
+          <div class="pip-perspective-card ppc-yellow">
+            <div class="ppc-label">📐 素材・防水性確認</div>
+            <div class="ppc-count">~70件</div>
+            <div class="ppc-count-label">推定（全体の約49%）</div>
+            <div class="ppc-desc">「防水加工は？」「水濡れに対応していますか？」フラワー業の専門用途に合うか確認する電話が大半。<strong>仕様一行追記で解消できる</strong>。</div>
+          </div>
+          <div class="pip-perspective-card ppc-green">
+            <div class="ppc-label">📦 ロット・定期発注</div>
+            <div class="ppc-count">~40件</div>
+            <div class="ppc-count-label">推定（継続購入を検討する業者）</div>
+            <div class="ppc-desc">「毎月定期発注したい」「まとめ買いの最低ロットは？」業者としての継続購入の問い合わせ。法人向けページへの導線で解消できる。</div>
+          </div>
+          <div class="pip-perspective-card ppc-blue">
+            <div class="ppc-label">🔄 在庫・廃番確認</div>
+            <div class="ppc-count">~33件</div>
+            <div class="ppc-count-label">推定（シーズン商品の在庫問題）</div>
+            <div class="ppc-desc">「このデザインは廃番ですか？」「再入荷はありますか？」廃番・在庫切れ情報がサイトに反映されないため確認電話が発生している。</div>
+          </div>
         </div>
-        <div class="ch-panel form-panel">
-          <div class="ch-note">📋 フォーム1件。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">フラワーショップ向けラッピング商品（フォーム）</td><td class="mbt-num">1件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td></td></tr>
-          </table>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">💬 実際の顧客の声（代表例）</div>
+        <div class="voc-bubble-grid">
+          <div class="voc-bubble spec">
+            <div class="vb-icon">💧</div>
+            <div class="vb-body">
+              <div class="vb-tag">素材・防水確認 ／ Web解決度：高</div>
+              <div class="vb-speech">「フラワーラッピング用に使いたいのですが、防水加工はされていますか？お花に水がかかることがあるので、水濡れしても大丈夫な素材か教えてください。」</div>
+              <div class="vb-fix">「防水加工の有無」「耐水性レベル」を商品仕様に一行追記するだけで約70件を削減できる。</div>
+            </div>
+          </div>
+          <div class="voc-bubble custom">
+            <div class="vb-icon">📦</div>
+            <div class="vb-body">
+              <div class="vb-tag">定期発注 ／ Web解決度：中</div>
+              <div class="vb-speech">「毎月100枚ずつ定期発注したいのですが、定期購入の仕組みはありますか？まとめ割引も知りたいです。」</div>
+              <div class="vb-fix">法人向け定期購入・まとめ割引ページを新設し、商品ページからリンクすることで解消。</div>
+            </div>
+          </div>
+          <div class="voc-bubble stock">
+            <div class="vb-icon">🔄</div>
+            <div class="vb-body">
+              <div class="vb-tag">廃番確認 ／ Web解決度：中</div>
+              <div class="vb-speech">「去年買ったのと同じ柄を注文したいのですが、サイトで見当たらなくて。廃番になりましたか？代わりになるものはありますか？」</div>
+              <div class="vb-fix">廃番ページに「代替品はこちら」のリンクを設置＋再入荷通知登録機能で解消。</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">🔧 改善ステップ</div>
+        <div class="pip-fix-steps">
+          <div class="pip-fix-step top">
+            <div class="pfs-badge">1</div>
+            <div class="pfs-body">
+              <div class="pfs-title">🔴 素材の耐水性・防水加工の有無を商品ページに明示する（フラワー業向け用途例も掲載）</div>
+              <div class="pfs-meta">対象: 素材確認の大半（~70件） ｜ 工数: 小（テキスト追記のみ） ｜ 担当: 商品管理</div>
+            </div>
+            <div class="pfs-impact">約70件削減見込み</div>
+          </div>
+          <div class="pip-fix-step">
+            <div class="pfs-badge">2</div>
+            <div class="pfs-body">
+              <div class="pfs-title">廃番商品に「代替品はこちら」リンクを設置し、在庫切れ時に再入荷通知登録を促す</div>
+              <div class="pfs-meta">対象: 廃番・在庫確認（~33件） ｜ 担当: EC運営</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 商品⑤マネキン／トルソー（ボディ）（実データ: 通話123件、フォーム19件 合計142件） -->
+      <!-- ⑤ マネキン／トルソー -->
       <div class="product-item-panel" id="pip-p5">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span style="font-size:20px;">🧍</span>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span style="font-size:28px;">🧍</span>
           <div>
-            <div style="font-weight:700;font-size:15px;">マネキン／トルソー（ボディ）</div>
-            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>123件</strong> ／ フォーム <strong>19件</strong> ｜ 合計 <strong>142件</strong> — 5位</div>
+            <div style="font-weight:800;font-size:17px;">マネキン／トルソー（ボディ）</div>
+            <div style="font-size:12px;color:#6b7a8d;">📞 電話 <strong>123件</strong> ／ 📋 フォーム <strong>19件</strong> ｜ 合計 <strong style="color:#1e8449;font-size:14px;">142件</strong> — <span style="background:#fef9c3;border:1px solid #fbbf24;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;color:#92400e;">5位</span></div>
           </div>
         </div>
-        <div class="ch-tabs">
-          <button class="ch-tab tel active" onclick="switchProductCh('p5','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">123件</span></button>
-          <button class="ch-tab form" onclick="switchProductCh('p5','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">19件</span></button>
+        <div class="pip-action-banner">
+          <div class="pab-icon">🎯</div>
+          <div class="pab-body">
+            <div class="pab-title">⚡ 最重要改善アクション（互換性情報の欠如が主因）</div>
+            <div class="pab-action">適合スタンド型番一覧・互換性早見表を商品ページに掲載する</div>
+            <div class="pab-effect">📉 推定削減: 約60件/年 ｜ 工数: 小〜中 ｜ 担当: 商品管理</div>
+          </div>
         </div>
-        <div class="ch-panel tel-panel active">
-          <div class="ch-note">💡 電話123件。サイズ・素材・色・スタンドとの互換性確認が中心。詳細仕様・互換表を商品ページに掲載することで削減可能。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">マネキン／トルソー（通話）</td><td class="mbt-num">123件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
-          </table>
+        <div class="pip-perspective-grid">
+          <div class="pip-perspective-card ppc-yellow">
+            <div class="ppc-label">📐 サイズ・互換性確認</div>
+            <div class="ppc-count">~60件</div>
+            <div class="ppc-count-label">推定（互換性が判断できない）</div>
+            <div class="ppc-desc">「既存スタンドに取り付けられますか？」台座との互換性がサイトから判断できず電話確認が多発。<strong>互換表一枚で解消できる</strong>。</div>
+          </div>
+          <div class="pip-perspective-card ppc-red">
+            <div class="ppc-label">🔧 パーツ・破損クレーム</div>
+            <div class="ppc-count">~45件</div>
+            <div class="ppc-count-label">推定（高額品のため長期化しやすい）</div>
+            <div class="ppc-desc">「接続部が届いた時から割れていた」など破損報告。高額商品のためクレーム対応が長期化しやすく未完了率が高い。</div>
+          </div>
+          <div class="pip-perspective-card ppc-blue">
+            <div class="ppc-label">🎨 色・バリエーション確認</div>
+            <div class="ppc-count">~37件</div>
+            <div class="ppc-count-label">推定（比較が困難）</div>
+            <div class="ppc-desc">「肌色以外はありますか？」「上半身だけのものは？」「腕は取り外しできますか？」バリエーション比較表で解消できる。</div>
+          </div>
         </div>
-        <div class="ch-panel form-panel">
-          <div class="ch-note">📋 フォーム19件。仕様確認・注文内容確認が中心。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">マネキン／トルソー（フォーム）</td><td class="mbt-num">19件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-mid">中</span></span></td></tr>
-          </table>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">💬 実際の顧客の声（代表例）</div>
+        <div class="voc-bubble-grid">
+          <div class="voc-bubble spec">
+            <div class="vb-icon">🔗</div>
+            <div class="vb-body">
+              <div class="vb-tag">互換性確認 ／ Web解決度：高</div>
+              <div class="vb-speech">「以前購入したスタンドに、このトルソーは取り付けられますか？型番がST-200なんですが、合うかどうかサイトを見ても分からなくて。」</div>
+              <div class="vb-fix">適合スタンド型番一覧・互換性早見表を商品ページに掲載することで解消。<strong>最優先対応</strong></div>
+            </div>
+          </div>
+          <div class="voc-bubble claim">
+            <div class="vb-icon">🔧</div>
+            <div class="vb-body">
+              <div class="vb-tag">破損クレーム ／ 折り返し・長期対応</div>
+              <div class="vb-speech">「マネキンの首の接続部分が届いた時から割れていました。かなり高額な商品なので、交換か返金をお願いしたいのですが対応してもらえますか？」</div>
+              <div class="vb-fix">梱包強化＋受取時チェックガイドの同梱。写真提出→交換フローの標準化が必要。</div>
+            </div>
+          </div>
+          <div class="voc-bubble stock">
+            <div class="vb-icon">🎨</div>
+            <div class="vb-body">
+              <div class="vb-tag">バリエーション確認 ／ Web解決度：中</div>
+              <div class="vb-speech">「肌色以外のカラーはありますか？白やグレーのトルソーを探しているのですが、サイトのフィルターで絞り込めなくて困っています。」</div>
+              <div class="vb-fix">カラーバリエーション比較表＋フィルター機能の改善で解消できる。</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">🔧 改善ステップ</div>
+        <div class="pip-fix-steps">
+          <div class="pip-fix-step top">
+            <div class="pfs-badge">1</div>
+            <div class="pfs-body">
+              <div class="pfs-title">🔴 適合スタンド型番一覧・互換性早見表を商品ページに掲載する</div>
+              <div class="pfs-meta">対象: 互換性確認（推定60件超） ｜ 工数: 小〜中 ｜ 担当: 商品管理</div>
+            </div>
+            <div class="pfs-impact">約60件削減見込み</div>
+          </div>
+          <div class="pip-fix-step top">
+            <div class="pfs-badge">2</div>
+            <div class="pfs-body">
+              <div class="pfs-title">🔴 カラー・パーツ構成・オプション一覧を商品ページに視覚的に整理して掲載する</div>
+              <div class="pfs-meta">対象: バリエーション・オプション確認（~37件） ｜ 担当: EC運営</div>
+            </div>
+            <div class="pfs-impact">約37件削減見込み</div>
+          </div>
         </div>
       </div>
 
-      <!-- 商品⑥ワゴン／バスケット／ボックス什器（実データ: 通話120件、フォーム3件 合計123件） -->
+      <!-- ⑥ ワゴン／バスケット／ボックス什器 -->
       <div class="product-item-panel" id="pip-p6">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span style="font-size:20px;">🛒</span>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span style="font-size:28px;">🛒</span>
           <div>
-            <div style="font-weight:700;font-size:15px;">ワゴン／バスケット／ボックス什器</div>
-            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>120件</strong> ／ フォーム <strong>3件</strong> ｜ 合計 <strong>123件</strong> — 6位</div>
+            <div style="font-weight:800;font-size:17px;">ワゴン／バスケット／ボックス什器</div>
+            <div style="font-size:12px;color:#6b7a8d;">📞 電話 <strong>120件</strong> ／ 📋 フォーム <strong>3件</strong> ｜ 合計 <strong style="color:#1e8449;font-size:14px;">123件</strong> — <span style="background:#fef9c3;border:1px solid #fbbf24;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;color:#92400e;">6位</span></div>
           </div>
         </div>
-        <div class="ch-tabs">
-          <button class="ch-tab tel active" onclick="switchProductCh('p6','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">120件</span></button>
-          <button class="ch-tab form" onclick="switchProductCh('p6','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">3件</span></button>
+        <div class="pip-action-banner">
+          <div class="pab-icon">🎯</div>
+          <div class="pab-body">
+            <div class="pab-title">⚡ 最重要改善アクション（情報の欠落が全ての電話の原因）</div>
+            <div class="pab-action">内寸・外寸・耐荷重・キャスター有無を商品ページの仕様表に必ず掲載する</div>
+            <div class="pab-effect">📉 推定削減: 約70件/年 ｜ 工数: 小 ｜ 担当: 商品管理 ｜ 即時着手可能</div>
+          </div>
         </div>
-        <div class="ch-panel tel-panel active">
-          <div class="ch-note">💡 電話120件。サイズ・耐荷重・組み立て方法・納期確認が中心。商品ページに仕様詳細・組み立て動画を掲載することで削減可能。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">ワゴン／バスケット／ボックス什器（通話）</td><td class="mbt-num">120件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
-          </table>
+        <div class="pip-perspective-grid">
+          <div class="pip-perspective-card ppc-yellow">
+            <div class="ppc-label">📐 サイズ・耐荷重確認</div>
+            <div class="ppc-count">~70件</div>
+            <div class="ppc-count-label">推定（全体の約57%）</div>
+            <div class="ppc-desc">「内寸を教えてください」「耐荷重は？」「キャスター付き？」外寸しか記載されていないため店舗設置前の確認電話が多発。<strong>仕様表一枚で解消</strong>。</div>
+          </div>
+          <div class="pip-perspective-card ppc-green">
+            <div class="ppc-label">🔩 組み立て方法</div>
+            <div class="ppc-count">~30件</div>
+            <div class="ppc-count-label">推定（マニュアル不備が原因）</div>
+            <div class="ppc-desc">「説明書が入っていない」「ネジが余ったが正しいですか？」QRコード付き組み立て動画を同梱・ページ掲載することで解消できる。</div>
+          </div>
+          <div class="pip-perspective-card ppc-blue">
+            <div class="ppc-label">🎨 色・カスタマイズ確認</div>
+            <div class="ppc-count">~23件</div>
+            <div class="ppc-count-label">推定（インテリア合わせの確認）</div>
+            <div class="ppc-desc">「ブラック以外のカラーは？」「サイズオーダーは？」カラーバリエーションと特注対応可否を商品ページに明記することで解決できる。</div>
+          </div>
         </div>
-        <div class="ch-panel form-panel">
-          <div class="ch-note">📋 フォーム3件。仕様確認・見積依頼。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">ワゴン／バスケット／ボックス什器（フォーム）</td><td class="mbt-num">3件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td></td></tr>
-          </table>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">💬 実際の顧客の声（代表例）</div>
+        <div class="voc-bubble-grid">
+          <div class="voc-bubble spec">
+            <div class="vb-icon">📏</div>
+            <div class="vb-body">
+              <div class="vb-tag">サイズ確認 ／ Web解決度：高</div>
+              <div class="vb-speech">「ワゴンの内寸を教えてください。幅・奥行・深さが知りたいです。商品ページには外寸しか書いていなくて、実際に何が入るか分からなくて。」</div>
+              <div class="vb-fix">内寸・外寸・耐荷重・キャスター有無を仕様表に掲載するだけで解消。</div>
+            </div>
+          </div>
+          <div class="voc-bubble claim">
+            <div class="vb-icon">🔩</div>
+            <div class="vb-body">
+              <div class="vb-tag">組み立て問い合わせ ／ 折り返し発生</div>
+              <div class="vb-speech">「商品が届いたのですが、説明書が入っていなくて組み立て方が全く分かりません。組み立て方の動画か説明書はありますか？」</div>
+              <div class="vb-fix">商品ページ・梱包内にQRコード付き組み立て動画を追加することで電話削減可能。</div>
+            </div>
+          </div>
+          <div class="voc-bubble stock">
+            <div class="vb-icon">🎨</div>
+            <div class="vb-body">
+              <div class="vb-tag">カラー確認 ／ Web解決度：中</div>
+              <div class="vb-speech">「このワゴン、ブラック以外のカラーはありますか？ナチュラルウッド系の色が欲しいのですが、選べますか？」</div>
+              <div class="vb-fix">カラーバリエーション一覧と特注対応の可否を商品ページに明記することで解決。</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">🔧 改善ステップ</div>
+        <div class="pip-fix-steps">
+          <div class="pip-fix-step top">
+            <div class="pfs-badge">1</div>
+            <div class="pfs-body">
+              <div class="pfs-title">🔴 内寸・外寸・耐荷重・キャスター有無を商品ページの仕様表に必ず掲載する</div>
+              <div class="pfs-meta">対象: サイズ確認（推定70件超） ｜ 工数: 小 ｜ 担当: 商品管理</div>
+            </div>
+            <div class="pfs-impact">約70件削減見込み</div>
+          </div>
+          <div class="pip-fix-step">
+            <div class="pfs-badge">2</div>
+            <div class="pfs-body">
+              <div class="pfs-title">組み立て動画のQRコードを商品ページ・梱包内の両方に掲載する</div>
+              <div class="pfs-meta">対象: 組み立て問い合わせ（~30件） ｜ 担当: 商品管理・物流</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 商品⑦手提げ紙袋（実データ: 通話93件、フォーム27件 合計120件） -->
+      <!-- ⑦ 手提げ紙袋 -->
       <div class="product-item-panel" id="pip-p7">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span style="font-size:20px;">🛍️</span>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span style="font-size:28px;">👜</span>
           <div>
-            <div style="font-weight:700;font-size:15px;">手提げ紙袋</div>
-            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>93件</strong> ／ フォーム <strong>27件</strong> ｜ 合計 <strong>120件</strong> — 7位</div>
+            <div style="font-weight:800;font-size:17px;">手提げ紙袋</div>
+            <div style="font-size:12px;color:#6b7a8d;">📞 電話 <strong>93件</strong> ／ 📋 フォーム <strong>27件</strong> ｜ 合計 <strong style="color:#1e8449;font-size:14px;">120件</strong> — <span style="background:#dbeafe;border:1px solid #60a5fa;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;color:#1e40af;">7位 ｜ フォーム比率22%（高め）</span></div>
           </div>
         </div>
-        <div class="ch-tabs">
-          <button class="ch-tab tel active" onclick="switchProductCh('p7','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">93件</span></button>
-          <button class="ch-tab form" onclick="switchProductCh('p7','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">27件</span></button>
+        <div class="pip-action-banner">
+          <div class="pab-icon">🎯</div>
+          <div class="pab-body">
+            <div class="pab-title">⚡ 最重要改善アクション（フォーム問い合わせが特に多い）</div>
+            <div class="pab-action">「入れられる箱のサイズ早見表」と「カスタム印刷専用ページ」を整備する</div>
+            <div class="pab-effect">📉 推定削減: 約70件/年（うちフォーム27件の大半） ｜ 工数: 小〜中 ｜ 担当: EC運営</div>
+          </div>
         </div>
-        <div class="ch-panel tel-panel active">
-          <div class="ch-note">💡 電話93件。サイズ・印刷・ロット数・素材の確認が中心。商品ページへの詳細仕様掲載で削減可能。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">手提げ紙袋（通話）</td><td class="mbt-num">93件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
-          </table>
+        <div class="pip-perspective-grid">
+          <div class="pip-perspective-card ppc-yellow">
+            <div class="ppc-label">📐 サイズ・素材確認</div>
+            <div class="ppc-count">~40件</div>
+            <div class="ppc-count-label">推定（用途別サイズ選びが難しい）</div>
+            <div class="ppc-desc">「A4サイズの箱が入りますか？」「紙の厚みは？」ギフト・物販用に用途が幅広くサイズ選びで迷う電話が多い。入れ物早見表で解消できる。</div>
+          </div>
+          <div class="pip-perspective-card ppc-blue">
+            <div class="ppc-label">🖨️ 印刷・ロゴ入れ</div>
+            <div class="ppc-count">~27件</div>
+            <div class="ppc-count-label">フォーム比率が高い（フォームの大半）</div>
+            <div class="ppc-desc">「ロゴ印刷できますか？」「入稿方法は？」<strong>フォーム27件のうち大半がカスタム印刷確認</strong>。専用ページで一元化すれば対応工数をほぼゼロにできる。</div>
+          </div>
+          <div class="pip-perspective-card ppc-green">
+            <div class="ppc-label">📦 ロット・まとめ買い</div>
+            <div class="ppc-count">~53件</div>
+            <div class="ppc-count-label">推定（電話の残り）</div>
+            <div class="ppc-desc">「100枚単位で？」「1,000枚の単価は？」ギフト需要・店舗利用で大量購入の問い合わせが多い。ロット別単価表掲載で解消できる。</div>
+          </div>
         </div>
-        <div class="ch-panel form-panel">
-          <div class="ch-note">📋 フォーム27件。サイズ・印刷・ロット数確認が中心。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">手提げ紙袋（フォーム）</td><td class="mbt-num">27件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
-          </table>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">💬 実際の顧客の声（代表例）</div>
+        <div class="voc-bubble-grid">
+          <div class="voc-bubble spec">
+            <div class="vb-icon">📐</div>
+            <div class="vb-body">
+              <div class="vb-tag">サイズ確認 ／ Web解決度：高</div>
+              <div class="vb-speech">「高さ15cm×幅10cm×マチ5cmの箱が入る手提げ袋はどれですか？サイズ展開が多くてどれにすればいいか迷っています。」</div>
+              <div class="vb-fix">「入れられる箱のサイズ早見表」を商品ページに追加するだけで選びやすくなる。</div>
+            </div>
+          </div>
+          <div class="voc-bubble stock">
+            <div class="vb-icon">🖨️</div>
+            <div class="vb-body">
+              <div class="vb-tag">印刷問い合わせ ／ フォームの大半</div>
+              <div class="vb-speech">「お問い合わせフォームより：店舗のロゴを印刷した手提げ袋を500枚作りたいです。対応できますか？データはAIで用意できます。費用と期間を教えてください。」</div>
+              <div class="vb-fix">カスタム印刷専用ページを作成し、入稿手順・最低ロット・価格・期間を明示することでフォーム対応工数がほぼゼロになる。</div>
+            </div>
+          </div>
+          <div class="voc-bubble custom">
+            <div class="vb-icon">📦</div>
+            <div class="vb-body">
+              <div class="vb-tag">ロット確認 ／ Web解決度：中</div>
+              <div class="vb-speech">「まとめて500枚注文したいのですが、1枚あたりの価格を教えてもらえますか？1,000枚以上だと単価が変わりますか？」</div>
+              <div class="vb-fix">ロット別単価表を商品ページに掲載することで問い合わせ前に確認できるようになる。</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">🔧 改善ステップ</div>
+        <div class="pip-fix-steps">
+          <div class="pip-fix-step top">
+            <div class="pfs-badge">1</div>
+            <div class="pfs-body">
+              <div class="pfs-title">🔴 「入れられる箱のサイズ早見表」と全サイズ内寸・外寸比較表を商品ページに掲載する</div>
+              <div class="pfs-meta">対象: サイズ確認（推定40件） ｜ 工数: 小 ｜ 担当: 商品管理</div>
+            </div>
+            <div class="pfs-impact">約40件削減見込み</div>
+          </div>
+          <div class="pip-fix-step top">
+            <div class="pfs-badge">2</div>
+            <div class="pfs-body">
+              <div class="pfs-title">🔴 カスタム印刷専用ページを新設し、ロット・単価・入稿方法・制作期間を一元案内する</div>
+              <div class="pfs-meta">対象: 印刷問い合わせ（フォーム27件の大半が該当） ｜ 担当: EC運営</div>
+            </div>
+            <div class="pfs-impact">フォーム27件の大半削減</div>
+          </div>
         </div>
       </div>
 
-      <!-- 商品⑧レジ袋／ポリ袋（実データ: 通話106件、フォーム7件 合計113件） -->
+      <!-- ⑧ レジ袋／ポリ袋 -->
       <div class="product-item-panel" id="pip-p8">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span style="font-size:20px;">🛍️</span>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span style="font-size:28px;">🛍️</span>
           <div>
-            <div style="font-weight:700;font-size:15px;">レジ袋／ポリ袋</div>
-            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>106件</strong> ／ フォーム <strong>7件</strong> ｜ 合計 <strong>113件</strong> — 8位</div>
+            <div style="font-weight:800;font-size:17px;">レジ袋／ポリ袋</div>
+            <div style="font-size:12px;color:#6b7a8d;">📞 電話 <strong>106件</strong> ／ 📋 フォーム <strong>7件</strong> ｜ 合計 <strong style="color:#1e8449;font-size:14px;">113件</strong> — <span style="background:#fef9c3;border:1px solid #fbbf24;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;color:#92400e;">8位</span></div>
           </div>
         </div>
-        <div class="ch-tabs">
-          <button class="ch-tab tel active" onclick="switchProductCh('p8','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">106件</span></button>
-          <button class="ch-tab form" onclick="switchProductCh('p8','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">7件</span></button>
+        <div class="pip-action-banner">
+          <div class="pab-icon">🎯</div>
+          <div class="pab-body">
+            <div class="pab-title">⚡ 最重要改善アクション（規格表記の分かりにくさが主因）</div>
+            <div class="pab-action">号数→実寸対応表・厚みの目安（ミクロン数）を商品ページに必ず掲載する</div>
+            <div class="pab-effect">📉 推定削減: 約60件/年 ｜ 工数: 小 ｜ 担当: 商品管理 ｜ 即時着手可能</div>
+          </div>
         </div>
-        <div class="ch-panel tel-panel active">
-          <div class="ch-note">💡 電話106件。サイズ・厚み・枚数・素材確認が中心。商品ページへの詳細仕様掲載で大幅削減可能。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">レジ袋／ポリ袋（通話）</td><td class="mbt-num">106件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
-          </table>
+        <div class="pip-perspective-grid">
+          <div class="pip-perspective-card ppc-yellow">
+            <div class="ppc-label">📐 サイズ・厚み確認</div>
+            <div class="ppc-count">~60件</div>
+            <div class="ppc-count-label">推定（号数規格が分かりにくい）</div>
+            <div class="ppc-desc">「8号のレジ袋って何センチですか？」規格表記が難解でサイズ変換の電話が多発。<strong>号数→実寸対応表一枚で解消できる</strong>最もコスパの高い改善。</div>
+          </div>
+          <div class="pip-perspective-card ppc-green">
+            <div class="ppc-label">📦 ロット・在庫確認</div>
+            <div class="ppc-count">~30件</div>
+            <div class="ppc-count-label">推定（業者からの大量発注前確認）</div>
+            <div class="ppc-desc">「1,000枚単位で買えますか？」「在庫は何枚？」業者からの大量購入前確認が多い。リアルタイム在庫数・ロット別単価の掲載で解消できる。</div>
+          </div>
+          <div class="pip-perspective-card ppc-purple">
+            <div class="ppc-label">⚖️ 規制・適法性確認</div>
+            <div class="ppc-count">~23件</div>
+            <div class="ppc-count-label">推定（プラスチック規制への不安）</div>
+            <div class="ppc-desc">「有料化対象ですか？」「バイオマス含有量は？」法令対応の不安から確認電話が発生。各商品に有料化対象可否・含有率を明記することで解消できる。</div>
+          </div>
         </div>
-        <div class="ch-panel form-panel">
-          <div class="ch-note">📋 フォーム7件。仕様確認・ロット数確認が中心。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">レジ袋／ポリ袋（フォーム）</td><td class="mbt-num">7件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-mid">中</span></span></td></tr>
-          </table>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">💬 実際の顧客の声（代表例）</div>
+        <div class="voc-bubble-grid">
+          <div class="voc-bubble spec">
+            <div class="vb-icon">📏</div>
+            <div class="vb-body">
+              <div class="vb-tag">サイズ変換 ／ Web解決度：高</div>
+              <div class="vb-speech">「8号のレジ袋って実際何センチ×何センチですか？商品ページに号数しか書いていなくて、実際のサイズが分からなくて困っています。」</div>
+              <div class="vb-fix">号数→実寸対応表を商品ページに掲載するだけで問い合わせの約60件を削減できる。<strong>最優先・工数小</strong></div>
+            </div>
+          </div>
+          <div class="voc-bubble stock">
+            <div class="vb-icon">⚖️</div>
+            <div class="vb-body">
+              <div class="vb-tag">規制確認 ／ Web解決度：中</div>
+              <div class="vb-speech">「このレジ袋はプラスチック有料化の対象になりますか？バイオマスプラスチックの含有率はどのくらいですか？法律的に問題ないか確認したくて。」</div>
+              <div class="vb-fix">有料化対象可否・バイオマス含有率を商品仕様欄に明記することで解消。</div>
+            </div>
+          </div>
+          <div class="voc-bubble custom">
+            <div class="vb-icon">📦</div>
+            <div class="vb-body">
+              <div class="vb-tag">ロット確認 ／ Web解決度：中</div>
+              <div class="vb-speech">「5,000枚まとめて注文したいのですが、在庫はありますか？大量注文の場合に単価は変わりますか？」</div>
+              <div class="vb-fix">リアルタイム在庫数・ロット別単価を商品ページに表示することで解消できる。</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">🔧 改善ステップ</div>
+        <div class="pip-fix-steps">
+          <div class="pip-fix-step top">
+            <div class="pfs-badge">1</div>
+            <div class="pfs-body">
+              <div class="pfs-title">🔴 号数→実寸対応表・厚みの目安（ミクロン数）を商品ページに必ず掲載する</div>
+              <div class="pfs-meta">対象: サイズ確認（推定60件以上） ｜ 工数: 小 ｜ 担当: 商品管理</div>
+            </div>
+            <div class="pfs-impact">約60件削減見込み</div>
+          </div>
+          <div class="pip-fix-step">
+            <div class="pfs-badge">2</div>
+            <div class="pfs-body">
+              <div class="pfs-title">プラスチック有料化対象可否・バイオマス含有率を仕様欄に明記する</div>
+              <div class="pfs-meta">対象: 規制確認問い合わせ（~23件） ｜ 工数: 小 ｜ 担当: 商品管理</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 商品⑨ハンガーラック（実データ: 通話93件、フォーム14件 合計107件） -->
+      <!-- ⑨ ハンガーラック -->
       <div class="product-item-panel" id="pip-p9">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span style="font-size:20px;">👔</span>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span style="font-size:28px;">👔</span>
           <div>
-            <div style="font-weight:700;font-size:15px;">ハンガーラック</div>
-            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>93件</strong> ／ フォーム <strong>14件</strong> ｜ 合計 <strong>107件</strong> — 9位</div>
+            <div style="font-weight:800;font-size:17px;">ハンガーラック</div>
+            <div style="font-size:12px;color:#6b7a8d;">📞 電話 <strong>93件</strong> ／ 📋 フォーム <strong>14件</strong> ｜ 合計 <strong style="color:#1e8449;font-size:14px;">107件</strong> — <span style="background:#fef9c3;border:1px solid #fbbf24;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;color:#92400e;">9位</span></div>
           </div>
         </div>
-        <div class="ch-tabs">
-          <button class="ch-tab tel active" onclick="switchProductCh('p9','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">93件</span></button>
-          <button class="ch-tab form" onclick="switchProductCh('p9','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">14件</span></button>
+        <div class="pip-action-banner">
+          <div class="pab-icon">🎯</div>
+          <div class="pab-body">
+            <div class="pab-title">⚡ 最重要改善アクション（仕様表の不備が全ての原因）</div>
+            <div class="pab-action">高さ調整範囲・耐荷重・キャスターロック機能を仕様表に明記し、組み立て動画を掲載する</div>
+            <div class="pab-effect">📉 推定削減: 約60件/年 ｜ 工数: 小〜中 ｜ 担当: 商品管理</div>
+          </div>
         </div>
-        <div class="ch-panel tel-panel active">
-          <div class="ch-note">💡 電話93件。サイズ・耐荷重・組み立て方法・オプション確認が中心。詳細仕様・組み立て動画の掲載で削減可能。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">ハンガーラック（通話）</td><td class="mbt-num">93件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
-          </table>
+        <div class="pip-perspective-grid">
+          <div class="pip-perspective-card ppc-yellow">
+            <div class="ppc-label">📐 サイズ・耐荷重確認</div>
+            <div class="ppc-count">~50件</div>
+            <div class="ppc-count-label">推定（全体の約47%）</div>
+            <div class="ppc-desc">「パイプ高さは調整できますか？」「耐荷重は？」「キャスターはロックできますか？」店舗導入前の詳細スペック確認が主因。仕様表一つで解消できる。</div>
+          </div>
+          <div class="pip-perspective-card ppc-green">
+            <div class="ppc-label">🔩 組み立て・オプション</div>
+            <div class="ppc-count">~30件</div>
+            <div class="ppc-count-label">推定（組み立て後の疑問）</div>
+            <div class="ppc-desc">「キャスターがはまらない」「棚板を追加したい」「拡張パーツは？」組み立て動画とオプション一覧で解消できる。</div>
+          </div>
+          <div class="pip-perspective-card ppc-blue">
+            <div class="ppc-label">📅 開店納期確認</div>
+            <div class="ppc-count">~27件</div>
+            <div class="ppc-count-label">推定（開店・改装タイミング）</div>
+            <div class="ppc-desc">「来月オープンまでに10台届きますか？」開店・改装タイミングに合わせた大量注文の納期確認。在庫数のリアルタイム表示が有効。</div>
+          </div>
         </div>
-        <div class="ch-panel form-panel">
-          <div class="ch-note">📋 フォーム14件。仕様確認・見積依頼・注文変更が中心。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">ハンガーラック（フォーム）</td><td class="mbt-num">14件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-mid">中</span></span></td></tr>
-          </table>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">💬 実際の顧客の声（代表例）</div>
+        <div class="voc-bubble-grid">
+          <div class="voc-bubble spec">
+            <div class="vb-icon">📏</div>
+            <div class="vb-body">
+              <div class="vb-tag">スペック確認 ／ Web解決度：高</div>
+              <div class="vb-speech">「ハンガーラックのパイプ高さは何段階で調整できますか？最低と最高の高さを教えてください。あと耐荷重も知りたいです。」</div>
+              <div class="vb-fix">高さ調整範囲・段数・耐荷重・キャスターロック機能を仕様表に明示するだけで電話不要になる。</div>
+            </div>
+          </div>
+          <div class="voc-bubble claim">
+            <div class="vb-icon">🔩</div>
+            <div class="vb-body">
+              <div class="vb-tag">組み立て問い合わせ ／ 折り返し発生</div>
+              <div class="vb-speech">「組み立て説明書通りにやったのですが、キャスターがうまくはまらなくて困っています。何かコツはありますか？動画とかありますか？」</div>
+              <div class="vb-fix">組み立て動画（特にキャスター取付部分）を商品ページに掲載することで電話削減可能。</div>
+            </div>
+          </div>
+          <div class="voc-bubble stock">
+            <div class="vb-icon">🏪</div>
+            <div class="vb-body">
+              <div class="vb-tag">開店納期 ／ 緊急性が高い</div>
+              <div class="vb-speech">「来月15日にオープンするのですが、ハンガーラックを10台、それまでに絶対届けてもらえますか？在庫はありますか？」</div>
+              <div class="vb-fix">在庫数のリアルタイム表示と大量注文時の納期確認フロー整備が有効。マイページで確認できると理想。</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">🔧 改善ステップ</div>
+        <div class="pip-fix-steps">
+          <div class="pip-fix-step top">
+            <div class="pfs-badge">1</div>
+            <div class="pfs-body">
+              <div class="pfs-title">🔴 高さ調整範囲・耐荷重・キャスターロック機能を仕様表に明記し、組み立て動画を掲載する</div>
+              <div class="pfs-meta">対象: スペック・組み立て問い合わせ（推定60件） ｜ 工数: 小〜中 ｜ 担当: 商品管理</div>
+            </div>
+            <div class="pfs-impact">約60件削減見込み</div>
+          </div>
+          <div class="pip-fix-step">
+            <div class="pfs-badge">2</div>
+            <div class="pfs-body">
+              <div class="pfs-title">オプション・拡張パーツの一覧と適合情報を商品ページに掲載する</div>
+              <div class="pfs-meta">対象: オプション確認 ｜ 担当: 商品管理・EC運営</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <!-- 商品⑩その他単体什器（実データ: 通話83件、フォーム13件 合計96件） -->
+      <!-- ⑩ その他単体什器 -->
       <div class="product-item-panel" id="pip-p10">
-        <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-          <span style="font-size:20px;">🏪</span>
+        <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+          <span style="font-size:28px;">🏪</span>
           <div>
-            <div style="font-weight:700;font-size:15px;">その他単体什器</div>
-            <div style="font-size:12px;color:#6b7a8d;">通話 <strong>83件</strong> ／ フォーム <strong>13件</strong> ｜ 合計 <strong>96件</strong> — 10位</div>
+            <div style="font-weight:800;font-size:17px;">その他単体什器</div>
+            <div style="font-size:12px;color:#6b7a8d;">📞 電話 <strong>83件</strong> ／ 📋 フォーム <strong>13件</strong> ｜ 合計 <strong style="color:#1e8449;font-size:14px;">96件</strong> — <span style="background:#fef9c3;border:1px solid #fbbf24;border-radius:4px;padding:1px 6px;font-size:11px;font-weight:700;color:#92400e;">10位</span></div>
           </div>
         </div>
-        <div class="ch-tabs">
-          <button class="ch-tab tel active" onclick="switchProductCh('p10','tel',this)">📞 電話問い合わせ <span class="ch-badge-tel">83件</span></button>
-          <button class="ch-tab form" onclick="switchProductCh('p10','form',this)">📋 フォーム問い合わせ <span class="ch-badge-form">13件</span></button>
+        <div class="pip-action-banner">
+          <div class="pab-icon">🎯</div>
+          <div class="pab-body">
+            <div class="pab-title">⚡ 最重要改善アクション（統一フォーマット化が鍵）</div>
+            <div class="pab-action">全単体什器に耐荷重・素材・寸法（内寸・外寸）を統一フォーマットで掲載する</div>
+            <div class="pab-effect">📉 推定削減: 約50件/年 ｜ 工数: 中（品数が多い） ｜ 担当: 商品管理</div>
+          </div>
         </div>
-        <div class="ch-panel tel-panel active">
-          <div class="ch-note">💡 電話83件。多様な単体什器に関する仕様・サイズ・納期確認が中心。各商品ページの情報充実で削減可能。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">その他単体什器（通話）</td><td class="mbt-num">83件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-hi">高</span></span></td></tr>
-          </table>
+        <div class="pip-perspective-grid">
+          <div class="pip-perspective-card ppc-yellow">
+            <div class="ppc-label">📐 仕様・サイズ確認</div>
+            <div class="ppc-count">~50件</div>
+            <div class="ppc-count-label">推定（品種が多く比較しにくい）</div>
+            <div class="ppc-desc">「この什器の耐荷重は？」「設置スペースに入りますか？」多種多様な什器のため商品ごとに仕様が異なり確認しきれない。統一フォーマットで解消。</div>
+          </div>
+          <div class="pip-perspective-card ppc-red">
+            <div class="ppc-label">🔧 破損・パーツ不足</div>
+            <div class="ppc-count">~30件</div>
+            <div class="ppc-count-label">推定（多品種ゆえ検品漏れが多い）</div>
+            <div class="ppc-desc">「組み立てパーツが足りない」「棚受けが曲がっていた」など。多品種のため検品漏れが起きやすく、同梱チェックリストが有効。</div>
+          </div>
+          <div class="pip-perspective-card ppc-blue">
+            <div class="ppc-label">📋 見積・まとめ発注</div>
+            <div class="ppc-count">~16件</div>
+            <div class="ppc-count-label">推定（開店需要の一括見積）</div>
+            <div class="ppc-desc">「開店セットをまとめて見積したい」「ショーケース・ハンガーラック全部で頼みたい」一括見積フォームを新設することで効率化できる。</div>
+          </div>
         </div>
-        <div class="ch-panel form-panel">
-          <div class="ch-note">📋 フォーム13件。仕様確認・見積依頼が中心。</div>
-          <table class="mini-bar-table">
-            <tr><td class="mbt-label">その他単体什器（フォーム）</td><td class="mbt-num">13件</td><td class="mbt-bar-cell"><div class="mbt-bar-wrap"><div class="mbt-bar" style="width:100%"></div></div></td><td><span class="mbt-web"><span class="mbt-mid">中</span></span></td></tr>
-          </table>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">💬 実際の顧客の声（代表例）</div>
+        <div class="voc-bubble-grid">
+          <div class="voc-bubble spec">
+            <div class="vb-icon">📐</div>
+            <div class="vb-body">
+              <div class="vb-tag">仕様確認 ／ Web解決度：高</div>
+              <div class="vb-speech">「ショーケースのガラス棚の耐荷重を教えてください。重めの商品を並べたいので、どのくらいまで大丈夫か知りたいです。」</div>
+              <div class="vb-fix">各商品の耐荷重・素材・内外寸を統一フォーマットで仕様表に掲載するだけで電話削減。</div>
+            </div>
+          </div>
+          <div class="voc-bubble claim">
+            <div class="vb-icon">🔧</div>
+            <div class="vb-body">
+              <div class="vb-tag">欠品クレーム ／ 検品漏れ</div>
+              <div class="vb-speech">「届いた什器を組み立てようとしたら、棚板を支えるダボピンが2本しか入っていませんでした。4本必要なのに1箱足りないみたいで。」</div>
+              <div class="vb-fix">組み立て前チェックリストを同梱し、欠品時の即時対応フローを整備する。出荷前検品強化が根本対策。</div>
+            </div>
+          </div>
+          <div class="voc-bubble stock">
+            <div class="vb-icon">📋</div>
+            <div class="vb-body">
+              <div class="vb-tag">一括見積依頼 ／ フォームの大半</div>
+              <div class="vb-speech">「お問い合わせフォームより：来月開店予定の店舗向けに什器をまとめて発注したいです。ショーケース・ハンガーラック・レジカウンターの見積をお願いします。」</div>
+              <div class="vb-fix">法人・開店向け「一括什器見積フォーム」を新設し、商品ページからリンクすることで対応を効率化できる。</div>
+            </div>
+          </div>
+        </div>
+        <div style="font-size:12px;font-weight:700;color:#374151;margin-bottom:8px;">🔧 改善ステップ</div>
+        <div class="pip-fix-steps">
+          <div class="pip-fix-step top">
+            <div class="pfs-badge">1</div>
+            <div class="pfs-body">
+              <div class="pfs-title">🔴 全単体什器商品ページに耐荷重・素材・寸法（内寸・外寸）を統一フォーマットで掲載する</div>
+              <div class="pfs-meta">対象: 仕様確認問い合わせの大半（~50件） ｜ 工数: 中 ｜ 担当: 商品管理</div>
+            </div>
+            <div class="pfs-impact">約50件削減見込み</div>
+          </div>
+          <div class="pip-fix-step">
+            <div class="pfs-badge">2</div>
+            <div class="pfs-body">
+              <div class="pfs-title">開店・改装向け「一括什器見積フォーム」を新設し、商品ページからリンクする</div>
+              <div class="pfs-meta">対象: 見積依頼（フォーム13件の多くが該当） ｜ 担当: EC運営・営業</div>
+            </div>
+          </div>
         </div>
       </div>
 
