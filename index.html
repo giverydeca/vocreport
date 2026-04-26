@@ -744,17 +744,16 @@ a { color: var(--color-a); }
     <li><a href="#s1">エグゼクティブサマリ</a></li>
     <li><a href="#s2">問い合わせ内容の分布（大区分・小区分）</a></li>
     <li><a href="#s3">解決ステータスと未完了分析</a></li>
-    <li><a href="#s4">Web自己解決可能性ギャップ分析</a></li>
-    <li><a href="#s5">⑤ カテゴリ別 課題の深掘りとVoC（13,714件 4カテゴリ分類）</a>
+    <li><a href="#s4">④ カテゴリ別 課題の深掘りとVoC（13,714件 4カテゴリ分類）</a>
       <ul style="margin-top:6px;padding-left:16px;">
-        <li><a href="#s5">🖥️ ⑤-1 サイト（5,283件）— 注文・帳票・支払・ログイン・納期確認・ご利用全般・カタログ・FAX</a></li>
-        <li><a href="#s5">🚚 ⑤-2 配送（842件）— 出荷後〜到着前の配送会社トラブル</a></li>
-        <li><a href="#s5">📦 ⑤-3 商品（5,800件）— 商品仕様・パーツ不足・その他商品</a></li>
-        <li><a href="#s5">📋 ⑤-4 その他（1,789件）— 担当者不在・売込み・間違い電話</a></li>
+        <li><a href="#s4">🖥️ ④-1 サイト（5,283件）— 注文・帳票・支払・ログイン・納期確認・ご利用全般・カタログ・FAX</a></li>
+        <li><a href="#s4">🚚 ④-2 配送（842件）— 出荷後〜到着前の配送会社トラブル</a></li>
+        <li><a href="#s4">📦 ④-3 商品（5,800件）— 商品仕様・パーツ不足・その他商品</a></li>
+        <li><a href="#s4">📋 ④-4 その他（1,789件）— 担当者不在・売込み・間違い電話</a></li>
       </ul>
     </li>
-    <li><a href="#s6">顧客問い合わせタイミング別 主な課題</a></li>
-    <li><a href="#s8-form">フォームの問い合わせ特性 — Web完結志向層のUX改善</a></li>
+    <li><a href="#s5">⑤ 顧客問い合わせタイミング別 主な課題</a></li>
+    <li><a href="#s6">⑥ フォームの問い合わせ特性 — Web完結志向層のUX改善</a></li>
   </ol>
 </nav>
 
@@ -768,12 +767,11 @@ a { color: var(--color-a); }
     <div class="message-card red">
       <div class="msg-num">Key Finding 1</div>
       <div class="msg-body">問い合わせの31.2%が「納期・配送」に集中（合計4,284件）— 上位4つの意図で1,743件を占める</div>
-      <div class="msg-detail">4,284件のうち意図が明確な上位4種類（計1,743件）は打ち手が特定できる：<br>
+      <div class="msg-detail">4,284件のうち意図が明確な上位4種類：<br>
         <span style="display:inline-block;margin-top:8px;">🔴 <strong>「いつ届くか・追跡できない」904件</strong>（注文後）— 出荷完了メールへの追跡URL追加＋マイページステータス改善で即時削減可能</span><br>
         <span style="display:inline-block;margin-top:4px;">🟠 <strong>「時間指定の変更・ミス」334件</strong>（注文後）— マイページに配送業者の時間変更リンクを設置</span><br>
         <span style="display:inline-block;margin-top:4px;">🔵 <strong>「在庫はあるか」263件</strong>（注文前）— 商品ページにリアルタイム在庫数を表示</span><br>
-        <span style="display:inline-block;margin-top:4px;">🟣 <strong>「表示より早く欲しい」242件</strong>（注文前）— 最短納期・早期便オプションの明示</span><br>
-        <span style="font-size:12px;color:#6b7a8d;margin-top:8px;display:inline-block;">※ 残り2,541件は複合・少数意図。まず上位4種の1,743件から着手するのが最短経路。</span>
+        <span style="display:inline-block;margin-top:4px;">🟣 <strong>「表示より早く欲しい」242件</strong>（注文前）— 最短納期・早期便オプションの明示</span>
       </div>
     </div>
     <div class="message-card blue">
@@ -1124,55 +1122,10 @@ a { color: var(--color-a); }
   </div>
 </section>
 
-<!-- ======= SECTION 4 ======= -->
+<!-- ======= SECTION 4 — カテゴリ別深掘り ======= -->
 <section class="section" id="s4">
   <div class="section-title">
-    <div class="section-num">4</div>Web自己解決可能性ギャップ分析
-  </div>
-
-  <p style="margin-bottom:16px;font-size:14px;">サイト起因5,283件はUI・機能改善、商品起因5,800件は商品ページ情報充実でそれぞれ削減可能。合計<strong>11,083件（全体の80.8%）</strong>が改善余地あり。年換算（3か月分×4）では改善の優先度付けと施策実行が重要。</p>
-
-  <div class="chart-row">
-    <div class="chart-wrap">
-      <div class="chart-title">Web自己解決可能性の分布（電話10,000件ベース）</div>
-      <canvas id="chartSelfService" height="280"></canvas>
-    </div>
-    <div class="chart-wrap">
-      <div class="chart-title">テーマ別 年間削減可能件数の試算（サイト起因対象）</div>
-      <canvas id="chartHighSelf" height="280"></canvas>
-    </div>
-  </div>
-
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin:8px 0 16px;">
-    <div style="background:#eafaf1;border:1px solid #a9dfbf;border-radius:10px;padding:20px;text-align:center;">
-      <div style="font-size:26px;font-weight:700;color:#1e8449;">21,132件/年</div>
-      <div style="font-size:12px;color:#6b7a8d;margin-top:4px;">年間削減見込み件数（サイト起因5,283件×4倍）</div>
-    </div>
-    <div style="background:#eafaf1;border:1px solid #a9dfbf;border-radius:10px;padding:20px;text-align:center;">
-      <div style="font-size:26px;font-weight:700;color:#1e8449;">約3,522時間/年</div>
-      <div style="font-size:12px;color:#6b7a8d;margin-top:4px;">CS対応工数削減効果（21,132件×10分÷60）</div>
-    </div>
-    <div style="background:#eafaf1;border:1px solid #a9dfbf;border-radius:10px;padding:20px;text-align:center;">
-      <div style="font-size:26px;font-weight:700;color:#e84c3d;">約704万円/年</div>
-      <div style="font-size:12px;color:#6b7a8d;margin-top:4px;">コスト削減換算（3,522時間×2,000円）</div>
-    </div>
-  </div>
-  <div class="insight-box">
-    <ul>
-      <li><strong>サイト起因5,283件（38.5%）がWeb・UI改善で削減可能。商品起因5,800件（42.3%）は商品ページ情報充実で対応可能</strong> — 合計11,083件（80.8%）が改善余地あり</li>
-      <li><strong>「帳票管理」が335件（高+中合計：電話165＋フォーム170）で最多</strong> — 年換算1,340件/年。納品書・領収書・請求書のマイページPDF即時発行で最も多くの入電を削減できる</li>
-      <li><strong>「カタログ配送管理」が87件（高+中合計：電話37＋フォーム50）</strong> — 年換算348件/年。マイページからのDM設定・送付先変更機能で自己解決可能に</li>
-      <li><strong>「FAX注文受信確認」が409件</strong> — Web注文移行促進と受付時の自動返信メール整備が有効</li>
-      <li><strong>「ログイン・登録・決済操作」が985件</strong> — UIの改善とエラーメッセージの明確化が効果的</li>
-    </ul>
-  </div>
-
-</section>
-
-<!-- ======= SECTION 5 — カテゴリ別深掘り ======= -->
-<section class="section" id="s5">
-  <div class="section-title">
-    <div class="section-num">5</div>カテゴリ別 課題の深掘りとVoC
+    <div class="section-num">4</div>カテゴリ別 課題の深掘りとVoC
   </div>
 
   <!-- カテゴリ概要 — ビジュアルバー型カード -->
@@ -1186,7 +1139,7 @@ a { color: var(--color-a); }
       <div class="cat5-left">
         <div class="cat5-icon">🖥️</div>
         <div class="cat5-info">
-          <div class="cat5-label">⑤-1 サイト</div>
+          <div class="cat5-label">④-1 サイト</div>
           <div class="cat5-tags">注文管理・帳票・支払・ログイン・納期確認・ご利用全般・カタログ・FAX注文</div>
         </div>
       </div>
@@ -1205,7 +1158,7 @@ a { color: var(--color-a); }
       <div class="cat5-left">
         <div class="cat5-icon">🚚</div>
         <div class="cat5-info">
-          <div class="cat5-label">⑤-2 配送 <span style="font-size:10px;background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:3px;padding:1px 5px;margin-left:4px;">出荷後限定</span></div>
+          <div class="cat5-label">④-2 配送 <span style="font-size:10px;background:#fff3cd;color:#856404;border:1px solid #ffc107;border-radius:3px;padding:1px 5px;margin-left:4px;">出荷後限定</span></div>
           <div class="cat5-tags">破損・同梱漏れ・時間指定変更・配送業者指定・配送日変更</div>
         </div>
       </div>
@@ -1224,7 +1177,7 @@ a { color: var(--color-a); }
       <div class="cat5-left">
         <div class="cat5-icon">📦</div>
         <div class="cat5-info">
-          <div class="cat5-label">⑤-3 商品</div>
+          <div class="cat5-label">④-3 商品</div>
           <div class="cat5-tags">商品仕様確認・在庫・パーツ不足・クレーム・カードケース・ツリー・マネキン等</div>
         </div>
       </div>
@@ -1243,7 +1196,7 @@ a { color: var(--color-a); }
       <div class="cat5-left">
         <div class="cat5-icon">📋</div>
         <div class="cat5-info">
-          <div class="cat5-label">⑤-4 その他</div>
+          <div class="cat5-label">④-4 その他</div>
           <div class="cat5-tags">担当者不在・売込み・間違い電話・ご相談・要件不明</div>
         </div>
       </div>
@@ -1266,11 +1219,11 @@ a { color: var(--color-a); }
     <button id="catTab-other"></button>
   </div>
 
-  <!-- ===== ⑤-1 サイト ===== -->
+  <!-- ===== ④-1 サイト ===== -->
   <div class="cat-panel active" id="cp-site">
     <div class="domain-header" style="background:linear-gradient(135deg,#d6eaf8 0%,#eaf4fd 100%);border-left:5px solid #2980b9;">
       <span class="dh-icon">🖥️</span>
-      <span class="dh-title">⑤-1 サイト — 注文・帳票・支払・ログイン・納期確認・ご利用全般</span>
+      <span class="dh-title">④-1 サイト — 注文・帳票・支払・ログイン・納期確認・ご利用全般</span>
       <span class="dh-sub">5,283件 ｜ 注文・帳票・支払・ログイン・納期確認・カタログ等</span>
     </div>
     <p style="font-size:13px;color:#555;margin:12px 0 20px;">サイト起因の問い合わせを機能別に分解。「いつ届くか分からない」等の配送情報確認もサイト情報不足が原因のためこのカテゴリに含む。</p>
@@ -3072,16 +3025,16 @@ a { color: var(--color-a); }
     </div>
 
   </div>
-  <!-- ===== END ⑤-1 サイト ===== -->
+  <!-- ===== END ④-1 サイト ===== -->
 
-  <!-- ===== ⑤-2 配送 ===== -->
+  <!-- ===== ④-2 配送 ===== -->
   <div class="cat-panel" id="cp-delivery">
     <div class="domain-header" style="background:linear-gradient(135deg,#fef5e7 0%,#fdf8ee 100%);border-left:5px solid #ca6f1e;">
       <span class="dh-icon">🚚</span>
-      <span class="dh-title">⑤-2 配送 — 出荷後〜到着前の配送会社トラブル</span>
+      <span class="dh-title">④-2 配送 — 出荷後〜到着前の配送会社トラブル</span>
       <span class="dh-sub">842件 ｜ 解決しにくい物理的トラブルが中心</span>
     </div>
-    <p style="font-size:13px;color:#666;margin:12px 0 16px;"><strong>定義：</strong>配送会社のトラブル（破損・遅延・時間指定ミス・業者変更依頼など）を指す。「いつ届くか分からない」等のサイト情報起因は⑤-1サイトカテゴリ。</p>
+    <p style="font-size:13px;color:#666;margin:12px 0 16px;"><strong>定義：</strong>配送会社のトラブル（破損・遅延・時間指定ミス・業者変更依頼など）を指す。「いつ届くか分からない」等のサイト情報起因は④-1サイトカテゴリ。</p>
 
     <div class="func-header">
       <div class="func-stat hl-red"><div class="fs-num">842件</div><div class="fs-label">配送合計</div></div>
@@ -3282,20 +3235,20 @@ a { color: var(--color-a); }
 
     </div><!-- /.shouku-acc -->
   </div>
-  <!-- ===== END ⑤-2 配送 ===== -->
+  <!-- ===== END ④-2 配送 ===== -->
 
-  <!-- ===== ⑤-3 商品 ===== -->
+  <!-- ===== ④-3 商品 ===== -->
   <div class="cat-panel" id="cp-product">
     <div class="domain-header" style="background:linear-gradient(135deg,#eafaf1 0%,#f4fdf7 100%);border-left:5px solid #1e8449;">
       <span class="dh-icon">📦</span>
-      <span class="dh-title">⑤-3 商品 — 商品仕様・パーツ不足・その他商品に関する問い合わせ</span>
+      <span class="dh-title">④-3 商品 — 商品仕様・パーツ不足・その他商品に関する問い合わせ</span>
       <span class="dh-sub">5,800件 ｜ 商品ページの情報充実で削減可能なものが多数</span>
     </div>
     <p style="font-size:13px;color:#666;margin:12px 0 16px;">商品単位で問い合わせ内容が異なるため、商品カテゴリ（仕様・クレーム・その他商品）でタブを切り替えて確認できる。また、<strong>問い合わせ上位10商品</strong>を商品名タブで確認でき、電話・フォームそれぞれの内訳も切り替えて確認できる。</p>
 
-    <!-- ⑤-3 カテゴリ全体 推奨施策サマリー -->
+    <!-- ④-3 カテゴリ全体 推奨施策サマリー -->
     <div class="insight-box" style="background:#f0fdf4;border-left-color:#1e8449;margin:0 0 20px;">
-      <strong>🎯 ⑤-3 商品 推奨施策サマリー（5,800件 → 約2,000〜3,000件削減）</strong>
+      <strong>🎯 ④-3 商品 推奨施策サマリー（5,800件 → 約2,000〜3,000件削減）</strong>
       <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:10px;">
         <thead><tr style="background:#dcfce7;"><th style="padding:6px 10px;text-align:left;border:1px solid #bbf7d0;">施策</th><th style="padding:6px 10px;text-align:left;border:1px solid #bbf7d0;">具体的アクション</th><th style="padding:6px 10px;text-align:center;border:1px solid #bbf7d0;">対象件数</th><th style="padding:6px 10px;text-align:center;border:1px solid #bbf7d0;">削減見込み</th><th style="padding:6px 10px;text-align:center;border:1px solid #bbf7d0;">優先度</th></tr></thead>
         <tbody>
@@ -4322,20 +4275,20 @@ a { color: var(--color-a); }
 
     </div>
   </div>
-  <!-- ===== END ⑤-3 商品 ===== -->
+  <!-- ===== END ④-3 商品 ===== -->
 
-  <!-- ===== ⑤-4 その他 ===== -->
+  <!-- ===== ④-4 その他 ===== -->
   <div class="cat-panel" id="cp-other">
     <div class="domain-header" style="background:linear-gradient(135deg,#f2f3f4 0%,#f8f9fa 100%);border-left:5px solid #7f8c8d;">
       <span class="dh-icon">📋</span>
-      <span class="dh-title">⑤-4 その他 — 担当者不在・売込み・間違い電話・ご相談</span>
+      <span class="dh-title">④-4 その他 — 担当者不在・売込み・間違い電話・ご相談</span>
       <span class="dh-sub">1,789件 ｜ Web改善対象外が中心</span>
     </div>
     <p style="font-size:13px;color:#666;margin:12px 0 16px;">担当者不在・売込み・間違い電話・ご相談など、Web改善では直接削減できない問い合わせ群。対応フローの整備とCS運用改善が主な解決策。</p>
 
-    <!-- ⑤-4 カテゴリ全体 推奨施策サマリー -->
+    <!-- ④-4 カテゴリ全体 推奨施策サマリー -->
     <div class="insight-box" style="background:#f9fafb;border-left-color:#7f8c8d;margin:0 0 20px;">
-      <strong>🎯 ⑤-4 その他 推奨施策サマリー（1,789件 → CS運用改善で約300〜500件のコスト削減）</strong>
+      <strong>🎯 ④-4 その他 推奨施策サマリー（1,789件 → CS運用改善で約300〜500件のコスト削減）</strong>
       <p style="font-size:12px;color:#555;margin:8px 0 10px;">このカテゴリはWebサイト改修では直接削減できない。ただし<strong>CS運用フロー・IVR・フォーム設計の改善</strong>により、対応工数・折り返しコストを削減できる。</p>
       <table style="width:100%;border-collapse:collapse;font-size:12px;margin-top:4px;">
         <thead><tr style="background:#ecf0f1;"><th style="padding:6px 10px;text-align:left;border:1px solid #d5dbdb;">サブカテゴリ</th><th style="padding:6px 10px;text-align:left;border:1px solid #d5dbdb;">具体的アクション</th><th style="padding:6px 10px;text-align:center;border:1px solid #d5dbdb;">件数</th><th style="padding:6px 10px;text-align:center;border:1px solid #d5dbdb;">期待効果</th><th style="padding:6px 10px;text-align:center;border:1px solid #d5dbdb;">優先度</th></tr></thead>
@@ -4385,7 +4338,7 @@ a { color: var(--color-a); }
       <div class="improvement-step"><div class="is-num">3</div><div class="is-body"><div class="is-title">ご相談系の問い合わせに対応するFAQ・ナレッジベースを整備する</div><div class="is-meta">対象: 108件 ｜ 担当: CS+商品管理</div></div></div>
     </div>
   </div>
-  <!-- ===== END ⑤-4 その他 ===== -->
+  <!-- ===== END ④-4 その他 ===== -->
 
 </section>
 
@@ -4393,10 +4346,10 @@ a { color: var(--color-a); }
 
 
 
-<!-- ======= SECTION 6 ======= -->
-<section class="section" id="s6">
+<!-- ======= SECTION 5 ======= -->
+<section class="section" id="s5">
   <div class="section-title">
-    <div class="section-num">6</div>顧客問い合わせタイミング別 主な課題
+    <div class="section-num">5</div>顧客問い合わせタイミング別 主な課題
   </div>
 
   <p style="margin-bottom:16px;font-size:14px;">電話＋フォーム合算で最も多いのは<strong>「注文後出荷前」（合計3,728件 / 27.2%）</strong>で、注文後の状況が分かりにくいための確認が最多。緊急度は「出荷後到着前」が最も高く（平均2.41）、業務への直接影響が大きい。Web自己解決「高」+「中」の比率が最も高いのは<strong>「注文前商品選定中」と「注文手続き中」</strong>。</p>
@@ -4462,16 +4415,16 @@ a { color: var(--color-a); }
 </section>
 
 
-<!-- ======= SECTION 8: フォーム問い合わせ特性 ======= -->
-<section class="section" id="s8-form">
+<!-- ======= SECTION 6: フォーム問い合わせ特性 ======= -->
+<section class="section" id="s6">
   <div class="section-title">
-    <div class="section-num">7</div>フォームの問い合わせ特性 — Web完結志向層の残存課題
+    <div class="section-num">6</div>フォームの問い合わせ特性 — Web完結志向層の残存課題
   </div>
 
   <!-- 背景/目的 -->
   <div class="insight-box" style="background:#f0f4ff;border-left-color:#4a6cf7;margin-bottom:20px;">
     <strong>📋 このセクションについて</strong><br>
-    対象は<strong>フォーム経由の問い合わせ（3,714件）</strong>のうち、サイト内検索・チャットボット経由でも解決できなかった層。<strong>「電話はしたくないが、自分では解決できなかった」</strong>ユーザーが主体であり、電話誘導よりも<strong>マイページ機能・セルフサービスの拡充</strong>が直接的な解決手段となる。カテゴリ別に現状課題と推奨施策を整理した。
+    <strong style="font-weight: normal;"><span style="font-weight: bold;">フォーム経由の問い合わせ（3,714件）</span>は</strong>、サイト内検索・チャットボット経由でも解決できなかった層の可能性が高い。<strong>「電話はしたくないが、自分では解決できなかった」</strong>ユーザーが主体であり、電話誘導よりも<strong>マイページ機能・セルフサービスの拡充</strong>が直接的な解決手段となる。カテゴリ別に現状課題と推奨施策を整理した。
   </div>
 
   <!-- カテゴリ別アコーディオン（サマリー表削除済み） -->
@@ -5618,41 +5571,7 @@ new Chart(document.getElementById('chartUnresolved'), {
   }
 });
 
-// 5. Web自己解決可能性 ドーナツ
-new Chart(document.getElementById('chartSelfService'), {
-  type: 'doughnut',
-  data: {
-    labels: ['高（1,181件）','中（2,055件）','低（1,601件）','不可（264件）','不明（4,899件）'],
-    datasets: [{ data: [1181,2055,1601,264,4899], /* 電話10,000件ベース */ backgroundColor: [C.e,C.a,'#bdc3c7','#7f8c8d','#ecf0f1'], hoverOffset: 8 }]
-  },
-  options: {
-    plugins: {
-      legend: { position: 'bottom' },
-      tooltip: { callbacks: { label: ctx => ` ${ctx.label}: ${ctx.raw.toLocaleString()}件 (${(ctx.raw/10000*100).toFixed(1)}% 電話全体比)` } }
-    }
-  }
-});
-
-// 6. テーマ別削減可能件数（棒グラフ）
-new Chart(document.getElementById('chartHighSelf'), {
-  type: 'bar',
-  data: {
-    labels: ['帳票管理\n(領収書・請求書・納品書)','カタログ\n配送管理','FAX注文\n受信確認','支払い・\n決済','ログイン・\n会員登録','見積書\n発行'],
-    datasets: [
-      { label: 'Web自己解決「高」', data: [95+20, 33, 4, 189, 49, 9], backgroundColor: C.e, borderRadius: 3 },
-      { label: 'Web自己解決「中」', data: [69+30, 509, 5, 277, 48, 12], backgroundColor: C.a, borderRadius: 3 }
-    ]
-  },
-  options: {
-    plugins: { legend: { position: 'top' } },
-    scales: {
-      x: { stacked: true, grid: { display: false }, ticks: { font: { size: 10 } } },
-      y: { stacked: true, grid: { color: '#eee' }, ticks: { callback: v => v.toLocaleString() } }
-    }
-  }
-});
-
-// 7. タイミング別件数（電話+フォーム合算）
+// 5. タイミング別件数（電話+フォーム合算）
 new Chart(document.getElementById('chartJourney'), {
   type: 'bar',
   data: {
