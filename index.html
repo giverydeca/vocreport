@@ -692,6 +692,98 @@ a { color: var(--color-a); }
 .voc-bubble.claim .vb-speech { border-left: 3px solid #f87171; }
 .voc-bubble.stock .vb-speech { border-left: 3px solid #60a5fa; }
 .voc-bubble.custom .vb-speech { border-left: 3px solid #34d399; }
+/* ── Excel型施策テーブル ── */
+.施策テーブル-wrap {
+  overflow-x: auto;
+  margin: 16px 0;
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+.施策テーブル {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 12.5px;
+  background: #fff;
+  min-width: 820px;
+}
+.施策テーブル thead tr {
+  background: var(--color-primary);
+  color: #fff;
+}
+.施策テーブル thead th {
+  padding: 10px 12px;
+  text-align: center;
+  font-size: 11.5px;
+  font-weight: 700;
+  white-space: nowrap;
+  letter-spacing: .03em;
+  border-right: 1px solid rgba(255,255,255,.15);
+}
+.施策テーブル thead th:first-child { text-align: left; }
+.施策テーブル tbody tr {
+  border-bottom: 1px solid var(--color-border);
+  transition: background .12s;
+}
+.施策テーブル tbody tr:nth-child(even) { background: #f8fafd; }
+.施策テーブル tbody tr:hover { background: #eef4ff; }
+.施策テーブル td {
+  padding: 10px 12px;
+  vertical-align: middle;
+  border-right: 1px solid #edf0f4;
+}
+.施策テーブル td.st-action {
+  font-weight: 600;
+  color: #1a2d4e;
+  min-width: 200px;
+  line-height: 1.55;
+}
+.施策テーブル td.st-num {
+  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
+  font-size: 13.5px;
+}
+.施策テーブル td.st-pct {
+  text-align: center;
+  font-weight: 700;
+  white-space: nowrap;
+  font-size: 13.5px;
+}
+.施策テーブル td.st-money {
+  text-align: right;
+  font-weight: 700;
+  white-space: nowrap;
+  font-size: 13px;
+}
+.施策テーブル td.st-ch {
+  text-align: center;
+  white-space: nowrap;
+  font-size: 12px;
+}
+.st-color-red   { color: #c0392b; }
+.st-color-orange{ color: #ca6f1e; }
+.st-color-green { color: #1e8449; }
+.st-color-blue  { color: #2980b9; }
+.st-color-gray  { color: #6b7a8d; }
+/* カテゴリグループ行 */
+.施策テーブル tr.st-group-row td {
+  background: #f0f3f8;
+  font-weight: 800;
+  font-size: 12.5px;
+  color: var(--color-primary);
+  padding: 8px 12px;
+  border-bottom: 2px solid var(--color-border);
+}
+/* 合計行 */
+.施策テーブル tr.st-total-row td {
+  background: #1a2d4e;
+  color: #fff;
+  font-weight: 800;
+  font-size: 13px;
+  padding: 11px 12px;
+  border-top: 2px solid #1a2d4e;
+}
 /* 商品パネル — 改善ステップ（強調版） */
 .pip-fix-steps { display: flex; flex-direction: column; gap: 8px; }
 .pip-fix-step {
@@ -1246,15 +1338,86 @@ a { color: var(--color-a); }
       <!-- ヘッダー KPI -->
       <div class="func-header">
         <div class="func-stat hl-red"><div class="fs-num">485件</div><div class="fs-label">帳票 合計</div></div>
-        <div class="func-stat hl-orange"><div class="fs-num">93%</div><div class="fs-label">電話問い合わせ比率</div></div>
         <div class="func-stat hl-blue"><div class="fs-num">33.8%</div><div class="fs-label">未完了率</div></div>
-        <div class="func-stat hl-green"><div class="fs-num">約280〜340件</div><div class="fs-label">改善後の削減見込み</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">217件</div><div class="fs-label">最多（領収書）</div></div>
+        <div class="func-stat"><div class="fs-num">📞93% / 📋7%</div><div class="fs-label">チャネル比率</div></div>
       </div>
 
-      <!-- 小区分アコーディオン -->
-      <div class="subsection-title">小区分別 件数と改善案（クリックで展開）</div>
-      <div class="shouku-acc">
+      <!-- 施策テーブル（帳票） -->
+      <div class="subsection-title">施策・件数・削減効果 一覧</div>
+      <div class="施策テーブル-wrap">
+      <table class="施策テーブル">
+        <thead>
+          <tr>
+            <th style="text-align:left;min-width:200px;">施策（小区分）</th>
+            <th>件数</th>
+            <th>未完了率</th>
+            <th>削減件数/年</th>
+            <th>削減工数/年</th>
+            <th>削減費用/年</th>
+            <th>チャネル比率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- 計算式:
+            平均処理時間 = r×30 + (1-r)×10 分
+            削減件数/年 = 件数×0.6×4
+            削減工数/年 = 削減件数 × 平均処理時間 / 60 h
+            削減費用/年 = 削減工数 × 2,000 円
+            帳票全体: r=0.338 → 平均16.76分
+            削減件数: 485×0.6×4=1,164 / 工数: 1,164×16.76/60≈325h / 費用: 65万円
+          -->
+          <tr>
+            <td class="st-action">📄 マイページ領収書ボタン付近に対象・条件を明記、メール案内追加</td>
+            <td class="st-num st-color-red">217件</td>
+            <td class="st-pct st-color-orange">33.8%</td>
+            <td class="st-num st-color-blue">521件</td>
+            <td class="st-num">145h</td>
+            <td class="st-money st-color-green">29万円</td>
+            <td class="st-ch">📞93% / 📋7%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📋 NP掛け払い・口座払い請求書の送付タイミングをメール・マイページに明記</td>
+            <td class="st-num st-color-red">148件</td>
+            <td class="st-pct st-color-orange">33.8%</td>
+            <td class="st-num st-color-blue">355件</td>
+            <td class="st-num">99h</td>
+            <td class="st-money st-color-green">20万円</td>
+            <td class="st-ch">📞93% / 📋7%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📝 商品詳細・カートに「見積書はカート→ログイン後に発行」導線を追加</td>
+            <td class="st-num st-color-red">66件</td>
+            <td class="st-pct st-color-orange">33.8%</td>
+            <td class="st-num st-color-blue">158件</td>
+            <td class="st-num">44h</td>
+            <td class="st-money st-color-green">9万円</td>
+            <td class="st-ch">📞93% / 📋7%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📦 マイページ注文詳細に「納品書PDF再発行」ボタンを設置</td>
+            <td class="st-num st-color-red">16件</td>
+            <td class="st-pct st-color-orange">33.8%</td>
+            <td class="st-num st-color-blue">38件</td>
+            <td class="st-num">11h</td>
+            <td class="st-money st-color-green">2万円</td>
+            <td class="st-ch">📞93% / 📋7%</td>
+          </tr>
+          <tr class="st-total-row">
+            <td>帳票 合計</td>
+            <td class="st-num">485件</td>
+            <td class="st-pct">33.8%</td>
+            <td class="st-num">1,164件/年</td>
+            <td class="st-num">325h/年</td>
+            <td class="st-money">65万円/年</td>
+            <td class="st-ch">📞93% / 📋7%</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
 
+      <!-- ダミー開始タグ（削除用 shouku-acc 互換） -->
+      <div class="shouku-acc" style="display:none;">
         <!-- ① 領収書 217件 -->
         <div>
           <div class="shouku-acc-header" onclick="toggleShouku(this)">
@@ -1479,15 +1642,87 @@ a { color: var(--color-a); }
     <div class="sub-panel" id="sp-site-invoice">
       <div class="func-header">
         <div class="func-stat hl-red"><div class="fs-num">141件</div><div class="fs-label">インボイス合計</div></div>
-        <div class="func-stat hl-blue"><div class="fs-num">50件</div><div class="fs-label">Web高20+中30</div></div>
-        <div class="func-stat hl-green"><div class="fs-num">35.5%</div><div class="fs-label">Web自己解決率</div></div>
-        <div class="func-stat"><div class="fs-num">67件</div><div class="fs-label">最多（納品書再発行）</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">30%</div><div class="fs-label">未完了率</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">67件</div><div class="fs-label">最多（納品書再発行）</div></div>
+        <div class="func-stat"><div class="fs-num">📞86% / 📋14%</div><div class="fs-label">チャネル比率</div></div>
       </div>
 
-      <!-- 小区分アコーディオン -->
-      <div class="subsection-title">小区分別 件数と改善案（クリックで展開）</div>
-      <div class="shouku-acc">
-
+      <!-- 施策テーブル（インボイス） -->
+      <div class="subsection-title">施策・件数・削減効果 一覧</div>
+      <div class="施策テーブル-wrap">
+      <table class="施策テーブル">
+        <thead>
+          <tr>
+            <th style="text-align:left;min-width:200px;">施策（小区分）</th>
+            <th>件数</th>
+            <th>未完了率</th>
+            <th>削減件数/年</th>
+            <th>削減工数/年</th>
+            <th>削減費用/年</th>
+            <th>チャネル比率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- r=0.30 → 平均処理時間 = 0.30×30 + 0.70×10 = 9+7 = 16.0分
+               141×0.6×4=338件/年, 338×16/60≈90h, 90×2000=18万円 -->
+          <tr>
+            <td class="st-action">📦 マイページ購入履歴から納品書PDF（T番号入り）をいつでもDL可能にする</td>
+            <td class="st-num st-color-red">67件</td>
+            <td class="st-pct st-color-orange">30%</td>
+            <td class="st-num st-color-blue">161件</td>
+            <td class="st-num">43h</td>
+            <td class="st-money st-color-green">9万円</td>
+            <td class="st-ch">📞86% / 📋14%</td>
+          </tr>
+          <tr>
+            <td class="st-action">🔢 マイページトップにT番号を常時表示（ログイン後すぐ確認できる）</td>
+            <td class="st-num st-color-red">28件</td>
+            <td class="st-pct st-color-orange">30%</td>
+            <td class="st-num st-color-blue">67件</td>
+            <td class="st-num">18h</td>
+            <td class="st-money st-color-green">4万円</td>
+            <td class="st-ch">📞86% / 📋14%</td>
+          </tr>
+          <tr>
+            <td class="st-action">🧾 全帳票（領収書・請求書・納品書）にT番号を統一印字</td>
+            <td class="st-num st-color-red">21件</td>
+            <td class="st-pct st-color-orange">30%</td>
+            <td class="st-num st-color-blue">50件</td>
+            <td class="st-num">13h</td>
+            <td class="st-money st-color-green">3万円</td>
+            <td class="st-ch">📞86% / 📋14%</td>
+          </tr>
+          <tr>
+            <td class="st-action">❓ 注文確認画面・マイページに「決済方法別：T番号が記載される書類」を図解</td>
+            <td class="st-num st-color-red">19件</td>
+            <td class="st-pct st-color-orange">30%</td>
+            <td class="st-num st-color-blue">46件</td>
+            <td class="st-num">12h</td>
+            <td class="st-money st-color-green">2万円</td>
+            <td class="st-ch">📞86% / 📋14%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📋 その他インボイス問い合わせ対応（FAQ整備等）</td>
+            <td class="st-num st-color-red">6件</td>
+            <td class="st-pct st-color-orange">30%</td>
+            <td class="st-num st-color-blue">14件</td>
+            <td class="st-num">4h</td>
+            <td class="st-money st-color-green">1万円</td>
+            <td class="st-ch">📞86% / 📋14%</td>
+          </tr>
+          <tr class="st-total-row">
+            <td>インボイス 合計</td>
+            <td class="st-num">141件</td>
+            <td class="st-pct">30%</td>
+            <td class="st-num">338件/年</td>
+            <td class="st-num">90h/年</td>
+            <td class="st-money">18万円/年</td>
+            <td class="st-ch">📞86% / 📋14%</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="shouku-acc" style="display:none;">
         <!-- ① 納品書再発行 67件 -->
         <div>
           <div class="shouku-acc-header" onclick="toggleShouku(this)">
@@ -1643,15 +1878,96 @@ a { color: var(--color-a); }
     <div class="sub-panel" id="sp-site-pay">
       <div class="func-header">
         <div class="func-stat hl-red"><div class="fs-num">1,003件</div><div class="fs-label">支払い合計</div></div>
-        <div class="func-stat hl-blue"><div class="fs-num">466件</div><div class="fs-label">Web高189+中277</div></div>
-        <div class="func-stat hl-green"><div class="fs-num">46.5%</div><div class="fs-label">Web自己解決率</div></div>
-        <div class="func-stat"><div class="fs-num">246件</div><div class="fs-label">最多（入金確認）</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">35%</div><div class="fs-label">未完了率</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">246件</div><div class="fs-label">最多（入金確認）</div></div>
+        <div class="func-stat"><div class="fs-num">📞75% / 📋25%</div><div class="fs-label">チャネル比率</div></div>
       </div>
 
-      <!-- 小区分アコーディオン -->
-      <div class="subsection-title">小区分別 件数と改善案（クリックで展開）</div>
-      <div class="shouku-acc">
-
+      <!-- 施策テーブル（支払い） -->
+      <div class="subsection-title">施策・件数・削減効果 一覧</div>
+      <div class="施策テーブル-wrap">
+      <table class="施策テーブル">
+        <thead>
+          <tr>
+            <th style="text-align:left;min-width:200px;">施策（小区分）</th>
+            <th>件数</th>
+            <th>未完了率</th>
+            <th>削減件数/年</th>
+            <th>削減工数/年</th>
+            <th>削減費用/年</th>
+            <th>チャネル比率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- r=0.35 → 平均処理時間 = 0.35×30 + 0.65×10 = 10.5+6.5 = 17.0分
+               1,003×0.6×4=2,407件/年, 2,407×17/60≈680h, 680×2000=136万円 -->
+          <tr>
+            <td class="st-action">💰 マイページ注文詳細に入金ステータス（確認中・確認済・未入金）をリアルタイム表示</td>
+            <td class="st-num st-color-red">246件</td>
+            <td class="st-pct st-color-orange">35%</td>
+            <td class="st-num st-color-blue">590件</td>
+            <td class="st-num">167h</td>
+            <td class="st-money st-color-green">33万円</td>
+            <td class="st-ch">📞75% / 📋25%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📋 FAQ・ご利用ガイドに支払方法比較表（特徴・手数料・書類・出荷条件）を集約</td>
+            <td class="st-num st-color-red">120件</td>
+            <td class="st-pct st-color-orange">35%</td>
+            <td class="st-num st-color-blue">288件</td>
+            <td class="st-num">82h</td>
+            <td class="st-money st-color-green">16万円</td>
+            <td class="st-ch">📞75% / 📋25%</td>
+          </tr>
+          <tr>
+            <td class="st-action">⚠️ NP掛け払いエラー画面にエラー種別（限度額超過・与信NG・住所不一致）と対処法を表示、別支払方法変更ボタン追加</td>
+            <td class="st-num st-color-red">106件</td>
+            <td class="st-pct st-color-orange">35%</td>
+            <td class="st-num st-color-blue">254件</td>
+            <td class="st-num">72h</td>
+            <td class="st-money st-color-green">14万円</td>
+            <td class="st-ch">📞75% / 📋25%</td>
+          </tr>
+          <tr>
+            <td class="st-action">🚚 カート・決済選択画面に「支払方法別出荷スケジュール」を常時表示</td>
+            <td class="st-num st-color-red">34件</td>
+            <td class="st-pct st-color-orange">35%</td>
+            <td class="st-num st-color-blue">82件</td>
+            <td class="st-num">23h</td>
+            <td class="st-money st-color-green">5万円</td>
+            <td class="st-ch">📞75% / 📋25%</td>
+          </tr>
+          <tr>
+            <td class="st-action">💳 クレジットカードエラー画面のUIバグ緊急修正、エラー原因と対処を具体表示</td>
+            <td class="st-num st-color-red">24件</td>
+            <td class="st-pct st-color-orange">35%</td>
+            <td class="st-num st-color-blue">58件</td>
+            <td class="st-num">16h</td>
+            <td class="st-money st-color-green">3万円</td>
+            <td class="st-ch">📞75% / 📋25%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📦 その他支払い問い合わせ（振込先確認等）対応</td>
+            <td class="st-num st-color-red">473件</td>
+            <td class="st-pct st-color-orange">35%</td>
+            <td class="st-num st-color-blue">1,135件</td>
+            <td class="st-num">321h</td>
+            <td class="st-money st-color-green">64万円</td>
+            <td class="st-ch">📞75% / 📋25%</td>
+          </tr>
+          <tr class="st-total-row">
+            <td>支払い 合計</td>
+            <td class="st-num">1,003件</td>
+            <td class="st-pct">35%</td>
+            <td class="st-num">2,407件/年</td>
+            <td class="st-num">680h/年</td>
+            <td class="st-money">136万円/年</td>
+            <td class="st-ch">📞75% / 📋25%</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="shouku-acc" style="display:none;">
         <!-- 入金確認 246件 -->
         <div>
           <div class="shouku-acc-header" onclick="toggleShouku(this)">
@@ -1787,15 +2103,87 @@ a { color: var(--color-a); }
     <div class="sub-panel" id="sp-site-login">
       <div class="func-header">
         <div class="func-stat hl-red"><div class="fs-num">127件</div><div class="fs-label">ログイン合計</div></div>
-        <div class="func-stat hl-green"><div class="fs-num">76.4%</div><div class="fs-label">Web自己解決率</div></div>
-        <div class="func-stat hl-blue"><div class="fs-num">97件</div><div class="fs-label">Web高49+中48</div></div>
-        <div class="func-stat"><div class="fs-num">50件</div><div class="fs-label">最多（ログインできない）</div></div>
+        <div class="func-stat hl-green"><div class="fs-num">18%</div><div class="fs-label">未完了率</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">50件</div><div class="fs-label">最多（ログインできない）</div></div>
+        <div class="func-stat"><div class="fs-num">📞77% / 📋23%</div><div class="fs-label">チャネル比率</div></div>
       </div>
 
-      <!-- 小区分アコーディオン -->
-      <div class="subsection-title">小区分別 件数と改善案（クリックで展開）</div>
-      <div class="shouku-acc">
-
+      <!-- 施策テーブル（ログイン） -->
+      <div class="subsection-title">施策・件数・削減効果 一覧</div>
+      <div class="施策テーブル-wrap">
+      <table class="施策テーブル">
+        <thead>
+          <tr>
+            <th style="text-align:left;min-width:200px;">施策（小区分）</th>
+            <th>件数</th>
+            <th>未完了率</th>
+            <th>削減件数/年</th>
+            <th>削減工数/年</th>
+            <th>削減費用/年</th>
+            <th>チャネル比率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- r=0.18 → 平均処理時間 = 0.18×30 + 0.82×10 = 5.4+8.2 = 13.6分
+               127×0.6×4=305件/年, 305×13.6/60≈69h, 69×2000=14万円 -->
+          <tr>
+            <td class="st-action">🔑 ログイン画面の入力欄直下に「パスワードをお忘れの方」リンクを大きく配置、リセット手順をステップ表示</td>
+            <td class="st-num st-color-red">50件</td>
+            <td class="st-pct st-color-green">18%</td>
+            <td class="st-num st-color-blue">120件</td>
+            <td class="st-num">27h</td>
+            <td class="st-money st-color-green">5万円</td>
+            <td class="st-ch">📞77% / 📋23%</td>
+          </tr>
+          <tr>
+            <td class="st-action">🔓 全ログインエラーメッセージに「パスワードリセットはこちら」を併記</td>
+            <td class="st-num st-color-red">32件</td>
+            <td class="st-pct st-color-green">18%</td>
+            <td class="st-num st-color-blue">77件</td>
+            <td class="st-num">17h</td>
+            <td class="st-money st-color-green">3万円</td>
+            <td class="st-ch">📞77% / 📋23%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📧 マイページからメールアドレス変更をWeb完結化（確認メール承認方式）</td>
+            <td class="st-num st-color-red">20件</td>
+            <td class="st-pct st-color-green">18%</td>
+            <td class="st-num st-color-blue">48件</td>
+            <td class="st-num">11h</td>
+            <td class="st-money st-color-green">2万円</td>
+            <td class="st-ch">📞77% / 📋23%</td>
+          </tr>
+          <tr>
+            <td class="st-action">🔐 セキュアキーエラー画面に「サポートチャット・フォーム」ボタンを追加</td>
+            <td class="st-num st-color-red">15件</td>
+            <td class="st-pct st-color-green">18%</td>
+            <td class="st-num st-color-blue">36件</td>
+            <td class="st-num">8h</td>
+            <td class="st-money st-color-green">2万円</td>
+            <td class="st-ch">📞77% / 📋23%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📝 会員登録エラーメッセージを具体化（原因+対処を1文で表示）</td>
+            <td class="st-num st-color-red">10件他</td>
+            <td class="st-pct st-color-green">18%</td>
+            <td class="st-num st-color-blue">24件</td>
+            <td class="st-num">5h</td>
+            <td class="st-money st-color-green">1万円</td>
+            <td class="st-ch">📞77% / 📋23%</td>
+          </tr>
+          <tr class="st-total-row">
+            <td>ログイン 合計</td>
+            <td class="st-num">127件</td>
+            <td class="st-pct">18%</td>
+            <td class="st-num">305件/年</td>
+            <td class="st-num">69h/年</td>
+            <td class="st-money">14万円/年</td>
+            <td class="st-ch">📞77% / 📋23%</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="shouku-acc" style="display:none;">
         <!-- ① ログインできない 50件 -->
         <div>
           <div class="shouku-acc-header" onclick="toggleShouku(this)">
@@ -1988,15 +2376,96 @@ a { color: var(--color-a); }
 
       <div class="func-header">
         <div class="func-stat hl-red"><div class="fs-num">1,488件</div><div class="fs-label">納期確認合計</div></div>
-        <div class="func-stat hl-orange"><div class="fs-num">41.4%</div><div class="fs-label">未完了率（高め）</div></div>
+        <div class="func-stat hl-orange"><div class="fs-num">41.4%</div><div class="fs-label">未完了率</div></div>
         <div class="func-stat hl-blue"><div class="fs-num">904件</div><div class="fs-label">最多（注文後・追跡不明）</div></div>
         <div class="func-stat"><div class="fs-num">263件</div><div class="fs-label">2位（注文前・在庫確認）</div></div>
       </div>
 
-      <!-- 小区分アコーディオン -->
-      <div class="subsection-title">小区分別 件数と改善案（クリックで展開）</div>
-      <div class="shouku-acc">
-
+      <!-- 施策テーブル（納期確認） -->
+      <div class="subsection-title">施策・件数・削減効果 一覧</div>
+      <div class="施策テーブル-wrap">
+      <table class="施策テーブル">
+        <thead>
+          <tr>
+            <th style="text-align:left;min-width:200px;">施策（小区分）</th>
+            <th>件数</th>
+            <th>未完了率</th>
+            <th>削減件数/年</th>
+            <th>削減工数/年</th>
+            <th>削減費用/年</th>
+            <th>チャネル比率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- r=0.414 → 平均処理時間 = 0.414×30 + 0.586×10 = 12.42+5.86 = 18.3分
+               1,488×0.6×4=3,571件/年, 3,571×18.3/60≈1,089h, 1,089×2000=218万円 -->
+          <tr>
+            <td class="st-action">📧 出荷完了メールに配送会社名・追跡URL・送り状番号・お届け予定日を自動挿入</td>
+            <td class="st-num st-color-red">約450件</td>
+            <td class="st-pct st-color-orange">41.4%</td>
+            <td class="st-num st-color-blue">1,080件</td>
+            <td class="st-num">329h</td>
+            <td class="st-money st-color-green">66万円</td>
+            <td class="st-ch">📞92% / 📋8%</td>
+          </tr>
+          <tr>
+            <td class="st-action">🛒 注文完了画面に「履歴反映まで数分」案内＋注文番号を大きく表示</td>
+            <td class="st-num st-color-red">約230件</td>
+            <td class="st-pct st-color-orange">41.4%</td>
+            <td class="st-num st-color-blue">552件</td>
+            <td class="st-num">168h</td>
+            <td class="st-money st-color-green">34万円</td>
+            <td class="st-ch">📞92% / 📋8%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📦 商品ページに数量別リアルタイム在庫数を表示（まず問い合わせ上位10商品から）</td>
+            <td class="st-num st-color-red">約263件</td>
+            <td class="st-pct st-color-orange">41.4%</td>
+            <td class="st-num st-color-blue">631件</td>
+            <td class="st-num">192h</td>
+            <td class="st-money st-color-green">38万円</td>
+            <td class="st-ch">📞92% / 📋8%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📋 マイページ注文詳細に出荷前ステータス4段階（入荷待ち→ピッキング→出荷準備→出荷済）をリアルタイム表示</td>
+            <td class="st-num st-color-red">約224件</td>
+            <td class="st-pct st-color-orange">41.4%</td>
+            <td class="st-num st-color-blue">538件</td>
+            <td class="st-num">164h</td>
+            <td class="st-money st-color-green">33万円</td>
+            <td class="st-ch">📞92% / 📋8%</td>
+          </tr>
+          <tr>
+            <td class="st-action">💳 カート・決済選択画面に支払方法別出荷スケジュール（クレカ→即日出荷、振込→入金後○営業日）を明示</td>
+            <td class="st-num st-color-red">約79件</td>
+            <td class="st-pct st-color-orange">41.4%</td>
+            <td class="st-num st-color-blue">190件</td>
+            <td class="st-num">58h</td>
+            <td class="st-money st-color-green">12万円</td>
+            <td class="st-ch">📞92% / 📋8%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📦 その他納期確認問い合わせ（早着希望・納期変更等）対応</td>
+            <td class="st-num st-color-red">約242件</td>
+            <td class="st-pct st-color-orange">41.4%</td>
+            <td class="st-num st-color-blue">581件</td>
+            <td class="st-num">177h</td>
+            <td class="st-money st-color-green">35万円</td>
+            <td class="st-ch">📞92% / 📋8%</td>
+          </tr>
+          <tr class="st-total-row">
+            <td>納期確認 合計</td>
+            <td class="st-num">1,488件</td>
+            <td class="st-pct">41.4%</td>
+            <td class="st-num">3,571件/年</td>
+            <td class="st-num">1,088h/年</td>
+            <td class="st-money">218万円/年</td>
+            <td class="st-ch">📞92% / 📋8%</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="shouku-acc" style="display:none;">
         <!-- ① 出荷完了メール 450件 -->
         <div>
           <div class="shouku-acc-header" onclick="toggleShouku(this)">
@@ -2201,9 +2670,103 @@ a { color: var(--color-a); }
     <div class="sub-panel" id="sp-site-chuumon">
       <div class="func-header">
         <div class="func-stat hl-red"><div class="fs-num">1,839件</div><div class="fs-label">注文管理合計</div></div>
-        <div class="func-stat hl-blue"><div class="fs-num">448件</div><div class="fs-label">Web高207+中241</div></div>
         <div class="func-stat hl-orange"><div class="fs-num">38.7%</div><div class="fs-label">未完了率</div></div>
-        <div class="func-stat"><div class="fs-num">280件</div><div class="fs-label">最多（キャンセル）</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">280件</div><div class="fs-label">最多（キャンセル）</div></div>
+        <div class="func-stat"><div class="fs-num">250件</div><div class="fs-label">2位（返品・交換）</div></div>
+      </div>
+
+      <!-- 施策テーブル（注文管理） -->
+      <div class="subsection-title">施策・件数・削減効果 一覧</div>
+      <div class="施策テーブル-wrap">
+      <table class="施策テーブル">
+        <thead>
+          <tr>
+            <th style="text-align:left;min-width:200px;">施策（小区分）</th>
+            <th>件数</th>
+            <th>未完了率</th>
+            <th>削減件数/年</th>
+            <th>削減工数/年</th>
+            <th>削減費用/年</th>
+            <th>チャネル比率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- r=0.387 → 平均処理時間 = 0.387×30 + 0.613×10 = 11.61+6.13 = 17.7分
+               1,839×0.6×4=4,414件/年, 4,414×17.7/60≈1,302h, 1,302×2000=260万円 -->
+          <tr>
+            <td class="st-action">❌ マイページから出荷前注文のキャンセルをセルフ化（確認後、自動メール送信）</td>
+            <td class="st-num st-color-red">280件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">672件</td>
+            <td class="st-num">199h</td>
+            <td class="st-money st-color-green">40万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr>
+            <td class="st-action">🔄 マイページ注文詳細に「返品・交換はこちら」ボタンを設置（注文番号自動入力、受付〜完了まで自動メール通知）</td>
+            <td class="st-num st-color-red">250件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">600件</td>
+            <td class="st-num">177h</td>
+            <td class="st-money st-color-green">35万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr>
+            <td class="st-action">💰 マイページ注文詳細に入金ステータス（確認中・確認済・未入金）をリアルタイム表示</td>
+            <td class="st-num st-color-red">246件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">590件</td>
+            <td class="st-num">174h</td>
+            <td class="st-money st-color-green">35万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr>
+            <td class="st-action">✏️ 出荷前注文の数量・商品変更をマイページからセルフ化（キャンセル・配送先変更と同一開発）</td>
+            <td class="st-num st-color-red">237件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">569件</td>
+            <td class="st-num">168h</td>
+            <td class="st-money st-color-green">34万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📋 注文完了画面に注文番号を大きく表示＋「履歴反映まで数分」案内を追記</td>
+            <td class="st-num st-color-red">230件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">552件</td>
+            <td class="st-num">163h</td>
+            <td class="st-money st-color-green">33万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📍 出荷前注文の配送先変更をマイページからセルフ化</td>
+            <td class="st-num st-color-red">69件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">166件</td>
+            <td class="st-num">49h</td>
+            <td class="st-money st-color-green">10万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📝 注文備考欄にヘルプテキスト（記入例）を追加</td>
+            <td class="st-num st-color-red">527件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">1,265件</td>
+            <td class="st-num">374h</td>
+            <td class="st-money st-color-green">75万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr class="st-total-row">
+            <td>注文管理 合計</td>
+            <td class="st-num">1,839件</td>
+            <td class="st-pct">38.7%</td>
+            <td class="st-num">4,414件/年</td>
+            <td class="st-num">1,304h/年</td>
+            <td class="st-money">261万円/年</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+        </tbody>
+      </table>
       </div>
 
       <!-- 推奨施策サマリー削除済み -->
@@ -2220,10 +2783,99 @@ a { color: var(--color-a); }
         </table>
         <p style="font-size:12px;color:#9a3412;margin-top:8px;">💡 1,839件中の586件（キャンセル・変更・配送先変更）はマイページのセルフサービス化で一括解決できる最大ターゲット。3〜6ヶ月の開発投資対効果が最大の領域。</p>
       </div>
-      <!-- 小区分アコーディオン -->
-      <div class="subsection-title">小区分別 件数と改善案（クリックで展開）</div>
-      <div class="shouku-acc">
-
+      <!-- 施策テーブル（注文管理） -->
+      <div class="subsection-title">施策・件数・削減効果 一覧</div>
+      <div class="施策テーブル-wrap">
+      <table class="施策テーブル">
+        <thead>
+          <tr>
+            <th style="text-align:left;min-width:200px;">施策（小区分）</th>
+            <th>件数</th>
+            <th>未完了率</th>
+            <th>削減件数/年</th>
+            <th>削減工数/年</th>
+            <th>削減費用/年</th>
+            <th>チャネル比率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- r=0.387 → 平均17.7分 / 1,839×0.6×4=4,414件/年 / 4,414×17.7/60≈1,302h / 260万円 -->
+          <tr>
+            <td class="st-action">❌ 出荷前注文のキャンセルをマイページからセルフ化（確認後、自動メール送信）</td>
+            <td class="st-num st-color-red">280件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">672件</td>
+            <td class="st-num">199h</td>
+            <td class="st-money st-color-green">40万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr>
+            <td class="st-action">🔄 マイページ注文詳細に「返品・交換はこちら」ボタン設置（注文番号自動入力・受付〜完了まで自動メール通知）</td>
+            <td class="st-num st-color-red">250件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">600件</td>
+            <td class="st-num">177h</td>
+            <td class="st-money st-color-green">35万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr>
+            <td class="st-action">💰 マイページ注文詳細に入金ステータス（確認中・確認済・未入金）をリアルタイム表示</td>
+            <td class="st-num st-color-red">246件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">590件</td>
+            <td class="st-num">174h</td>
+            <td class="st-money st-color-green">35万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr>
+            <td class="st-action">✏️ 出荷前注文の数量・商品変更をマイページからセルフ化（キャンセル・配送先変更と同一開発）</td>
+            <td class="st-num st-color-red">237件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">569件</td>
+            <td class="st-num">168h</td>
+            <td class="st-money st-color-green">34万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📋 注文完了画面に注文番号を大きく表示＋「履歴反映まで数分」案内を追記（テキスト変更のみ・即日対応可）</td>
+            <td class="st-num st-color-red">230件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">552件</td>
+            <td class="st-num">163h</td>
+            <td class="st-money st-color-green">33万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📍 出荷前注文の配送先変更をマイページからセルフ化（登録済み住所から選択または新規入力）</td>
+            <td class="st-num st-color-red">69件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">166件</td>
+            <td class="st-num">49h</td>
+            <td class="st-money st-color-green">10万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📝 注文備考欄にヘルプテキスト（のし希望・午前中着希望等の記入例）を追加</td>
+            <td class="st-num st-color-red">527件</td>
+            <td class="st-pct st-color-orange">38.7%</td>
+            <td class="st-num st-color-blue">1,265件</td>
+            <td class="st-num">374h</td>
+            <td class="st-money st-color-green">75万円</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+          <tr class="st-total-row">
+            <td>注文管理 合計</td>
+            <td class="st-num">1,839件</td>
+            <td class="st-pct">38.7%</td>
+            <td class="st-num">4,414件/年</td>
+            <td class="st-num">1,304h/年</td>
+            <td class="st-money">261万円/年</td>
+            <td class="st-ch">📞78% / 📋22%</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="shouku-acc" style="display:none;">
         <!-- ① 注文のキャンセル 280件 -->
         <div>
           <div class="shouku-acc-header" onclick="toggleShouku(this)">
@@ -2471,9 +3123,9 @@ a { color: var(--color-a); }
     <div class="sub-panel" id="sp-site-goriyou">
       <div class="func-header">
         <div class="func-stat hl-red"><div class="fs-num">1,310件</div><div class="fs-label">ご利用全般合計</div></div>
-        <div class="func-stat hl-green"><div class="fs-num">21.1%</div><div class="fs-label">未完了率（低め）</div></div>
-        <div class="func-stat hl-blue"><div class="fs-num">522件</div><div class="fs-label">Web高252+中270</div></div>
-        <div class="func-stat hl-orange"><div class="fs-num">39.8%</div><div class="fs-label">Web自己解決率</div></div>
+        <div class="func-stat hl-green"><div class="fs-num">21.1%</div><div class="fs-label">未完了率</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">120件</div><div class="fs-label">最多（支払方法の種類）</div></div>
+        <div class="func-stat"><div class="fs-num">📞81% / 📋19%</div><div class="fs-label">チャネル比率</div></div>
       </div>
 
       <!-- 推奨施策サマリー削除済み -->
@@ -2490,10 +3142,100 @@ a { color: var(--color-a); }
         </table>
         <p style="font-size:12px;color:#075985;margin-top:8px;">💡 未完了率21.1%は全カテゴリ中低く、問い合わせの大半は「確認したら自己解決した」ケース。ガイドページとカートの情報充実で大幅削減が見込める費用対効果の高い領域。</p>
       </div>
-      <!-- 小区分アコーディオン -->
-      <div class="subsection-title">小区分別 件数と改善案（クリックで展開）</div>
-      <div class="shouku-acc">
-
+      <!-- 施策テーブル（ご利用全般） -->
+      <div class="subsection-title">施策・件数・削減効果 一覧</div>
+      <div class="施策テーブル-wrap">
+      <table class="施策テーブル">
+        <thead>
+          <tr>
+            <th style="text-align:left;min-width:200px;">施策（小区分）</th>
+            <th>件数</th>
+            <th>未完了率</th>
+            <th>削減件数/年</th>
+            <th>削減工数/年</th>
+            <th>削減費用/年</th>
+            <th>チャネル比率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- r=0.211 → 平均処理時間 = 0.211×30 + 0.789×10 = 6.33+7.89 = 14.2分
+               1,310×0.6×4=3,144件/年, 3,144×14.2/60≈744h, 744×2000=149万円 -->
+          <tr>
+            <td class="st-action">💳 FAQ・ご利用ガイドに支払方法比較表（特徴・手数料・書類・出荷条件）を1ページに集約、カートにも1行表示</td>
+            <td class="st-num st-color-red">120件</td>
+            <td class="st-pct st-color-green">21.1%</td>
+            <td class="st-num st-color-blue">288件</td>
+            <td class="st-num">68h</td>
+            <td class="st-money st-color-green">14万円</td>
+            <td class="st-ch">📞81% / 📋19%</td>
+          </tr>
+          <tr>
+            <td class="st-action">⚠️ NP掛け払いエラー画面にエラー種別と対処手順を表示、「別の支払方法へ」ボタン追加、FAQへリンク</td>
+            <td class="st-num st-color-red">106件</td>
+            <td class="st-pct st-color-green">21.1%</td>
+            <td class="st-num st-color-blue">254件</td>
+            <td class="st-num">60h</td>
+            <td class="st-money st-color-green">12万円</td>
+            <td class="st-ch">📞81% / 📋19%</td>
+          </tr>
+          <tr>
+            <td class="st-action">❓ 「はじめての方へ」ガイドページを新設（注文フローをスクリーンショット付きで解説、ヘッダー・ログイン画面・カートからリンク）</td>
+            <td class="st-num st-color-red">67件</td>
+            <td class="st-pct st-color-green">21.1%</td>
+            <td class="st-num st-color-blue">161件</td>
+            <td class="st-num">38h</td>
+            <td class="st-money st-color-green">8万円</td>
+            <td class="st-ch">📞81% / 📋19%</td>
+          </tr>
+          <tr>
+            <td class="st-action">🎁 カートページに「適用中キャンペーン・割引額」「あと○円でキャンペーン適用」をリアルタイム表示</td>
+            <td class="st-num st-color-red">60件</td>
+            <td class="st-pct st-color-green">21.1%</td>
+            <td class="st-num st-color-blue">144件</td>
+            <td class="st-num">34h</td>
+            <td class="st-money st-color-green">7万円</td>
+            <td class="st-ch">📞81% / 📋19%</td>
+          </tr>
+          <tr>
+            <td class="st-action">👤 マイページから住所・電話番号・お届け先変更をWeb完結化（セルフサービス化）</td>
+            <td class="st-num st-color-red">54件</td>
+            <td class="st-pct st-color-green">21.1%</td>
+            <td class="st-num st-color-blue">130件</td>
+            <td class="st-num">31h</td>
+            <td class="st-money st-color-green">6万円</td>
+            <td class="st-ch">📞81% / 📋19%</td>
+          </tr>
+          <tr>
+            <td class="st-action">🚚 カートページに「現在の送料・あと○円で送料無料」を常時表示</td>
+            <td class="st-num st-color-red">52件</td>
+            <td class="st-pct st-color-green">21.1%</td>
+            <td class="st-num st-color-blue">125件</td>
+            <td class="st-num">30h</td>
+            <td class="st-money st-color-green">6万円</td>
+            <td class="st-ch">📞81% / 📋19%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📦 その他ご利用全般問い合わせ対応（支払方法と納期の関係説明等）</td>
+            <td class="st-num st-color-red">951件</td>
+            <td class="st-pct st-color-green">21.1%</td>
+            <td class="st-num st-color-blue">2,282件</td>
+            <td class="st-num">541h</td>
+            <td class="st-money st-color-green">108万円</td>
+            <td class="st-ch">📞81% / 📋19%</td>
+          </tr>
+          <tr class="st-total-row">
+            <td>ご利用全般 合計</td>
+            <td class="st-num">1,310件</td>
+            <td class="st-pct">21.1%</td>
+            <td class="st-num">3,144件/年</td>
+            <td class="st-num">745h/年</td>
+            <td class="st-money">149万円/年</td>
+            <td class="st-ch">📞81% / 📋19%</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="shouku-acc" style="display:none;">
         <!-- ① 支払方法の種類 120件 -->
         <div>
           <div class="shouku-acc-header" onclick="toggleShouku(this)">
@@ -2733,9 +3475,9 @@ a { color: var(--color-a); }
     <div class="sub-panel" id="sp-site-catalog">
       <div class="func-header">
         <div class="func-stat hl-red"><div class="fs-num">512件</div><div class="fs-label">カタログ・DM合計</div></div>
-        <div class="func-stat hl-green"><div class="fs-num">7.0%</div><div class="fs-label">未完了率（最低）</div></div>
-        <div class="func-stat hl-blue"><div class="fs-num">348件/年</div><div class="fs-label">年間削減試算<br><span style="font-size:10px;font-weight:400;">(電話37＋フォーム50)×4</span></div></div>
-        <div class="func-stat"><div class="fs-num">284件</div><div class="fs-label">最多（DM停止）</div></div>
+        <div class="func-stat hl-green"><div class="fs-num">7.0%</div><div class="fs-label">未完了率</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">284件</div><div class="fs-label">最多（DM停止）</div></div>
+        <div class="func-stat"><div class="fs-num">📞61% / 📋39%</div><div class="fs-label">チャネル比率</div></div>
       </div>
 
       <!-- 推奨施策サマリー削除済み -->
@@ -2750,10 +3492,64 @@ a { color: var(--color-a); }
         </table>
         <p style="font-size:12px;color:#9d174d;margin-top:8px;">💡 未完了率7%は全機能中最低で対応自体は容易。DM停止（284件）はセルフサービス化するだけで丸ごと解消できる最大のクイックウィン。</p>
       </div>
-      <!-- 小区分アコーディオン -->
-      <div class="subsection-title">小区分別 件数と改善案（クリックで展開）</div>
-      <div class="shouku-acc">
-
+      <!-- 施策テーブル（カタログ・DM） -->
+      <div class="subsection-title">施策・件数・削減効果 一覧</div>
+      <div class="施策テーブル-wrap">
+      <table class="施策テーブル">
+        <thead>
+          <tr>
+            <th style="text-align:left;min-width:200px;">施策（小区分）</th>
+            <th>件数</th>
+            <th>未完了率</th>
+            <th>削減件数/年</th>
+            <th>削減工数/年</th>
+            <th>削減費用/年</th>
+            <th>チャネル比率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- r=0.07 → 平均処理時間 = 0.07×30 + 0.93×10 = 2.1+9.3 = 11.4分
+               512×0.6×4=1,229件/年, 1,229×10.84/60≈222h, 222×2000=44万円 -->
+          <tr>
+            <td class="st-action">🚫 マイページ「カタログ・DM設定」からDM停止・送付先変更をワンクリックで完結。カタログ同梱DMにQRコード印刷</td>
+            <td class="st-num st-color-red">284件</td>
+            <td class="st-pct st-color-green">7.0%</td>
+            <td class="st-num st-color-blue">682件</td>
+            <td class="st-num">123h</td>
+            <td class="st-money st-color-green">25万円</td>
+            <td class="st-ch">📞61% / 📋39%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📮 ヘッダーナビ・商品ページ・フッターに「カタログを無料で請求する」リンクを設置（3クリック以内でフォームへ）</td>
+            <td class="st-num st-color-red">165件</td>
+            <td class="st-pct st-color-green">7.0%</td>
+            <td class="st-num st-color-blue">396件</td>
+            <td class="st-num">75h</td>
+            <td class="st-money st-color-green">15万円</td>
+            <td class="st-ch">📞61% / 📋39%</td>
+          </tr>
+          <tr>
+            <td class="st-action">📍 マイページ「DM設定」画面から送付先住所の変更をセルフ化（DM停止機能と同時実装）</td>
+            <td class="st-num st-color-red">63件</td>
+            <td class="st-pct st-color-green">7.0%</td>
+            <td class="st-num st-color-blue">151件</td>
+            <td class="st-num">29h</td>
+            <td class="st-money st-color-green">6万円</td>
+            <td class="st-ch">📞61% / 📋39%</td>
+          </tr>
+          <tr class="st-total-row">
+            <td>カタログ・DM 合計</td>
+            <td class="st-num">512件</td>
+            <td class="st-pct">7.0%</td>
+            <td class="st-num">1,229件/年</td>
+            <td class="st-num">222h/年</td>
+            <td class="st-money">44万円/年</td>
+            <td class="st-ch">📞61% / 📋39%</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="shouku-acc" style="display:none;">
         <!-- ① DM停止 284件 -->
         <div>
           <div class="shouku-acc-header" onclick="toggleShouku(this)">
@@ -2881,9 +3677,9 @@ a { color: var(--color-a); }
     <div class="sub-panel" id="sp-site-fax">
       <div class="func-header">
         <div class="func-stat hl-red"><div class="fs-num">407件</div><div class="fs-label">FAX受信確認合計</div></div>
-        <div class="func-stat hl-orange"><div class="fs-num">2.2%</div><div class="fs-label">Web自己解決率（低）</div></div>
-        <div class="func-stat hl-blue"><div class="fs-num">55.8%</div><div class="fs-label">解決率</div></div>
-        <div class="func-stat"><div class="fs-num">407件</div><div class="fs-label">FAX注文後の確認電話</div></div>
+        <div class="func-stat hl-orange"><div class="fs-num">44%</div><div class="fs-label">未完了率</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">407件</div><div class="fs-label">最多（FAX注文後の確認）</div></div>
+        <div class="func-stat"><div class="fs-num">📞99% / 📋1%</div><div class="fs-label">チャネル比率</div></div>
       </div>
 
       <!-- 推奨施策サマリー削除済み -->
@@ -2901,10 +3697,55 @@ a { color: var(--color-a); }
       </div>
       <div class="insight-box red"><strong>特記事項</strong> — FAXという手段自体が確認を困難にしている。自動返信がないためユーザーが確認電話せざるを得ない構造。Web移行促進が根本解決。</div>
 
-      <!-- 小区分アコーディオン -->
-      <div class="subsection-title" style="margin-top:16px;">小区分別 件数と改善案（クリックで展開）</div>
-      <div class="shouku-acc">
-
+      <!-- 施策テーブル（FAX注文） -->
+      <div class="subsection-title" style="margin-top:16px;">施策・件数・削減効果 一覧</div>
+      <div class="施策テーブル-wrap">
+      <table class="施策テーブル">
+        <thead>
+          <tr>
+            <th style="text-align:left;min-width:200px;">施策（小区分）</th>
+            <th>件数</th>
+            <th>未完了率</th>
+            <th>削減件数/年</th>
+            <th>削減工数/年</th>
+            <th>削減費用/年</th>
+            <th>チャネル比率</th>
+          </tr>
+        </thead>
+        <tbody>
+          <!-- r=0.44 → 平均処理時間 = 0.44×30 + 0.56×10 = 13.2+5.6 = 18.8分
+               407×0.6×4=977件/年, 977×18.8/60≈306h, 306×2000=61万円 -->
+          <tr>
+            <td class="st-action">📨 FAX受信後に受付番号付き自動返信メールを送付（短期：手動運用→中期：受注システムに自動送信機能組み込み）</td>
+            <td class="st-num st-color-red">407件</td>
+            <td class="st-pct st-color-orange">44%</td>
+            <td class="st-num st-color-blue">586件</td>
+            <td class="st-num">184h</td>
+            <td class="st-money st-color-green">37万円</td>
+            <td class="st-ch">📞99% / 📋1%</td>
+          </tr>
+          <tr>
+            <td class="st-action">🌐 FAX用紙にWeb注文QRコード・「初回Web注文で送料無料」特典を印刷、FAXユーザーへWeb移行促進キャンペーン実施</td>
+            <td class="st-num st-color-red">407件</td>
+            <td class="st-pct st-color-orange">44%</td>
+            <td class="st-num st-color-blue">391件</td>
+            <td class="st-num">123h</td>
+            <td class="st-money st-color-green">25万円</td>
+            <td class="st-ch">📞99% / 📋1%</td>
+          </tr>
+          <tr class="st-total-row">
+            <td>FAX注文 合計</td>
+            <td class="st-num">407件</td>
+            <td class="st-pct">44%</td>
+            <td class="st-num">977件/年</td>
+            <td class="st-num">306h/年</td>
+            <td class="st-money">61万円/年</td>
+            <td class="st-ch">📞99% / 📋1%</td>
+          </tr>
+        </tbody>
+      </table>
+      </div>
+      <div class="shouku-acc" style="display:none;">
         <!-- ① FAX受付後の確認電話 407件 -->
         <div>
           <div class="shouku-acc-header" onclick="toggleShouku(this)">
@@ -3038,9 +3879,9 @@ a { color: var(--color-a); }
 
     <div class="func-header">
       <div class="func-stat hl-red"><div class="fs-num">842件</div><div class="fs-label">配送合計</div></div>
-      <div class="func-stat hl-orange"><div class="fs-num">87.8%</div><div class="fs-label">未完了率・破損（最高）</div></div>
+      <div class="func-stat hl-orange"><div class="fs-num">87.8%</div><div class="fs-label">未完了率</div></div>
       <div class="func-stat hl-blue"><div class="fs-num">369件</div><div class="fs-label">最多（破損・不良）</div></div>
-      <div class="func-stat"><div class="fs-num">334件</div><div class="fs-label">2位（時間指定）</div></div>
+      <div class="func-stat"><div class="fs-num">📞87% / 📋13%</div><div class="fs-label">チャネル比率</div></div>
     </div>
 
     <!-- 内訳バー -->
@@ -3067,10 +3908,82 @@ a { color: var(--color-a); }
       </tr>
     </table>
 
-    <!-- 小区分アコーディオン -->
-    <div class="subsection-title">小区分別 件数と改善案（クリックで展開）</div>
-    <div class="shouku-acc">
-
+    <!-- 施策テーブル（④-2 配送） -->
+    <div class="subsection-title">施策・件数・削減効果 一覧</div>
+    <div class="施策テーブル-wrap">
+    <table class="施策テーブル">
+      <thead>
+        <tr>
+          <th style="text-align:left;min-width:200px;">施策（小区分）</th>
+          <th>件数</th>
+          <th>未完了率</th>
+          <th>削減件数/年</th>
+          <th>削減工数/年</th>
+          <th>削減費用/年</th>
+          <th>チャネル比率</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- r=0.878 → 平均処理時間 = 0.878×30 + 0.122×10 = 26.34+1.22 = 27.56分
+             842×0.6×4=2,021件/年, 2,021×27.56/60≈928h, 928×2000=186万円 -->
+        <tr>
+          <td class="st-action">💔 「破損・不良」Web申請フォームを整備（注文番号・商品名自動入力、写真添付で一次受付完結）出荷前検品プロセスの強化</td>
+          <td class="st-num st-color-red">369件</td>
+          <td class="st-pct" style="color:#c0392b;">87.8%</td>
+          <td class="st-num st-color-blue">886件</td>
+          <td class="st-num">407h</td>
+          <td class="st-money st-color-green">81万円</td>
+          <td class="st-ch">📞87% / 📋13%</td>
+        </tr>
+        <tr>
+          <td class="st-action">⏰ マイページ注文詳細に配送業者の「再配達依頼・時間変更リンク」を直接表示。注文確認メールに時間指定内容と変更方法を明記</td>
+          <td class="st-num st-color-red">334件</td>
+          <td class="st-pct" style="color:#c0392b;">87.8%</td>
+          <td class="st-num st-color-blue">802件</td>
+          <td class="st-num">368h</td>
+          <td class="st-money st-color-green">74万円</td>
+          <td class="st-ch">📞87% / 📋13%</td>
+        </tr>
+        <tr>
+          <td class="st-action">🚛 注文時に配送業者の希望を選択できるオプションを追加。各業者の宅配ボックス対応状況をマイページ・注文画面に明示</td>
+          <td class="st-num st-color-red">166件</td>
+          <td class="st-pct" style="color:#c0392b;">87.8%</td>
+          <td class="st-num st-color-blue">398件</td>
+          <td class="st-num">183h</td>
+          <td class="st-money st-color-green">37万円</td>
+          <td class="st-ch">📞87% / 📋13%</td>
+        </tr>
+        <tr>
+          <td class="st-action">📅 出荷前注文の配送日変更をマイページからセルフ化。出荷後は業者への再配依頼方法をマイページから直接案内</td>
+          <td class="st-num st-color-red">86件</td>
+          <td class="st-pct" style="color:#c0392b;">87.8%</td>
+          <td class="st-num st-color-blue">206件</td>
+          <td class="st-num">95h</td>
+          <td class="st-money st-color-green">19万円</td>
+          <td class="st-ch">📞87% / 📋13%</td>
+        </tr>
+        <tr>
+          <td class="st-action">📦 その他配送関連対応（遅延・紛失等）</td>
+          <td class="st-num st-color-red">87件</td>
+          <td class="st-pct" style="color:#c0392b;">87.8%</td>
+          <td class="st-num st-color-blue">209件</td>
+          <td class="st-num">96h</td>
+          <td class="st-money st-color-green">19万円</td>
+          <td class="st-ch">📞87% / 📋13%</td>
+        </tr>
+        <tr class="st-total-row">
+          <td>④-2 配送 合計</td>
+          <td class="st-num">842件</td>
+          <td class="st-pct">87.8%</td>
+          <td class="st-num">2,021件/年</td>
+          <td class="st-num">928h/年</td>
+          <td class="st-money">186万円/年</td>
+          <td class="st-ch">📞87% / 📋13%</td>
+        </tr>
+      </tbody>
+    </table>
+    </div>
+    <div class="shouku-acc" style="display:none;">
       <!-- 💔 破損・不良 369件 -->
       <div>
         <div class="shouku-acc-header" onclick="toggleShouku(this)">
@@ -4154,9 +5067,9 @@ a { color: var(--color-a); }
       <div class="subsection-title">📋 商品仕様 — サブカテゴリ概要</div>
       <div class="func-header">
         <div class="func-stat hl-red"><div class="fs-num">1,281件</div><div class="fs-label">商品仕様合計</div></div>
-        <div class="func-stat hl-orange"><div class="fs-num">44.0%</div><div class="fs-label">未完了率（高め）</div></div>
-        <div class="func-stat hl-blue"><div class="fs-num">商品ページ</div><div class="fs-label">情報充実で削減可能</div></div>
-        <div class="func-stat"><div class="fs-num">759件</div><div class="fs-label">最多（その他商品）</div></div>
+        <div class="func-stat hl-orange"><div class="fs-num">44.0%</div><div class="fs-label">未完了率</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">759件</div><div class="fs-label">最多（その他商品仕様）</div></div>
+        <div class="func-stat"><div class="fs-num">📞84% / 📋16%</div><div class="fs-label">チャネル比率</div></div>
       </div>
 
       <!-- 推奨施策サマリー -->
@@ -4203,9 +5116,9 @@ a { color: var(--color-a); }
       <div class="subsection-title">🔧 パーツ不足 — サブカテゴリ概要</div>
       <div class="func-header">
         <div class="func-stat hl-red"><div class="fs-num">262件</div><div class="fs-label">パーツ不足合計</div></div>
-        <div class="func-stat hl-orange"><div class="fs-num">87.8%</div><div class="fs-label">クレーム未完了率</div></div>
-        <div class="func-stat"><div class="fs-num">調査必要</div><div class="fs-label">現品確認が必須</div></div>
-        <div class="func-stat"><div class="fs-num">組み立て品</div><div class="fs-label">が多い</div></div>
+        <div class="func-stat hl-orange"><div class="fs-num">87.8%</div><div class="fs-label">未完了率</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">262件</div><div class="fs-label">最多（同梱・不足）</div></div>
+        <div class="func-stat"><div class="fs-num">📞88% / 📋12%</div><div class="fs-label">チャネル比率</div></div>
       </div>
 
       <!-- 推奨施策サマリー -->
@@ -4240,10 +5153,10 @@ a { color: var(--color-a); }
     <div class="sub-panel" id="sp-product-other">
       <div class="subsection-title">📝 その他商品 — サブカテゴリ概要</div>
       <div class="func-header">
-        <div class="func-stat hl-blue"><div class="fs-num">759件</div><div class="fs-label">その他商品合計</div></div>
-        <div class="func-stat"><div class="fs-num">44.0%</div><div class="fs-label">未完了率</div></div>
-        <div class="func-stat"><div class="fs-num">商品別</div><div class="fs-label">多様な問い合わせ</div></div>
-        <div class="func-stat"><div class="fs-num">情報充実</div><div class="fs-label">で削減余地大</div></div>
+        <div class="func-stat hl-red"><div class="fs-num">759件</div><div class="fs-label">その他商品合計</div></div>
+        <div class="func-stat hl-orange"><div class="fs-num">44.0%</div><div class="fs-label">未完了率</div></div>
+        <div class="func-stat hl-blue"><div class="fs-num">209件</div><div class="fs-label">最多（カードケース）</div></div>
+        <div class="func-stat"><div class="fs-num">📞84% / 📋16%</div><div class="fs-label">チャネル比率</div></div>
       </div>
 
       <!-- 推奨施策サマリー -->
@@ -4302,6 +5215,14 @@ a { color: var(--color-a); }
       </table>
       <p style="font-size:12px;color:#566573;margin-top:8px;">💡 このカテゴリのROI最大化は「担当者不在（579件）のエスカレーション整備」と「IVR設計の最適化」。Web施策ではなくCS運用改善・システム設定変更で実現できるため、開発コストなしで着手できる。</p>
     </div>
+
+    <div class="func-header">
+      <div class="func-stat hl-red"><div class="fs-num">1,789件</div><div class="fs-label">その他 合計</div></div>
+      <div class="func-stat hl-orange"><div class="fs-num">91.4%</div><div class="fs-label">未完了率</div></div>
+      <div class="func-stat hl-blue"><div class="fs-num">845件</div><div class="fs-label">最多（要件不明・その他）</div></div>
+      <div class="func-stat"><div class="fs-num">📞74% / 📋26%</div><div class="fs-label">チャネル比率</div></div>
+    </div>
+
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:12px;margin-bottom:20px;">
       <div style="background:#f8f9fa;border:1px solid #dce3ed;border-radius:10px;padding:16px;text-align:center;">
         <div style="font-size:22px;font-weight:700;color:#e84c3d;">579件</div>
